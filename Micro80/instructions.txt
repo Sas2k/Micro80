@@ -1,0 +1,74 @@
+0x0000 : NOP  : No Operation
+0x0001 : LDA  : Load Accumulator
+0x0002 : LDB  : Load Register B
+0x0003 : LDC  : Load Register C
+0x0004 : LDD  : Load Register D
+0x0005 : LDE  : Load Register E
+0x0006 : LDF  : Load Register F
+0x0007 : LDST : Load Stack Pointer
+0x0008 : LDAd : Load Address
+0x0009 : LDPC : Load Program Counter
+0x000A : STA  : Store Accumulator
+0x000B : STB  : Store Register B
+0x000C : STC  : Store Register C
+0x000D : STD  : Store Register D
+0x000E : STE  : Store Register E
+0x000F : STF  : Store Register F
+0x0010 : STST : Store Stack Pointer
+0x0011 : STAd : Store Address
+0x0012 : STPC : Store Program Counter
+0x0013 : ADD  : Add
+0x0014 : SUB  : Subtract
+0x0015 : MUL  : Multiply
+0x0016 : DIV  : Divide
+0x0017 : MOD  : Modulo
+0x0018 : AND  : Bitwise AND
+0x0019 : OR   : Bitwise OR
+0x001A : XOR  : Bitwise XOR
+0x001B : NOT  : Bitwise NOT
+0x001C : SHL  : Shift Left
+0x001D : SHR  : Shift Right
+0x001E : CMP  : Compare
+0x001F : JMP  : Jump
+0x0020 : JEQ  : Jump if Equal
+0x0021 : JNE  : Jump if Not Equal
+0x0022 : JGT  : Jump if Greater Than
+0x0023 : JLT  : Jump if Less Than
+0x0024 : JGE  : Jump if Greater Than or Equal
+0x0025 : JLE  : Jump if Less Than or Equal
+0x0026 : JZ   : Jump if Zero
+0x0027 : JNZ  : Jump if Not Zero
+0x0028 : JGZ  : Jump if Greater Than Zero
+0x0029 : JLZ  : Jump if Less Than Zero
+0x002A : JGEZ : Jump if Greater Than or Equal to Zero
+0x002B : JLEZ : Jump if Less Than or Equal to Zero
+0x002C : CALL : Call
+0x002D : RET  : Return
+0x002E : PUSH : Push
+0x002F : POP  : Pop
+0x0030 : PUSHA: Push All
+0x0031 : POPA : Pop All
+0x0032 : WDir : Writes Directly to the current address
+0x0033 : RDir : Reads Directly from Memory
+0x0034 : WAdr : Writes the address directly to the address register
+0x0035 : INCA : Increment Accumulator
+0x0036 : DECA : Decrement Accumulator
+0x0037 : INCB : Increment Register B
+0x0038 : DECB : Decrement Register B
+0x0039 : INCC : Increment Register C
+0x003A : DECC : Decrement Register C
+0x003B : INCD : Increment Register D
+0x003C : DECD : Decrement Register D
+0x003D : INCE : Increment Register E
+0x003E : DECE : Decrement Register E
+0x003F : INCF : Increment Register F
+0x0040 : DECF : Decrement Register F
+0x0041 : INCS : Increment Stack Pointer
+0x0042 : DECS : Decrement Stack Pointer
+0x0043 : INCP : Increment Program Counter
+0x0044 : DECP : Decrement Program Counter
+0x0045 : ICAd : Increment Address
+0x0046 : DCAd : Decrement Address
+0x0047 : MOV  : Copies the data from the current Address to the specified address
+0x0048 : SLP  : Sleeps for a specified amount of cycles
+0x0049 : HLT  : Halt

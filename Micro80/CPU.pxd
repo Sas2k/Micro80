@@ -1,0 +1,59 @@
+""""
+Micro80: CPU.pxd
+Sas2k 2024
+
+- Micro80 CPU Header File -
+"""
+
+from Micro80.MainMemory import MainMemory
+from Micro80.Display import Display
+
+from pathlib import Path
+
+cimport sdl2
+cimport sdl2.ext
+import time
+
+cdef class CPU:
+    cdef public debug
+    cdef public memory
+    cdef public int programCounter, stackPointer, RunStatus, A, B, C, D, E, F, adr, sleepTimer
+    cdef public curOpcode
+    cdef public curOperand
+    cdef public instructionTable
+    cdef public dict instructions
+    cdef public list List
+    cdef public window
+    cdef public display
+
+    cpdef runProgram(self)
+
+    cpdef fetch(self)
+
+    cpdef execute(self, int opcode, operands)
+
+    cpdef popAll(self)
+
+    cpdef pushAll(self)
+
+    cpdef pop(self, int operands)
+
+    cpdef push(self, int operands)
+
+    cpdef ret(self)
+
+    cpdef call(self, int operands)
+
+    cpdef increment(self, str register)
+
+    cpdef decrement(self, str register)
+
+    cpdef load(self, str register, int operands)
+
+    cpdef store(self, str register, int operands)
+
+    cpdef alu(self, str opcode, int operands)
+
+    cpdef jump(self, str opcode, int operands)
+
+    cpdef Loader(self, ROMFile, int location=*)

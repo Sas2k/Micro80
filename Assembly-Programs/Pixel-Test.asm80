@@ -1,0 +1,12 @@
+WAdr 0xC000
+WDir 0xFFFF ;renders at (0, 0)
+
+WAdr 0xFFFF 
+WDir 0xFFFF ;renders at (127, 127)
+
+WAdr 0x400A
+WDir 0x0001
+
+SLP 0xFFFF
+
+HLT

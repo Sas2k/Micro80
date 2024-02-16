@@ -1,0 +1,4 @@
+Cython
+PySDL2
+pysdl2-dll
+black

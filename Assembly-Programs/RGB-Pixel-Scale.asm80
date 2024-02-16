@@ -1,0 +1,44 @@
+WAdr 0x4400
+WDir 0x0000 ; Counter Variable
+WAdr 0x4401
+WDir 0xBFFF ; Address Variable
+WAdr 0x4402
+WDir 0xFFFF ; Loop Limit
+
+:Loop-Start
+LDA 0x4403  ; Resets the Accumulator to 0
+LDB 0x4403  ; Resets the B Register to 0
+LDA 0x4401  ; Loads the Address Variable into the Accumulator
+INCA        ; Increments the Accumulator
+LDB 0x4400  ; Loads the Counter Variable into the B Register
+INCB
+INCB
+INCB
+INCB        ; Increments the B Register by 2.
+STA 0x4401  ; Stores the Accumulator into the Address Variable
+STB 0x4400  ; Stores the B Register into the Counter Variable
+LDAd 0x4401 ; Loads the Address Variable into the Accumulator
+STB 0x4400  ; Stores the Accumulator into the Counter Variable
+
+; Loads the three variables into the Accumulator, B Register, and C Register
+LDA 0x4400
+LDB 0x4401
+LDC 0x4402
+
+; Stores the 2 into the variable memory
+STA 0x4400
+STB 0x4401
+
+MOV 0x4400, 0x4401 ; moves the value of 0x4400 into the address stored in 0x4401
+
+LDA 0x4402 ; Loads the Loop Limit into the Accumulator
+SUB 0x4401 ; Subtracts the Accumulator from the Loop Limit
+
+JNZ :Loop-Start ; Jumps to the Loop Start if the Accumulator is not 0
+
+; Loop End
+
+WAdr 0x400A ; Address of the Render Status
+WDir 0x0001 ; sets it to 1, to render screen
+
+HLT ;Stops Everything
