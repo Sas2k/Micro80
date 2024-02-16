@@ -69,7 +69,7 @@ A how-to guide that will help you get started with the project.
 First off, Clone the repository on to your local machine.
 
 ```bash
-git clone
+git clone <http-repo-url>
 ```
 
 then, navigate to the directory and create a virtual environment.
