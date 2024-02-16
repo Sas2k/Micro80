@@ -52,6 +52,7 @@ class CPU:
         debug = self.debug
         renderLocations = []
         renderAmount = 0
+        self.jumpCount = 0
         while self.memory.readAddress(self.RunStatus) == 0x0000:
             if self.sleepTimer != 0:
                 self.sleepTimer -= 1
@@ -74,6 +75,8 @@ class CPU:
                 )
                 print(f"variable:\n{self.memory.memory[0x4400:0x4406]}")
                 print(f"Stack: {self.memory.memory[0x5400:0x5406]}")
+                print(f"Display: {self.memory.memory[0xC000:0xC006]}")
+                print(f"Jump Count: {self.jumpCount}")
         if debug:
             print(f"Rendered {renderAmount} times in {renderLocations}")
 
@@ -341,6 +344,7 @@ class CPU:
 
     def jump(self, opcode, operands):
         "Jumps to a given address based on the condition."
+        self.jumpCount += 1
         if opcode == "Z":
             if self.A == 0:
                 self.programCounter = operands
@@ -382,6 +386,7 @@ class CPU:
         elif opcode == "MP":
             self.programCounter = operands
         else:
+            self.jumpCount -= 1
             raise ValueError("Invalid Opcode")
 
     def Loader(self, ROMFile, location=0x0000):

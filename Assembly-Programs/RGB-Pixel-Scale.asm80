@@ -14,7 +14,7 @@ LDB 0x4400  ; Loads the Counter Variable into the B Register
 INCB
 INCB
 INCB
-INCB        ; Increments the B Register by 2.
+INCB        ; Increments the B Register by 4.
 STA 0x4401  ; Stores the Accumulator into the Address Variable
 STB 0x4400  ; Stores the B Register into the Counter Variable
 LDAd 0x4401 ; Loads the Address Variable into the Accumulator

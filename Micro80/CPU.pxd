@@ -17,7 +17,7 @@ import time
 cdef class CPU:
     cdef public debug
     cdef public memory
-    cdef public int programCounter, stackPointer, RunStatus, A, B, C, D, E, F, adr, sleepTimer
+    cdef public int programCounter, stackPointer, RunStatus, A, B, C, D, E, F, adr, sleepTimer, jumpCount
     cdef public curOpcode
     cdef public curOperand
     cdef public instructionTable
@@ -25,6 +25,7 @@ cdef class CPU:
     cdef public list List
     cdef public window
     cdef public display
+    cdef public render
 
     cpdef runProgram(self)
 

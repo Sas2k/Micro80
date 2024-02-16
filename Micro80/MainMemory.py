@@ -38,7 +38,7 @@ class MainMemory:
     def readAddress(self, address):
         "Read an address from the memory"
         if address < 0x0000 or address > 0xFFFF:
-            raise ValueError("Memory address out of range")
+            raise ValueError(f"Memory address out of range: {address}")
         else:
             self.curAddress = address
             self.curData = self.memory[address]

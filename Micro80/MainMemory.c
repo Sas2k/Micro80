@@ -1805,6 +1805,21 @@ static CYTHON_INLINE PyObject* __Pyx_PyObject_CallMethO(PyObject *func, PyObject
 #define __Pyx_PyObject_FastCall(func, args, nargs)  __Pyx_PyObject_FastCallDict(func, args, (size_t)(nargs), NULL)
 static CYTHON_INLINE PyObject* __Pyx_PyObject_FastCallDict(PyObject *func, PyObject **args, size_t nargs, PyObject *kwargs);
 
+/* GCCDiagnostics.proto */
+#if !defined(__INTEL_COMPILER) && defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6))
+#define __Pyx_HAS_GCC_DIAGNOSTIC
+#endif
+
+/* BuildPyUnicode.proto */
+static PyObject* __Pyx_PyUnicode_BuildFromAscii(Py_ssize_t ulength, char* chars, int clength,
+                                                int prepend_sign, char padding_char);
+
+/* CIntToPyUnicode.proto */
+static CYTHON_INLINE PyObject* __Pyx_PyUnicode_From_int(int value, Py_ssize_t width, char padding_char, char format_char);
+
+/* PyObjectCallOneArg.proto */
+static CYTHON_INLINE PyObject* __Pyx_PyObject_CallOneArg(PyObject *func, PyObject *arg);
+
 /* RaiseException.proto */
 static void __Pyx_Raise(PyObject *type, PyObject *value, PyObject *tb, PyObject *cause);
 
@@ -1908,9 +1923,6 @@ static int __Pyx_fix_up_extension_type_from_spec(PyType_Spec *spec, PyTypeObject
 
 /* PyObjectCallNoArg.proto */
 static CYTHON_INLINE PyObject* __Pyx_PyObject_CallNoArg(PyObject *func);
-
-/* PyObjectCallOneArg.proto */
-static CYTHON_INLINE PyObject* __Pyx_PyObject_CallOneArg(PyObject *func, PyObject *arg);
 
 /* PyObjectGetMethod.proto */
 static int __Pyx_PyObject_GetMethod(PyObject *obj, PyObject *name, PyObject **method);
@@ -2124,11 +2136,6 @@ static void __pyx_insert_code_object(int code_line, PyCodeObject* code_object);
 static void __Pyx_AddTraceback(const char *funcname, int c_line,
                                int py_line, const char *filename);
 
-/* GCCDiagnostics.proto */
-#if !defined(__INTEL_COMPILER) && defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6))
-#define __Pyx_HAS_GCC_DIAGNOSTIC
-#endif
-
 /* CIntToPy.proto */
 static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int(int value);
 
@@ -2247,8 +2254,9 @@ static const char __pyx_k_MainMemory_writeAddress[] = "MainMemory.writeAddress";
 static const char __pyx_k_pyx_unpickle_MainMemory[] = "__pyx_unpickle_MainMemory";
 static const char __pyx_k_MainMemory_getCurAddress[] = "MainMemory.getCurAddress";
 static const char __pyx_k_MainMemory___reduce_cython[] = "MainMemory.__reduce_cython__";
-static const char __pyx_k_Memory_address_out_of_range[] = "Memory address out of range";
+static const char __pyx_k_Memory_address_out_of_range[] = "Memory address out of range: ";
 static const char __pyx_k_MainMemory___setstate_cython[] = "MainMemory.__setstate_cython__";
+static const char __pyx_k_Memory_address_out_of_range_2[] = "Memory address out of range";
 static const char __pyx_k_Micro80_MainMemory_py_Sas2k_202[] = "\nMicro80: MainMemory.py\nSas2k 2024\n\n- Micro80 Main Memory -\n\n";
 static const char __pyx_k_Incompatible_checksums_0x_x_vs_0[] = "Incompatible checksums (0x%x vs (0x3497c75, 0x06e054c, 0x015d81a) = (curAddress, curData, memory, stackPointer))";
 /* #### Code section: decls ### */
@@ -2309,7 +2317,8 @@ typedef struct {
   PyObject *__pyx_n_s_MainMemory_getMemory;
   PyObject *__pyx_n_s_MainMemory_readAddress;
   PyObject *__pyx_n_s_MainMemory_writeAddress;
-  PyObject *__pyx_kp_s_Memory_address_out_of_range;
+  PyObject *__pyx_kp_u_Memory_address_out_of_range;
+  PyObject *__pyx_kp_s_Memory_address_out_of_range_2;
   PyObject *__pyx_n_s_Micro80_MainMemory;
   PyObject *__pyx_kp_s_Micro80_MainMemory_py;
   PyObject *__pyx_n_s_PickleError;
@@ -2426,7 +2435,8 @@ static int __pyx_m_clear(PyObject *m) {
   Py_CLEAR(clear_module_state->__pyx_n_s_MainMemory_getMemory);
   Py_CLEAR(clear_module_state->__pyx_n_s_MainMemory_readAddress);
   Py_CLEAR(clear_module_state->__pyx_n_s_MainMemory_writeAddress);
-  Py_CLEAR(clear_module_state->__pyx_kp_s_Memory_address_out_of_range);
+  Py_CLEAR(clear_module_state->__pyx_kp_u_Memory_address_out_of_range);
+  Py_CLEAR(clear_module_state->__pyx_kp_s_Memory_address_out_of_range_2);
   Py_CLEAR(clear_module_state->__pyx_n_s_Micro80_MainMemory);
   Py_CLEAR(clear_module_state->__pyx_kp_s_Micro80_MainMemory_py);
   Py_CLEAR(clear_module_state->__pyx_n_s_PickleError);
@@ -2521,7 +2531,8 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
   Py_VISIT(traverse_module_state->__pyx_n_s_MainMemory_getMemory);
   Py_VISIT(traverse_module_state->__pyx_n_s_MainMemory_readAddress);
   Py_VISIT(traverse_module_state->__pyx_n_s_MainMemory_writeAddress);
-  Py_VISIT(traverse_module_state->__pyx_kp_s_Memory_address_out_of_range);
+  Py_VISIT(traverse_module_state->__pyx_kp_u_Memory_address_out_of_range);
+  Py_VISIT(traverse_module_state->__pyx_kp_s_Memory_address_out_of_range_2);
   Py_VISIT(traverse_module_state->__pyx_n_s_Micro80_MainMemory);
   Py_VISIT(traverse_module_state->__pyx_kp_s_Micro80_MainMemory_py);
   Py_VISIT(traverse_module_state->__pyx_n_s_PickleError);
@@ -2626,7 +2637,8 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
 #define __pyx_n_s_MainMemory_getMemory __pyx_mstate_global->__pyx_n_s_MainMemory_getMemory
 #define __pyx_n_s_MainMemory_readAddress __pyx_mstate_global->__pyx_n_s_MainMemory_readAddress
 #define __pyx_n_s_MainMemory_writeAddress __pyx_mstate_global->__pyx_n_s_MainMemory_writeAddress
-#define __pyx_kp_s_Memory_address_out_of_range __pyx_mstate_global->__pyx_kp_s_Memory_address_out_of_range
+#define __pyx_kp_u_Memory_address_out_of_range __pyx_mstate_global->__pyx_kp_u_Memory_address_out_of_range
+#define __pyx_kp_s_Memory_address_out_of_range_2 __pyx_mstate_global->__pyx_kp_s_Memory_address_out_of_range_2
 #define __pyx_n_s_Micro80_MainMemory __pyx_mstate_global->__pyx_n_s_Micro80_MainMemory
 #define __pyx_kp_s_Micro80_MainMemory_py __pyx_mstate_global->__pyx_kp_s_Micro80_MainMemory_py
 #define __pyx_n_s_PickleError __pyx_mstate_global->__pyx_n_s_PickleError
@@ -3266,7 +3278,7 @@ static PyObject *__pyx_f_7Micro80_10MainMemory_10MainMemory_readAddress(struct _
  *     def readAddress(self, address):
  *         "Read an address from the memory"
  *         if address < 0x0000 or address > 0xFFFF:             # <<<<<<<<<<<<<<
- *             raise ValueError("Memory address out of range")
+ *             raise ValueError(f"Memory address out of range: {address}")
  *         else:
  */
   __pyx_t_8 = (__pyx_v_address < 0x0000);
@@ -3283,12 +3295,18 @@ static PyObject *__pyx_f_7Micro80_10MainMemory_10MainMemory_readAddress(struct _
     /* "Micro80/MainMemory.py":41
  *         "Read an address from the memory"
  *         if address < 0x0000 or address > 0xFFFF:
- *             raise ValueError("Memory address out of range")             # <<<<<<<<<<<<<<
+ *             raise ValueError(f"Memory address out of range: {address}")             # <<<<<<<<<<<<<<
  *         else:
  *             self.curAddress = address
  */
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple_, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 41, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyUnicode_From_int(__pyx_v_address, 0, ' ', 'd'); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 41, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_2 = __Pyx_PyUnicode_Concat(__pyx_kp_u_Memory_address_out_of_range, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 41, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_builtin_ValueError, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 41, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_Raise(__pyx_t_1, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __PYX_ERR(0, 41, __pyx_L1_error)
@@ -3297,13 +3315,13 @@ static PyObject *__pyx_f_7Micro80_10MainMemory_10MainMemory_readAddress(struct _
  *     def readAddress(self, address):
  *         "Read an address from the memory"
  *         if address < 0x0000 or address > 0xFFFF:             # <<<<<<<<<<<<<<
- *             raise ValueError("Memory address out of range")
+ *             raise ValueError(f"Memory address out of range: {address}")
  *         else:
  */
   }
 
   /* "Micro80/MainMemory.py":43
- *             raise ValueError("Memory address out of range")
+ *             raise ValueError(f"Memory address out of range: {address}")
  *         else:
  *             self.curAddress = address             # <<<<<<<<<<<<<<
  *             self.curData = self.memory[address]
@@ -5313,7 +5331,8 @@ static int __Pyx_CreateStringTabAndInitStrings(void) {
     {&__pyx_n_s_MainMemory_getMemory, __pyx_k_MainMemory_getMemory, sizeof(__pyx_k_MainMemory_getMemory), 0, 0, 1, 1},
     {&__pyx_n_s_MainMemory_readAddress, __pyx_k_MainMemory_readAddress, sizeof(__pyx_k_MainMemory_readAddress), 0, 0, 1, 1},
     {&__pyx_n_s_MainMemory_writeAddress, __pyx_k_MainMemory_writeAddress, sizeof(__pyx_k_MainMemory_writeAddress), 0, 0, 1, 1},
-    {&__pyx_kp_s_Memory_address_out_of_range, __pyx_k_Memory_address_out_of_range, sizeof(__pyx_k_Memory_address_out_of_range), 0, 0, 1, 0},
+    {&__pyx_kp_u_Memory_address_out_of_range, __pyx_k_Memory_address_out_of_range, sizeof(__pyx_k_Memory_address_out_of_range), 0, 1, 0, 0},
+    {&__pyx_kp_s_Memory_address_out_of_range_2, __pyx_k_Memory_address_out_of_range_2, sizeof(__pyx_k_Memory_address_out_of_range_2), 0, 0, 1, 0},
     {&__pyx_n_s_Micro80_MainMemory, __pyx_k_Micro80_MainMemory, sizeof(__pyx_k_Micro80_MainMemory), 0, 0, 1, 1},
     {&__pyx_kp_s_Micro80_MainMemory_py, __pyx_k_Micro80_MainMemory_py, sizeof(__pyx_k_Micro80_MainMemory_py), 0, 0, 1, 0},
     {&__pyx_n_s_PickleError, __pyx_k_PickleError, sizeof(__pyx_k_PickleError), 0, 0, 1, 1},
@@ -5376,14 +5395,14 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__Pyx_InitCachedConstants", 0);
 
-  /* "Micro80/MainMemory.py":41
- *         "Read an address from the memory"
+  /* "Micro80/MainMemory.py":50
+ *         "Write data to an address in the memory"
  *         if address < 0x0000 or address > 0xFFFF:
  *             raise ValueError("Memory address out of range")             # <<<<<<<<<<<<<<
  *         else:
  *             self.curAddress = address
  */
-  __pyx_tuple_ = PyTuple_Pack(1, __pyx_kp_s_Memory_address_out_of_range); if (unlikely(!__pyx_tuple_)) __PYX_ERR(0, 41, __pyx_L1_error)
+  __pyx_tuple_ = PyTuple_Pack(1, __pyx_kp_s_Memory_address_out_of_range_2); if (unlikely(!__pyx_tuple_)) __PYX_ERR(0, 50, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple_);
   __Pyx_GIVEREF(__pyx_tuple_);
 
@@ -6812,6 +6831,187 @@ static CYTHON_INLINE PyObject* __Pyx_PyObject_FastCallDict(PyObject *func, PyObj
     #endif
 }
 
+/* CIntToDigits */
+static const char DIGIT_PAIRS_10[2*10*10+1] = {
+    "00010203040506070809"
+    "10111213141516171819"
+    "20212223242526272829"
+    "30313233343536373839"
+    "40414243444546474849"
+    "50515253545556575859"
+    "60616263646566676869"
+    "70717273747576777879"
+    "80818283848586878889"
+    "90919293949596979899"
+};
+static const char DIGIT_PAIRS_8[2*8*8+1] = {
+    "0001020304050607"
+    "1011121314151617"
+    "2021222324252627"
+    "3031323334353637"
+    "4041424344454647"
+    "5051525354555657"
+    "6061626364656667"
+    "7071727374757677"
+};
+static const char DIGITS_HEX[2*16+1] = {
+    "0123456789abcdef"
+    "0123456789ABCDEF"
+};
+
+/* BuildPyUnicode */
+static PyObject* __Pyx_PyUnicode_BuildFromAscii(Py_ssize_t ulength, char* chars, int clength,
+                                                int prepend_sign, char padding_char) {
+    PyObject *uval;
+    Py_ssize_t uoffset = ulength - clength;
+#if CYTHON_USE_UNICODE_INTERNALS
+    Py_ssize_t i;
+#if CYTHON_PEP393_ENABLED
+    void *udata;
+    uval = PyUnicode_New(ulength, 127);
+    if (unlikely(!uval)) return NULL;
+    udata = PyUnicode_DATA(uval);
+#else
+    Py_UNICODE *udata;
+    uval = PyUnicode_FromUnicode(NULL, ulength);
+    if (unlikely(!uval)) return NULL;
+    udata = PyUnicode_AS_UNICODE(uval);
+#endif
+    if (uoffset > 0) {
+        i = 0;
+        if (prepend_sign) {
+            __Pyx_PyUnicode_WRITE(PyUnicode_1BYTE_KIND, udata, 0, '-');
+            i++;
+        }
+        for (; i < uoffset; i++) {
+            __Pyx_PyUnicode_WRITE(PyUnicode_1BYTE_KIND, udata, i, padding_char);
+        }
+    }
+    for (i=0; i < clength; i++) {
+        __Pyx_PyUnicode_WRITE(PyUnicode_1BYTE_KIND, udata, uoffset+i, chars[i]);
+    }
+#else
+    {
+        PyObject *sign = NULL, *padding = NULL;
+        uval = NULL;
+        if (uoffset > 0) {
+            prepend_sign = !!prepend_sign;
+            if (uoffset > prepend_sign) {
+                padding = PyUnicode_FromOrdinal(padding_char);
+                if (likely(padding) && uoffset > prepend_sign + 1) {
+                    PyObject *tmp;
+                    PyObject *repeat = PyInt_FromSsize_t(uoffset - prepend_sign);
+                    if (unlikely(!repeat)) goto done_or_error;
+                    tmp = PyNumber_Multiply(padding, repeat);
+                    Py_DECREF(repeat);
+                    Py_DECREF(padding);
+                    padding = tmp;
+                }
+                if (unlikely(!padding)) goto done_or_error;
+            }
+            if (prepend_sign) {
+                sign = PyUnicode_FromOrdinal('-');
+                if (unlikely(!sign)) goto done_or_error;
+            }
+        }
+        uval = PyUnicode_DecodeASCII(chars, clength, NULL);
+        if (likely(uval) && padding) {
+            PyObject *tmp = PyNumber_Add(padding, uval);
+            Py_DECREF(uval);
+            uval = tmp;
+        }
+        if (likely(uval) && sign) {
+            PyObject *tmp = PyNumber_Add(sign, uval);
+            Py_DECREF(uval);
+            uval = tmp;
+        }
+done_or_error:
+        Py_XDECREF(padding);
+        Py_XDECREF(sign);
+    }
+#endif
+    return uval;
+}
+
+/* CIntToPyUnicode */
+static CYTHON_INLINE PyObject* __Pyx_PyUnicode_From_int(int value, Py_ssize_t width, char padding_char, char format_char) {
+    char digits[sizeof(int)*3+2];
+    char *dpos, *end = digits + sizeof(int)*3+2;
+    const char *hex_digits = DIGITS_HEX;
+    Py_ssize_t length, ulength;
+    int prepend_sign, last_one_off;
+    int remaining;
+#ifdef __Pyx_HAS_GCC_DIAGNOSTIC
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconversion"
+#endif
+    const int neg_one = (int) -1, const_zero = (int) 0;
+#ifdef __Pyx_HAS_GCC_DIAGNOSTIC
+#pragma GCC diagnostic pop
+#endif
+    const int is_unsigned = neg_one > const_zero;
+    if (format_char == 'X') {
+        hex_digits += 16;
+        format_char = 'x';
+    }
+    remaining = value;
+    last_one_off = 0;
+    dpos = end;
+    do {
+        int digit_pos;
+        switch (format_char) {
+        case 'o':
+            digit_pos = abs((int)(remaining % (8*8)));
+            remaining = (int) (remaining / (8*8));
+            dpos -= 2;
+            memcpy(dpos, DIGIT_PAIRS_8 + digit_pos * 2, 2);
+            last_one_off = (digit_pos < 8);
+            break;
+        case 'd':
+            digit_pos = abs((int)(remaining % (10*10)));
+            remaining = (int) (remaining / (10*10));
+            dpos -= 2;
+            memcpy(dpos, DIGIT_PAIRS_10 + digit_pos * 2, 2);
+            last_one_off = (digit_pos < 10);
+            break;
+        case 'x':
+            *(--dpos) = hex_digits[abs((int)(remaining % 16))];
+            remaining = (int) (remaining / 16);
+            break;
+        default:
+            assert(0);
+            break;
+        }
+    } while (unlikely(remaining != 0));
+    assert(!last_one_off || *dpos == '0');
+    dpos += last_one_off;
+    length = end - dpos;
+    ulength = length;
+    prepend_sign = 0;
+    if (!is_unsigned && value <= neg_one) {
+        if (padding_char == ' ' || width <= length + 1) {
+            *(--dpos) = '-';
+            ++length;
+        } else {
+            prepend_sign = 1;
+        }
+        ++ulength;
+    }
+    if (width > ulength) {
+        ulength = width;
+    }
+    if (ulength == 1) {
+        return PyUnicode_FromOrdinal(*dpos);
+    }
+    return __Pyx_PyUnicode_BuildFromAscii(ulength, dpos, (int) length, prepend_sign, padding_char);
+}
+
+/* PyObjectCallOneArg */
+static CYTHON_INLINE PyObject* __Pyx_PyObject_CallOneArg(PyObject *func, PyObject *arg) {
+    PyObject *args[2] = {NULL, arg};
+    return __Pyx_PyObject_FastCall(func, args+1, 1 | __Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET);
+}
+
 /* RaiseException */
 #if PY_MAJOR_VERSION < 3
 static void __Pyx_Raise(PyObject *type, PyObject *value, PyObject *tb, PyObject *cause) {
@@ -7589,12 +7789,6 @@ static int __Pyx_fix_up_extension_type_from_spec(PyType_Spec *spec, PyTypeObject
 static CYTHON_INLINE PyObject* __Pyx_PyObject_CallNoArg(PyObject *func) {
     PyObject *arg[2] = {NULL, NULL};
     return __Pyx_PyObject_FastCall(func, arg + 1, 0 | __Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET);
-}
-
-/* PyObjectCallOneArg */
-static CYTHON_INLINE PyObject* __Pyx_PyObject_CallOneArg(PyObject *func, PyObject *arg) {
-    PyObject *args[2] = {NULL, arg};
-    return __Pyx_PyObject_FastCall(func, args+1, 1 | __Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET);
 }
 
 /* PyObjectGetMethod */
