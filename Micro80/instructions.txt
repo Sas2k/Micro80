@@ -71,4 +71,5 @@
 0x0046 : DCAd : Decrement Address
 0x0047 : MOV  : Copies the data from the current Address to the specified address
 0x0048 : SLP  : Sleeps for a specified amount of cycles
-0x0049 : HLT  : Halt
+0x0049 : CLS  : Clears the Screen
+0x004A : HLT  : Halt

@@ -16,3 +16,5 @@ cdef class Display:
     cdef public display
     
     cpdef render(self)
+
+    cpdef clear(Self)

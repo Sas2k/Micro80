@@ -41,3 +41,8 @@ class Display:
                 b = (color & 0x1F) << 3
                 self.renderer.draw_point((x, y), sdl2.ext.Color(r, g, b))
                 self.curAddress += 1
+        self.curAddress = self.startAddress
+
+    def clear(self):
+        """Clear the display"""
+        self.renderer.clear(sdl2.ext.Color(0, 0, 0))

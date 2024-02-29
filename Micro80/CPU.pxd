@@ -31,6 +31,8 @@ cdef class CPU:
 
     cpdef fetch(self)
 
+    cpdef _handleEvents(self)
+
     cpdef execute(self, int opcode, operands)
 
     cpdef popAll(self)

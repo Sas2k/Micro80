@@ -3,8 +3,8 @@
 <div align="center">
 
 [![Status](https://img.shields.io/badge/status-active-success.svg)]()
-[![GitHub Issues](https://img.shields.io/github/issues/Sas2k/Micro80.svg)](https://github.com/kylelobo/The-Documentation-Compendium/issues)
-[![GitHub Pull Requests](https://img.shields.io/github/issues-pr/Sas2k/Micro80.svg)](https://github.com/kylelobo/The-Documentation-Compendium/pulls)
+[![GitHub Issues](https://img.shields.io/github/issues/Sas2k/Micro80.svg)](https://github.com/Sas2k/Micro80/issues)
+[![GitHub Pull Requests](https://img.shields.io/github/issues-pr/Sas2k/Micro80.svg)](https://github.com/Sas2k/Micro80/pulls)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](/LICENSE)
 
 </div>
@@ -48,7 +48,7 @@ These instructions will get you a copy of the project up and running on your loc
 ### 📃 To-Do
 
 - [ ] Make Character-Maps for the Graphics Display.
-- [ ] Add Inputs.
+- [x] Add Inputs.
 - [ ] Add Sound Chips.
 - [ ] Create a High-Level Language to Code in.
 - [ ] Bring up the Clock Speed

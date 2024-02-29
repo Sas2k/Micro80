@@ -20,7 +20,7 @@ from timeit import timeit
 
 import sys
 
-__version__ = "1.0-Alpha"
+__version__ = "1.2-Alpha"
 
 parser = ArgumentParser(description="Micro80")
 
@@ -38,9 +38,9 @@ if args.debug:
     print("Python Version: ", sys.version)
 
 if args.file:
-    if args.debug:
-        print("ROM File: ", args.file)
     file = Path(args.file)
+    if args.debug:
+        print("ROM File: ", file)
     if args.memory:
         if args.debug:
             print("Memory Location: ", args.memory)

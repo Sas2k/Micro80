@@ -4,6 +4,7 @@ WAdr 0x4401
 WDir 0x04
 
 :Loop-Start
+NOP
 LDA 0x4400
 INCA
 STA 0x4400

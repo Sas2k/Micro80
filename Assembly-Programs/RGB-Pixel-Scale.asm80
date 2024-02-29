@@ -6,6 +6,7 @@ WAdr 0x4402
 WDir 0xFFFF ; Loop Limit
 
 :Loop-Start
+NOP
 LDA 0x4403  ; Resets the Accumulator to 0
 LDB 0x4403  ; Resets the B Register to 0
 LDA 0x4401  ; Loads the Address Variable into the Accumulator
@@ -40,5 +41,16 @@ JNZ :Loop-Start ; Jumps to the Loop Start if the Accumulator is not 0
 
 WAdr 0x400A ; Address of the Render Status
 WDir 0x0001 ; sets it to 1, to render screen
+
+; Wait Loop Until Exit
+
+:Wait-Loop
+NOP
+LDA 0x4404 ; Loads the Render Status into the Accumulator
+ADD 0x400B
+ADD 0x400C
+ADD 0x400D ; Checks for any input from user
+
+JZ :Wait-Loop ; Jumps to the Wait Loop if the Accumulator is 0
 
 HLT ;Stops Everything

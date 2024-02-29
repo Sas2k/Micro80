@@ -46,17 +46,30 @@ class CPU:
         self.render = sdl2.ext.Renderer(self.window)
         self.display = Display(self.memory, 0xC000, 0xFFFF, self.render, self.window)
         self.window.show()
+        print("CPU Initialized...")
+        if self.debug:
+            print("Debug Mode Enabled...")
 
     def runProgram(self):
         "Runs the program stores in memory"
         debug = self.debug
         renderLocations = []
         renderAmount = 0
+        ticks = 0
         self.jumpCount = 0
+        if self.debug:
+            for x in range(0x0000, 0x003F):
+                (
+                    print(x, self.instructions[self.memory.readAddress(x)])
+                    if self.memory.readAddress(x) <= 0x004A
+                    else print(x, self.memory.readAddress(x))
+                )
+        print("Program Running....")
         while self.memory.readAddress(self.RunStatus) == 0x0000:
             if self.sleepTimer != 0:
                 self.sleepTimer -= 1
                 continue
+            self._handleEvents()
             self.fetch()
             self.execute(self.curOpcode, self.curOperand)
             if self.memory.readAddress(0x400A) == 1:
@@ -66,19 +79,24 @@ class CPU:
                 self.memory.writeAddress(0x400A, 0)
                 renderLocations.append(self.programCounter)
                 renderAmount += 1
-            if debug:
-                print(
-                    f"Current Opcode: {self.curOpcode}, Current Operand: {self.curOperand}"
-                )
-                print(
-                    f"PC: {self.programCounter}, SP: {self.stackPointer}, A: {self.A}, B: {self.B}, C: {self.C}, D: {self.D}, E: {self.E}, F: {self.F}, Ad: {self.adr}"
-                )
-                print(f"variable:\n{self.memory.memory[0x4400:0x4406]}")
-                print(f"Stack: {self.memory.memory[0x5400:0x5406]}")
-                print(f"Display: {self.memory.memory[0xC000:0xC006]}")
-                print(f"Jump Count: {self.jumpCount}")
+            ticks += 1
         if debug:
-            print(f"Rendered {renderAmount} times in {renderLocations}")
+            print(f"Jump Count: {self.jumpCount}")
+            print(f"Render Count: {renderAmount}")
+            print(f"Ticks: {ticks}")
+            print(
+                f"Accumulator: {self.A}, B: {self.B}, C: {self.C}, D: {self.D}, E: {self.E}, F: {self.F}"
+            )
+            print(
+                f"Program Counter: {self.programCounter}, Stack Pointer: {self.stackPointer}, Address: {self.adr}"
+            )
+            print(
+                f"Input: {self.memory.readAddress(0x400B)}, {self.memory.readAddress(0x400C)}, {self.memory.readAddress(0x400D)}"
+            )
+            print(f"Variables: {self.memory.memory[0x4400:0x440F]}")
+            print(f"Display: {self.memory.memory[0xC000:0xC00F]}")
+            print(f"Current Address: {self.adr}, Current Data: {self.memory.curData}")
+            print(f"Program End.")
 
     def fetch(self):
         "Fetches the current opcode and operand from memory."
@@ -87,7 +105,9 @@ class CPU:
             self.programCounter += 1
         else:
             raise ValueError("Memory Overflow")
-        singleOpcode = [0x0000, 0x002D] + [x for x in range(0x0035, 0x0046)] + [0x0049]
+        singleOpcode = (
+            [0x0000, 0x002D] + [x for x in range(0x0035, 0x0046)] + [0x0049, 0x004A]
+        )
         if self.curOpcode not in singleOpcode:
             self.curOperand = self.memory.readAddress(self.programCounter)
             if self.curOpcode == 0x0047:
@@ -98,9 +118,59 @@ class CPU:
         else:
             self.curOperand = None
 
+    def _handleEvents(self):
+        "Handles the SDL2 events"
+        events = sdl2.ext.get_events()
+        DPadKeys = {
+            sdl2.SDLK_UP: 1,
+            sdl2.SDLK_DOWN: 2,
+            sdl2.SDLK_LEFT: 3,
+            sdl2.SDLK_RIGHT: 4,
+            sdl2.SDLK_w: 1,
+            sdl2.SDLK_s: 2,
+            sdl2.SDLK_a: 3,
+            sdl2.SDLK_d: 4,
+        }
+        ActionKeys = {
+            sdl2.SDLK_j: 1,
+            sdl2.SDLK_k: 2,
+            sdl2.SDLK_z: 3,
+            sdl2.SDLK_x: 4,
+            sdl2.SDLK_RETURN: 5,
+            sdl2.SDLK_BACKSPACE: 6,
+        }
+        for event in events:
+            if event.type == sdl2.SDL_QUIT:
+                self.memory.writeAddress(self.RunStatus, 0x0001)
+                break
+            if event.type == sdl2.SDL_KEYDOWN:
+                if event.key.keysym.sym == sdl2.SDLK_ESCAPE:
+                    self.memory.writeAddress(self.RunStatus, 0x0001)
+                    break
+                elif event.key.keysym.sym in DPadKeys:
+                    if self.memory.readAddress(0x400B) == 0x0000:
+                        self.memory.writeAddress(0x400B, DPadKeys[event.key.keysym.sym])
+                    else:
+                        self.memory.writeAddress(0x400C, DPadKeys[event.key.keysym.sym])
+                elif event.key.keysym.sym in ActionKeys:
+                    self.memory.writeAddress(0x400D, ActionKeys[event.key.keysym.sym])
+            if event.type == sdl2.SDL_KEYUP:
+                if event.key.keysym.sym in DPadKeys:
+                    if (
+                        self.memory.readAddress(0x400B)
+                        == DPadKeys[event.key.keysym.sym]
+                    ):
+                        self.memory.writeAddress(0x400B, 0x0000)
+                    else:
+                        self.memory.writeAddress(0x400C, 0x0000)
+                if event.key.keysym.sym in ActionKeys:
+                    self.memory.writeAddress(0x400D, 0x0000)
+
     def execute(self, opcode, operands):
         "Executes the code"
         instructions = self.instructions
+        if self.debug:
+            print(self.programCounter, instructions[opcode], operands)
         if opcode not in instructions:
             raise ValueError(f"Invalid Opcode, {opcode}")
         if instructions[opcode] == "NOP":
@@ -141,7 +211,7 @@ class CPU:
         elif instructions[opcode] == "POPA":
             self.popAll()
         elif instructions[opcode] == "SLP":
-            self.sleepTimer = operands
+            time.sleep(operands)
         elif instructions[opcode] == "WDir":
             self.memory.writeAddress(self.adr, operands)
         elif instructions[opcode] == "RDir":
@@ -168,6 +238,10 @@ class CPU:
                     self.adr -= 1
                 else:
                     raise ValueError("Invalid Opcode")
+        elif instructions[opcode] == "CLS":
+            self.display.clear()
+            self.render.present()
+            self.window.refresh()
         else:
             raise ValueError(f"Invalid Opcode, {opcode}")
 
@@ -394,7 +468,10 @@ class CPU:
         file = open(ROMFile, "r")
         ROM = file.read()
         file.close()
-        ROM = ROM.split("/")[1:]
-        for i in ROM:
+        programCode = ROM.split("\n")[0]
+        programCode = programCode.split("/")[1:]
+        for i in programCode:
             self.memory.writeAddress(location, int(i))
             location += 1
+        if self.debug:
+            print(f"Loaded {ROMFile} into memory...")

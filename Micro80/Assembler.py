@@ -133,4 +133,8 @@ for instruction in assembledCode:
             else:
                 outputFile.write("/" + str(labels[instruction[1]]))
 
+
+if args.debug:
+    print(labels)
+
 memoryCounter = 0x0000

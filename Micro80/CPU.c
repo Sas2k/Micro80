@@ -1479,7 +1479,7 @@ static const char *__pyx_f[] = {
 struct __pyx_obj_7Micro80_3CPU_CPU;
 struct __pyx_opt_args_7Micro80_3CPU_3CPU_Loader;
 
-/* "Micro80/CPU.pxd":60
+/* "Micro80/CPU.pxd":62
  *     cpdef jump(self, str opcode, int operands)
  * 
  *     cpdef Loader(self, ROMFile, int location=*)             # <<<<<<<<<<<<<<
@@ -1536,6 +1536,7 @@ struct __pyx_obj_7Micro80_3CPU_CPU {
 struct __pyx_vtabstruct_7Micro80_3CPU_CPU {
   PyObject *(*runProgram)(struct __pyx_obj_7Micro80_3CPU_CPU *, int __pyx_skip_dispatch);
   PyObject *(*fetch)(struct __pyx_obj_7Micro80_3CPU_CPU *, int __pyx_skip_dispatch);
+  PyObject *(*_handleEvents)(struct __pyx_obj_7Micro80_3CPU_CPU *, int __pyx_skip_dispatch);
   PyObject *(*execute)(struct __pyx_obj_7Micro80_3CPU_CPU *, int, PyObject *, int __pyx_skip_dispatch);
   PyObject *(*popAll)(struct __pyx_obj_7Micro80_3CPU_CPU *, int __pyx_skip_dispatch);
   PyObject *(*pushAll)(struct __pyx_obj_7Micro80_3CPU_CPU *, int __pyx_skip_dispatch);
@@ -1898,6 +1899,17 @@ static PyObject *__Pyx_GetItemInt_Generic(PyObject *o, PyObject* j);
 static CYTHON_INLINE PyObject *__Pyx_GetItemInt_Fast(PyObject *o, Py_ssize_t i,
                                                      int is_list, int wraparound, int boundscheck);
 
+/* DictGetItem.proto */
+#if PY_MAJOR_VERSION >= 3 && !CYTHON_COMPILING_IN_PYPY
+static PyObject *__Pyx_PyDict_GetItem(PyObject *d, PyObject* key);
+#define __Pyx_PyObject_Dict_GetItem(obj, name)\
+    (likely(PyDict_CheckExact(obj)) ?\
+     __Pyx_PyDict_GetItem(obj, name) : PyObject_GetItem(obj, name))
+#else
+#define __Pyx_PyDict_GetItem(d, key) PyObject_GetItem(d, key)
+#define __Pyx_PyObject_Dict_GetItem(obj, name)  PyObject_GetItem(obj, name)
+#endif
+
 /* PyIntCompare.proto */
 static CYTHON_INLINE int __Pyx_PyInt_BoolEqObjC(PyObject *op1, PyObject *op2, long intval, long inplace);
 
@@ -1930,6 +1942,21 @@ static PyObject* __Pyx_PyInt_AddObjC(PyObject *op1, PyObject *op2, long intval, 
     (inplace ? PyNumber_InPlaceAdd(op1, op2) : PyNumber_Add(op1, op2))
 #endif
 
+/* GCCDiagnostics.proto */
+#if !defined(__INTEL_COMPILER) && defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6))
+#define __Pyx_HAS_GCC_DIAGNOSTIC
+#endif
+
+/* BuildPyUnicode.proto */
+static PyObject* __Pyx_PyUnicode_BuildFromAscii(Py_ssize_t ulength, char* chars, int clength,
+                                                int prepend_sign, char padding_char);
+
+/* CIntToPyUnicode.proto */
+static CYTHON_INLINE PyObject* __Pyx_PyUnicode_From_int(int value, Py_ssize_t width, char padding_char, char format_char);
+
+/* PyObjectCallOneArg.proto */
+static CYTHON_INLINE PyObject* __Pyx_PyObject_CallOneArg(PyObject *func, PyObject *arg);
+
 /* PyObjectFormatSimple.proto */
 #if CYTHON_COMPILING_IN_PYPY
     #define __Pyx_PyObject_FormatSimple(s, f) (\
@@ -1955,21 +1982,6 @@ static PyObject* __Pyx_PyInt_AddObjC(PyObject *op1, PyObject *op2, long intval, 
 /* JoinPyUnicode.proto */
 static PyObject* __Pyx_PyUnicode_Join(PyObject* value_tuple, Py_ssize_t value_count, Py_ssize_t result_ulength,
                                       Py_UCS4 max_char);
-
-/* PyObjectCallOneArg.proto */
-static CYTHON_INLINE PyObject* __Pyx_PyObject_CallOneArg(PyObject *func, PyObject *arg);
-
-/* GCCDiagnostics.proto */
-#if !defined(__INTEL_COMPILER) && defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6))
-#define __Pyx_HAS_GCC_DIAGNOSTIC
-#endif
-
-/* BuildPyUnicode.proto */
-static PyObject* __Pyx_PyUnicode_BuildFromAscii(Py_ssize_t ulength, char* chars, int clength,
-                                                int prepend_sign, char padding_char);
-
-/* CIntToPyUnicode.proto */
-static CYTHON_INLINE PyObject* __Pyx_PyUnicode_From_int(int value, Py_ssize_t width, char padding_char, char format_char);
 
 /* SliceObject.proto */
 static CYTHON_INLINE PyObject* __Pyx_PyObject_GetSlice(
@@ -2027,17 +2039,6 @@ static CYTHON_INLINE int __Pyx_PyDict_ContainsTF(PyObject* item, PyObject* dict,
     int result = PyDict_Contains(dict, item);
     return unlikely(result < 0) ? result : (result == (eq == Py_EQ));
 }
-
-/* DictGetItem.proto */
-#if PY_MAJOR_VERSION >= 3 && !CYTHON_COMPILING_IN_PYPY
-static PyObject *__Pyx_PyDict_GetItem(PyObject *d, PyObject* key);
-#define __Pyx_PyObject_Dict_GetItem(obj, name)\
-    (likely(PyDict_CheckExact(obj)) ?\
-     __Pyx_PyDict_GetItem(obj, name) : PyObject_GetItem(obj, name))
-#else
-#define __Pyx_PyDict_GetItem(d, key) PyObject_GetItem(d, key)
-#define __Pyx_PyObject_Dict_GetItem(obj, name)  PyObject_GetItem(obj, name)
-#endif
 
 /* StrEquals.proto */
 #if PY_MAJOR_VERSION >= 3
@@ -2358,6 +2359,7 @@ static int __Pyx_InitStrings(__Pyx_StringTabEntry *t);
 /* #### Code section: module_declarations ### */
 static PyObject *__pyx_f_7Micro80_3CPU_3CPU_runProgram(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, int __pyx_skip_dispatch); /* proto*/
 static PyObject *__pyx_f_7Micro80_3CPU_3CPU_fetch(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, int __pyx_skip_dispatch); /* proto*/
+static PyObject *__pyx_f_7Micro80_3CPU_3CPU__handleEvents(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, int __pyx_skip_dispatch); /* proto*/
 static PyObject *__pyx_f_7Micro80_3CPU_3CPU_execute(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, int __pyx_v_opcode, PyObject *__pyx_v_operands, int __pyx_skip_dispatch); /* proto*/
 static PyObject *__pyx_f_7Micro80_3CPU_3CPU_popAll(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, int __pyx_skip_dispatch); /* proto*/
 static PyObject *__pyx_f_7Micro80_3CPU_3CPU_pushAll(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, int __pyx_skip_dispatch); /* proto*/
@@ -2389,11 +2391,11 @@ int __pyx_module_is_main_Micro80__CPU = 0;
 /* #### Code section: global_var ### */
 static PyObject *__pyx_builtin_open;
 static PyObject *__pyx_builtin_print;
-static PyObject *__pyx_builtin_ValueError;
 static PyObject *__pyx_builtin_range;
+static PyObject *__pyx_builtin_ValueError;
 /* #### Code section: string_decls ### */
 static const char __pyx_k_[] = "\n";
-static const char __pyx_k_A[] = ", A: ";
+static const char __pyx_k_A[] = "A";
 static const char __pyx_k_B[] = ", B: ";
 static const char __pyx_k_C[] = ", C: ";
 static const char __pyx_k_D[] = ", D: ";
@@ -2405,7 +2407,7 @@ static const char __pyx_k_L[] = "L";
 static const char __pyx_k_P[] = "P";
 static const char __pyx_k_Z[] = "Z";
 static const char __pyx_k_r[] = "r";
-static const char __pyx_k_Ad[] = ", Ad: ";
+static const char __pyx_k_Ad[] = "Ad";
 static const char __pyx_k_DC[] = "DC";
 static const char __pyx_k_EQ[] = "EQ";
 static const char __pyx_k_GE[] = "GE";
@@ -2420,15 +2422,16 @@ static const char __pyx_k_MP[] = "MP";
 static const char __pyx_k_NE[] = "NE";
 static const char __pyx_k_NZ[] = "NZ";
 static const char __pyx_k_OR[] = "OR";
-static const char __pyx_k_PC[] = "PC: ";
-static const char __pyx_k_SP[] = ", SP: ";
+static const char __pyx_k_PC[] = "PC";
+static const char __pyx_k_SP[] = "SP";
 static const char __pyx_k_ST[] = "ST";
 static const char __pyx_k__2[] = ":";
+static const char __pyx_k__9[] = ", ";
 static const char __pyx_k_gc[] = "gc";
 static const char __pyx_k_ADD[] = "ADD";
 static const char __pyx_k_AND[] = "AND";
-static const char __pyx_k_A_2[] = "A";
 static const char __pyx_k_B_2[] = "B";
+static const char __pyx_k_CLS[] = "CLS";
 static const char __pyx_k_CMP[] = "CMP";
 static const char __pyx_k_CPU[] = "CPU";
 static const char __pyx_k_C_2[] = "C";
@@ -2453,23 +2456,22 @@ static const char __pyx_k_SHR[] = "SHR";
 static const char __pyx_k_SLP[] = "SLP";
 static const char __pyx_k_SUB[] = "SUB";
 static const char __pyx_k_XOR[] = "XOR";
-static const char __pyx_k__17[] = "/";
-static const char __pyx_k__19[] = ".";
-static const char __pyx_k__20[] = "*";
-static const char __pyx_k__51[] = "?";
+static const char __pyx_k__24[] = "/";
+static const char __pyx_k__26[] = ".";
+static const char __pyx_k__27[] = "*";
+static const char __pyx_k__59[] = "?";
 static const char __pyx_k_alu[] = "alu";
 static const char __pyx_k_ext[] = "ext";
+static const char __pyx_k_key[] = "key";
 static const char __pyx_k_new[] = "__new__";
 static const char __pyx_k_pop[] = "pop";
 static const char __pyx_k_ret[] = "ret";
-static const char __pyx_k_Ad_2[] = "Ad";
+static const char __pyx_k_sym[] = "sym";
 static const char __pyx_k_CALL[] = "CALL";
-static const char __pyx_k_PC_2[] = "PC";
 static const char __pyx_k_POPA[] = "POPA";
 static const char __pyx_k_PUSH[] = "PUSH";
 static const char __pyx_k_Path[] = "Path";
 static const char __pyx_k_RDir[] = "RDir";
-static const char __pyx_k_SP_2[] = "SP";
 static const char __pyx_k_WAdr[] = "WAdr";
 static const char __pyx_k_WDir[] = "WDir";
 static const char __pyx_k_base[] = "base";
@@ -2490,23 +2492,37 @@ static const char __pyx_k_show[] = "show";
 static const char __pyx_k_spec[] = "__spec__";
 static const char __pyx_k_test[] = "__test__";
 static const char __pyx_k_time[] = "time";
+static const char __pyx_k_type[] = "type";
+static const char __pyx_k_Input[] = "Input: ";
 static const char __pyx_k_PUSHA[] = "PUSHA";
-static const char __pyx_k_Stack[] = "Stack: ";
+static const char __pyx_k_Ticks[] = "Ticks: ";
+static const char __pyx_k_clear[] = "clear";
 static const char __pyx_k_close[] = "close";
 static const char __pyx_k_debug[] = "debug";
 static const char __pyx_k_fetch[] = "fetch";
 static const char __pyx_k_print[] = "print";
 static const char __pyx_k_range[] = "range";
+static const char __pyx_k_sleep[] = "sleep";
 static const char __pyx_k_split[] = "split";
 static const char __pyx_k_state[] = "state";
 static const char __pyx_k_store[] = "store";
 static const char __pyx_k_strip[] = "strip";
+static const char __pyx_k_Loaded[] = "Loaded ";
 static const char __pyx_k_Loader[] = "Loader";
+static const char __pyx_k_SDLK_a[] = "SDLK_a";
+static const char __pyx_k_SDLK_d[] = "SDLK_d";
+static const char __pyx_k_SDLK_j[] = "SDLK_j";
+static const char __pyx_k_SDLK_k[] = "SDLK_k";
+static const char __pyx_k_SDLK_s[] = "SDLK_s";
+static const char __pyx_k_SDLK_w[] = "SDLK_w";
+static const char __pyx_k_SDLK_x[] = "SDLK_x";
+static const char __pyx_k_SDLK_z[] = "SDLK_z";
 static const char __pyx_k_Window[] = "Window";
 static const char __pyx_k_append[] = "append";
 static const char __pyx_k_dict_2[] = "_dict";
 static const char __pyx_k_enable[] = "enable";
 static const char __pyx_k_import[] = "__import__";
+static const char __pyx_k_keysym[] = "keysym";
 static const char __pyx_k_memory[] = "memory";
 static const char __pyx_k_opcode[] = "opcode";
 static const char __pyx_k_parent[] = "parent";
@@ -2515,12 +2531,14 @@ static const char __pyx_k_popAll[] = "popAll";
 static const char __pyx_k_reduce[] = "__reduce__";
 static const char __pyx_k_render[] = "render";
 static const char __pyx_k_update[] = "update";
+static const char __pyx_k_Address[] = ", Address: ";
 static const char __pyx_k_CPU_alu[] = "CPU.alu";
 static const char __pyx_k_CPU_pop[] = "CPU.pop";
 static const char __pyx_k_CPU_ret[] = "CPU.ret";
 static const char __pyx_k_Display[] = "Display";
 static const char __pyx_k_Micro80[] = "Micro80";
 static const char __pyx_k_ROMFile[] = "ROMFile";
+static const char __pyx_k_SDLK_UP[] = "SDLK_UP";
 static const char __pyx_k_curData[] = "curData";
 static const char __pyx_k_disable[] = "disable";
 static const char __pyx_k_execute[] = "execute";
@@ -2532,8 +2550,8 @@ static const char __pyx_k_CPU_call[] = "CPU.call";
 static const char __pyx_k_CPU_jump[] = "CPU.jump";
 static const char __pyx_k_CPU_load[] = "CPU.load";
 static const char __pyx_k_CPU_push[] = "CPU.push";
-static const char __pyx_k_Rendered[] = "Rendered ";
 static const char __pyx_k_Renderer[] = "Renderer";
+static const char __pyx_k_SDL_QUIT[] = "SDL_QUIT";
 static const char __pyx_k_getstate[] = "__getstate__";
 static const char __pyx_k_location[] = "location";
 static const char __pyx_k_operands[] = "operands";
@@ -2541,11 +2559,13 @@ static const char __pyx_k_pyx_type[] = "__pyx_type";
 static const char __pyx_k_register[] = "register";
 static const char __pyx_k_sdl2_ext[] = "sdl2.ext";
 static const char __pyx_k_setstate[] = "__setstate__";
-static const char __pyx_k_times_in[] = " times in ";
-static const char __pyx_k_variable[] = "variable:\n";
 static const char __pyx_k_CPU_fetch[] = "CPU.fetch";
 static const char __pyx_k_CPU_store[] = "CPU.store";
 static const char __pyx_k_Display_2[] = "Display: ";
+static const char __pyx_k_SDLK_DOWN[] = "SDLK_DOWN";
+static const char __pyx_k_SDLK_LEFT[] = "SDLK_LEFT";
+static const char __pyx_k_SDL_KEYUP[] = "SDL_KEYUP";
+static const char __pyx_k_Variables[] = "Variables: ";
 static const char __pyx_k_decrement[] = "decrement";
 static const char __pyx_k_increment[] = "increment";
 static const char __pyx_k_isenabled[] = "isenabled";
@@ -2555,15 +2575,26 @@ static const char __pyx_k_CPU_Loader[] = "CPU.Loader";
 static const char __pyx_k_CPU_popAll[] = "CPU.popAll";
 static const char __pyx_k_Jump_Count[] = "Jump Count: ";
 static const char __pyx_k_MainMemory[] = "MainMemory";
+static const char __pyx_k_SDLK_RIGHT[] = "SDLK_RIGHT";
 static const char __pyx_k_ValueError[] = "ValueError";
+static const char __pyx_k_get_events[] = "get_events";
 static const char __pyx_k_pyx_result[] = "__pyx_result";
 static const char __pyx_k_pyx_vtable[] = "__pyx_vtable__";
 static const char __pyx_k_runProgram[] = "runProgram";
+static const char __pyx_k_Accumulator[] = "Accumulator: ";
 static const char __pyx_k_CPU_execute[] = "CPU.execute";
 static const char __pyx_k_CPU_pushAll[] = "CPU.pushAll";
 static const char __pyx_k_Micro80_CPU[] = "Micro80.CPU";
 static const char __pyx_k_PickleError[] = "PickleError";
+static const char __pyx_k_Program_End[] = "Program End.";
+static const char __pyx_k_SDLK_ESCAPE[] = "SDLK_ESCAPE";
+static const char __pyx_k_SDLK_RETURN[] = "SDLK_RETURN";
+static const char __pyx_k_SDL_KEYDOWN[] = "SDL_KEYDOWN";
+static const char __pyx_k_into_memory[] = " into memory...";
 static const char __pyx_k_readAddress[] = "readAddress";
+static const char __pyx_k_Current_Data[] = ", Current Data: ";
+static const char __pyx_k_Render_Count[] = "Render Count: ";
+static const char __pyx_k_handleEvents[] = "_handleEvents";
 static const char __pyx_k_initializing[] = "_initializing";
 static const char __pyx_k_is_coroutine[] = "_is_coroutine";
 static const char __pyx_k_pyx_checksum[] = "__pyx_checksum";
@@ -2573,20 +2604,26 @@ static const char __pyx_k_use_setstate[] = "use_setstate";
 static const char __pyx_k_writeAddress[] = "writeAddress";
 static const char __pyx_k_CPU_decrement[] = "CPU.decrement";
 static const char __pyx_k_CPU_increment[] = "CPU.increment";
+static const char __pyx_k_Stack_Pointer[] = ", Stack Pointer: ";
 static const char __pyx_k_reduce_cython[] = "__reduce_cython__";
 static const char __pyx_k_CPU_runProgram[] = "CPU.runProgram";
-static const char __pyx_k_Current_Opcode[] = "Current Opcode: ";
 static const char __pyx_k_Invalid_Opcode[] = "Invalid Opcode, ";
 static const char __pyx_k_Micro80_CPU_py[] = "Micro80\\CPU.py";
-static const char __pyx_k_Current_Operand[] = ", Current Operand: ";
+static const char __pyx_k_SDLK_BACKSPACE[] = "SDLK_BACKSPACE";
+static const char __pyx_k_CPU_Initialized[] = "CPU Initialized...";
+static const char __pyx_k_Current_Address[] = "Current Address: ";
 static const char __pyx_k_Memory_Overflow[] = "Memory Overflow";
 static const char __pyx_k_Micro80_Display[] = "Micro80.Display";
+static const char __pyx_k_Program_Counter[] = "Program Counter: ";
+static const char __pyx_k_Program_Running[] = "Program Running....";
 static const char __pyx_k_pyx_PickleError[] = "__pyx_PickleError";
 static const char __pyx_k_setstate_cython[] = "__setstate_cython__";
 static const char __pyx_k_Invalid_Opcode_2[] = "Invalid Opcode";
 static const char __pyx_k_Invalid_Register[] = "Invalid Register";
 static const char __pyx_k_instructions_txt[] = "instructions.txt";
 static const char __pyx_k_pyx_unpickle_CPU[] = "__pyx_unpickle_CPU";
+static const char __pyx_k_CPU__handleEvents[] = "CPU._handleEvents";
+static const char __pyx_k_Debug_Mode_Enabled[] = "Debug Mode Enabled...";
 static const char __pyx_k_Micro80_MainMemory[] = "Micro80.MainMemory";
 static const char __pyx_k_asyncio_coroutines[] = "asyncio.coroutines";
 static const char __pyx_k_cline_in_traceback[] = "cline_in_traceback";
@@ -2598,20 +2635,21 @@ static const char __pyx_k_Incompatible_checksums_0x_x_vs_0[] = "Incompatible che
 static int __pyx_pf_7Micro80_3CPU_3CPU___init__(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, PyObject *__pyx_v_memory, PyObject *__pyx_v_debug); /* proto */
 static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_2runProgram(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_4fetch(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_6execute(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, int __pyx_v_opcode, PyObject *__pyx_v_operands); /* proto */
-static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_8popAll(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_10pushAll(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_12pop(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, int __pyx_v_operands); /* proto */
-static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_14push(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, int __pyx_v_operands); /* proto */
-static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_16ret(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_18call(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, int __pyx_v_operands); /* proto */
-static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_20increment(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, PyObject *__pyx_v_register); /* proto */
-static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_22decrement(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, PyObject *__pyx_v_register); /* proto */
-static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_24load(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, PyObject *__pyx_v_register, int __pyx_v_operands); /* proto */
-static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_26store(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, PyObject *__pyx_v_register, int __pyx_v_operands); /* proto */
-static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_28alu(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, PyObject *__pyx_v_opcode, int __pyx_v_operands); /* proto */
-static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_30jump(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, PyObject *__pyx_v_opcode, int __pyx_v_operands); /* proto */
-static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_32Loader(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, PyObject *__pyx_v_ROMFile, int __pyx_v_location); /* proto */
+static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_6_handleEvents(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_8execute(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, int __pyx_v_opcode, PyObject *__pyx_v_operands); /* proto */
+static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_10popAll(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_12pushAll(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_14pop(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, int __pyx_v_operands); /* proto */
+static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_16push(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, int __pyx_v_operands); /* proto */
+static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_18ret(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_20call(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, int __pyx_v_operands); /* proto */
+static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_22increment(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, PyObject *__pyx_v_register); /* proto */
+static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_24decrement(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, PyObject *__pyx_v_register); /* proto */
+static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_26load(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, PyObject *__pyx_v_register, int __pyx_v_operands); /* proto */
+static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_28store(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, PyObject *__pyx_v_register, int __pyx_v_operands); /* proto */
+static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_30alu(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, PyObject *__pyx_v_opcode, int __pyx_v_operands); /* proto */
+static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_32jump(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, PyObject *__pyx_v_opcode, int __pyx_v_operands); /* proto */
+static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_34Loader(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, PyObject *__pyx_v_ROMFile, int __pyx_v_location); /* proto */
 static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_5debug___get__(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self); /* proto */
 static int __pyx_pf_7Micro80_3CPU_3CPU_5debug_2__set__(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, PyObject *__pyx_v_value); /* proto */
 static int __pyx_pf_7Micro80_3CPU_3CPU_5debug_4__del__(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self); /* proto */
@@ -2666,8 +2704,8 @@ static int __pyx_pf_7Micro80_3CPU_3CPU_7display_4__del__(struct __pyx_obj_7Micro
 static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_6render___get__(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self); /* proto */
 static int __pyx_pf_7Micro80_3CPU_3CPU_6render_2__set__(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, PyObject *__pyx_v_value); /* proto */
 static int __pyx_pf_7Micro80_3CPU_3CPU_6render_4__del__(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_34__reduce_cython__(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_36__setstate_cython__(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, PyObject *__pyx_v___pyx_state); /* proto */
+static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_36__reduce_cython__(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_38__setstate_cython__(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, PyObject *__pyx_v___pyx_state); /* proto */
 static PyObject *__pyx_pf_7Micro80_3CPU___pyx_unpickle_CPU(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v___pyx_type, long __pyx_v___pyx_checksum, PyObject *__pyx_v___pyx_state); /* proto */
 static PyObject *__pyx_tp_new_7Micro80_3CPU_CPU(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 /* #### Code section: late_includes ### */
@@ -2706,21 +2744,24 @@ typedef struct {
   #endif
   PyTypeObject *__pyx_ptype_7Micro80_3CPU_CPU;
   PyObject *__pyx_kp_s_;
-  PyObject *__pyx_kp_u_A;
+  PyObject *__pyx_n_s_A;
   PyObject *__pyx_n_s_ADD;
   PyObject *__pyx_n_s_AND;
-  PyObject *__pyx_n_s_A_2;
-  PyObject *__pyx_kp_u_Ad;
-  PyObject *__pyx_n_s_Ad_2;
+  PyObject *__pyx_kp_u_Accumulator;
+  PyObject *__pyx_n_s_Ad;
+  PyObject *__pyx_kp_u_Address;
   PyObject *__pyx_kp_u_B;
   PyObject *__pyx_n_s_B_2;
   PyObject *__pyx_kp_u_C;
   PyObject *__pyx_n_s_CALL;
+  PyObject *__pyx_n_s_CLS;
   PyObject *__pyx_n_s_CMP;
   PyObject *__pyx_n_s_CPU;
+  PyObject *__pyx_kp_s_CPU_Initialized;
   PyObject *__pyx_n_s_CPU_Loader;
   PyObject *__pyx_n_s_CPU___reduce_cython;
   PyObject *__pyx_n_s_CPU___setstate_cython;
+  PyObject *__pyx_n_s_CPU__handleEvents;
   PyObject *__pyx_n_s_CPU_alu;
   PyObject *__pyx_n_s_CPU_call;
   PyObject *__pyx_n_s_CPU_decrement;
@@ -2737,13 +2778,14 @@ typedef struct {
   PyObject *__pyx_n_s_CPU_runProgram;
   PyObject *__pyx_n_s_CPU_store;
   PyObject *__pyx_n_s_C_2;
-  PyObject *__pyx_kp_u_Current_Opcode;
-  PyObject *__pyx_kp_u_Current_Operand;
+  PyObject *__pyx_kp_u_Current_Address;
+  PyObject *__pyx_kp_u_Current_Data;
   PyObject *__pyx_kp_u_D;
   PyObject *__pyx_n_s_DC;
   PyObject *__pyx_n_s_DEC;
   PyObject *__pyx_n_s_DIV;
   PyObject *__pyx_n_s_D_2;
+  PyObject *__pyx_kp_s_Debug_Mode_Enabled;
   PyObject *__pyx_n_s_Display;
   PyObject *__pyx_kp_u_Display_2;
   PyObject *__pyx_kp_u_E;
@@ -2760,6 +2802,7 @@ typedef struct {
   PyObject *__pyx_n_s_IC;
   PyObject *__pyx_n_s_INC;
   PyObject *__pyx_kp_s_Incompatible_checksums_0x_x_vs_0;
+  PyObject *__pyx_kp_u_Input;
   PyObject *__pyx_kp_u_Invalid_Opcode;
   PyObject *__pyx_kp_s_Invalid_Opcode_2;
   PyObject *__pyx_kp_s_Invalid_Register;
@@ -2771,6 +2814,7 @@ typedef struct {
   PyObject *__pyx_n_s_LEZ;
   PyObject *__pyx_n_s_LT;
   PyObject *__pyx_n_s_LZ;
+  PyObject *__pyx_kp_u_Loaded;
   PyObject *__pyx_n_s_Loader;
   PyObject *__pyx_n_s_MOD;
   PyObject *__pyx_n_s_MOV;
@@ -2789,43 +2833,66 @@ typedef struct {
   PyObject *__pyx_n_s_NZ;
   PyObject *__pyx_n_s_OR;
   PyObject *__pyx_n_s_P;
-  PyObject *__pyx_kp_u_PC;
-  PyObject *__pyx_n_s_PC_2;
+  PyObject *__pyx_n_s_PC;
   PyObject *__pyx_n_s_POP;
   PyObject *__pyx_n_s_POPA;
   PyObject *__pyx_n_s_PUSH;
   PyObject *__pyx_n_s_PUSHA;
   PyObject *__pyx_n_s_Path;
   PyObject *__pyx_n_s_PickleError;
+  PyObject *__pyx_kp_u_Program_Counter;
+  PyObject *__pyx_kp_u_Program_End;
+  PyObject *__pyx_kp_s_Program_Running;
   PyObject *__pyx_n_s_RDir;
   PyObject *__pyx_n_s_RET;
   PyObject *__pyx_n_s_ROMFile;
-  PyObject *__pyx_kp_u_Rendered;
+  PyObject *__pyx_kp_u_Render_Count;
   PyObject *__pyx_n_s_Renderer;
+  PyObject *__pyx_n_s_SDLK_BACKSPACE;
+  PyObject *__pyx_n_s_SDLK_DOWN;
+  PyObject *__pyx_n_s_SDLK_ESCAPE;
+  PyObject *__pyx_n_s_SDLK_LEFT;
+  PyObject *__pyx_n_s_SDLK_RETURN;
+  PyObject *__pyx_n_s_SDLK_RIGHT;
+  PyObject *__pyx_n_s_SDLK_UP;
+  PyObject *__pyx_n_s_SDLK_a;
+  PyObject *__pyx_n_s_SDLK_d;
+  PyObject *__pyx_n_s_SDLK_j;
+  PyObject *__pyx_n_s_SDLK_k;
+  PyObject *__pyx_n_s_SDLK_s;
+  PyObject *__pyx_n_s_SDLK_w;
+  PyObject *__pyx_n_s_SDLK_x;
+  PyObject *__pyx_n_s_SDLK_z;
+  PyObject *__pyx_n_s_SDL_KEYDOWN;
+  PyObject *__pyx_n_s_SDL_KEYUP;
+  PyObject *__pyx_n_s_SDL_QUIT;
   PyObject *__pyx_n_s_SHL;
   PyObject *__pyx_n_s_SHR;
   PyObject *__pyx_n_s_SLP;
-  PyObject *__pyx_kp_u_SP;
-  PyObject *__pyx_n_s_SP_2;
+  PyObject *__pyx_n_s_SP;
   PyObject *__pyx_n_s_ST;
   PyObject *__pyx_n_s_SUB;
-  PyObject *__pyx_kp_u_Stack;
+  PyObject *__pyx_kp_u_Stack_Pointer;
+  PyObject *__pyx_kp_u_Ticks;
   PyObject *__pyx_n_s_ValueError;
+  PyObject *__pyx_kp_u_Variables;
   PyObject *__pyx_n_s_WAdr;
   PyObject *__pyx_n_s_WDir;
   PyObject *__pyx_n_s_Window;
   PyObject *__pyx_n_s_XOR;
   PyObject *__pyx_n_s_Z;
-  PyObject *__pyx_kp_s__17;
-  PyObject *__pyx_kp_u__19;
   PyObject *__pyx_kp_s__2;
-  PyObject *__pyx_n_s__20;
-  PyObject *__pyx_n_s__51;
+  PyObject *__pyx_kp_s__24;
+  PyObject *__pyx_kp_u__26;
+  PyObject *__pyx_n_s__27;
+  PyObject *__pyx_n_s__59;
+  PyObject *__pyx_kp_u__9;
   PyObject *__pyx_n_s_alu;
   PyObject *__pyx_n_s_append;
   PyObject *__pyx_n_s_asyncio_coroutines;
   PyObject *__pyx_n_s_base;
   PyObject *__pyx_n_s_call;
+  PyObject *__pyx_n_s_clear;
   PyObject *__pyx_n_s_cline_in_traceback;
   PyObject *__pyx_n_s_close;
   PyObject *__pyx_n_s_curData;
@@ -2840,15 +2907,20 @@ typedef struct {
   PyObject *__pyx_n_s_fetch;
   PyObject *__pyx_n_s_file;
   PyObject *__pyx_kp_u_gc;
+  PyObject *__pyx_n_s_get_events;
   PyObject *__pyx_n_s_getstate;
+  PyObject *__pyx_n_s_handleEvents;
   PyObject *__pyx_n_s_import;
   PyObject *__pyx_n_s_increment;
   PyObject *__pyx_n_s_init;
   PyObject *__pyx_n_s_initializing;
   PyObject *__pyx_kp_s_instructions_txt;
+  PyObject *__pyx_kp_u_into_memory;
   PyObject *__pyx_n_s_is_coroutine;
   PyObject *__pyx_kp_u_isenabled;
   PyObject *__pyx_n_s_jump;
+  PyObject *__pyx_n_s_key;
+  PyObject *__pyx_n_s_keysym;
   PyObject *__pyx_n_s_load;
   PyObject *__pyx_n_s_location;
   PyObject *__pyx_n_s_main;
@@ -2892,6 +2964,7 @@ typedef struct {
   PyObject *__pyx_n_s_setstate;
   PyObject *__pyx_n_s_setstate_cython;
   PyObject *__pyx_n_s_show;
+  PyObject *__pyx_n_s_sleep;
   PyObject *__pyx_n_s_spec;
   PyObject *__pyx_n_s_split;
   PyObject *__pyx_n_s_stackPointer;
@@ -2899,68 +2972,74 @@ typedef struct {
   PyObject *__pyx_n_s_store;
   PyObject *__pyx_kp_s_stringsource;
   PyObject *__pyx_n_s_strip;
+  PyObject *__pyx_n_s_sym;
   PyObject *__pyx_n_s_test;
   PyObject *__pyx_n_s_time;
-  PyObject *__pyx_kp_u_times_in;
+  PyObject *__pyx_n_s_type;
   PyObject *__pyx_n_s_update;
   PyObject *__pyx_n_s_use_setstate;
-  PyObject *__pyx_kp_u_variable;
   PyObject *__pyx_n_s_writeAddress;
   PyObject *__pyx_int_0;
   PyObject *__pyx_int_1;
   PyObject *__pyx_int_2;
   PyObject *__pyx_int_3;
+  PyObject *__pyx_int_4;
+  PyObject *__pyx_int_5;
+  PyObject *__pyx_int_6;
   PyObject *__pyx_int_16;
   PyObject *__pyx_int_45;
   PyObject *__pyx_int_71;
   PyObject *__pyx_int_73;
+  PyObject *__pyx_int_74;
   PyObject *__pyx_int_128;
   PyObject *__pyx_int_16394;
+  PyObject *__pyx_int_16395;
+  PyObject *__pyx_int_16396;
+  PyObject *__pyx_int_16397;
   PyObject *__pyx_int_17408;
-  PyObject *__pyx_int_17414;
-  PyObject *__pyx_int_21504;
-  PyObject *__pyx_int_21510;
+  PyObject *__pyx_int_17423;
   PyObject *__pyx_int_49152;
-  PyObject *__pyx_int_49158;
+  PyObject *__pyx_int_49167;
   PyObject *__pyx_int_65535;
   PyObject *__pyx_int_1481767;
   PyObject *__pyx_int_206723160;
   PyObject *__pyx_int_235959991;
-  PyObject *__pyx_slice__6;
-  PyObject *__pyx_slice__7;
-  PyObject *__pyx_slice__8;
   PyObject *__pyx_tuple__3;
   PyObject *__pyx_tuple__4;
   PyObject *__pyx_tuple__5;
-  PyObject *__pyx_tuple__9;
+  PyObject *__pyx_tuple__6;
+  PyObject *__pyx_tuple__7;
+  PyObject *__pyx_tuple__8;
   PyObject *__pyx_slice__10;
   PyObject *__pyx_slice__11;
-  PyObject *__pyx_slice__12;
-  PyObject *__pyx_slice__13;
-  PyObject *__pyx_slice__14;
+  PyObject *__pyx_slice__17;
+  PyObject *__pyx_slice__18;
+  PyObject *__pyx_slice__19;
+  PyObject *__pyx_slice__20;
+  PyObject *__pyx_slice__21;
+  PyObject *__pyx_tuple__12;
+  PyObject *__pyx_tuple__13;
+  PyObject *__pyx_tuple__14;
   PyObject *__pyx_tuple__15;
   PyObject *__pyx_tuple__16;
-  PyObject *__pyx_tuple__18;
-  PyObject *__pyx_tuple__21;
   PyObject *__pyx_tuple__22;
+  PyObject *__pyx_tuple__23;
   PyObject *__pyx_tuple__25;
+  PyObject *__pyx_tuple__28;
   PyObject *__pyx_tuple__29;
-  PyObject *__pyx_tuple__34;
+  PyObject *__pyx_tuple__33;
   PyObject *__pyx_tuple__37;
   PyObject *__pyx_tuple__42;
-  PyObject *__pyx_tuple__44;
   PyObject *__pyx_tuple__45;
-  PyObject *__pyx_tuple__47;
-  PyObject *__pyx_tuple__49;
-  PyObject *__pyx_codeobj__23;
-  PyObject *__pyx_codeobj__24;
-  PyObject *__pyx_codeobj__26;
-  PyObject *__pyx_codeobj__27;
-  PyObject *__pyx_codeobj__28;
+  PyObject *__pyx_tuple__50;
+  PyObject *__pyx_tuple__52;
+  PyObject *__pyx_tuple__53;
+  PyObject *__pyx_tuple__55;
+  PyObject *__pyx_tuple__57;
   PyObject *__pyx_codeobj__30;
   PyObject *__pyx_codeobj__31;
   PyObject *__pyx_codeobj__32;
-  PyObject *__pyx_codeobj__33;
+  PyObject *__pyx_codeobj__34;
   PyObject *__pyx_codeobj__35;
   PyObject *__pyx_codeobj__36;
   PyObject *__pyx_codeobj__38;
@@ -2968,9 +3047,15 @@ typedef struct {
   PyObject *__pyx_codeobj__40;
   PyObject *__pyx_codeobj__41;
   PyObject *__pyx_codeobj__43;
+  PyObject *__pyx_codeobj__44;
   PyObject *__pyx_codeobj__46;
+  PyObject *__pyx_codeobj__47;
   PyObject *__pyx_codeobj__48;
-  PyObject *__pyx_codeobj__50;
+  PyObject *__pyx_codeobj__49;
+  PyObject *__pyx_codeobj__51;
+  PyObject *__pyx_codeobj__54;
+  PyObject *__pyx_codeobj__56;
+  PyObject *__pyx_codeobj__58;
 } __pyx_mstate;
 
 #if CYTHON_USE_MODULE_STATE
@@ -3016,21 +3101,24 @@ static int __pyx_m_clear(PyObject *m) {
   Py_CLEAR(clear_module_state->__pyx_ptype_7Micro80_3CPU_CPU);
   Py_CLEAR(clear_module_state->__pyx_type_7Micro80_3CPU_CPU);
   Py_CLEAR(clear_module_state->__pyx_kp_s_);
-  Py_CLEAR(clear_module_state->__pyx_kp_u_A);
+  Py_CLEAR(clear_module_state->__pyx_n_s_A);
   Py_CLEAR(clear_module_state->__pyx_n_s_ADD);
   Py_CLEAR(clear_module_state->__pyx_n_s_AND);
-  Py_CLEAR(clear_module_state->__pyx_n_s_A_2);
-  Py_CLEAR(clear_module_state->__pyx_kp_u_Ad);
-  Py_CLEAR(clear_module_state->__pyx_n_s_Ad_2);
+  Py_CLEAR(clear_module_state->__pyx_kp_u_Accumulator);
+  Py_CLEAR(clear_module_state->__pyx_n_s_Ad);
+  Py_CLEAR(clear_module_state->__pyx_kp_u_Address);
   Py_CLEAR(clear_module_state->__pyx_kp_u_B);
   Py_CLEAR(clear_module_state->__pyx_n_s_B_2);
   Py_CLEAR(clear_module_state->__pyx_kp_u_C);
   Py_CLEAR(clear_module_state->__pyx_n_s_CALL);
+  Py_CLEAR(clear_module_state->__pyx_n_s_CLS);
   Py_CLEAR(clear_module_state->__pyx_n_s_CMP);
   Py_CLEAR(clear_module_state->__pyx_n_s_CPU);
+  Py_CLEAR(clear_module_state->__pyx_kp_s_CPU_Initialized);
   Py_CLEAR(clear_module_state->__pyx_n_s_CPU_Loader);
   Py_CLEAR(clear_module_state->__pyx_n_s_CPU___reduce_cython);
   Py_CLEAR(clear_module_state->__pyx_n_s_CPU___setstate_cython);
+  Py_CLEAR(clear_module_state->__pyx_n_s_CPU__handleEvents);
   Py_CLEAR(clear_module_state->__pyx_n_s_CPU_alu);
   Py_CLEAR(clear_module_state->__pyx_n_s_CPU_call);
   Py_CLEAR(clear_module_state->__pyx_n_s_CPU_decrement);
@@ -3047,13 +3135,14 @@ static int __pyx_m_clear(PyObject *m) {
   Py_CLEAR(clear_module_state->__pyx_n_s_CPU_runProgram);
   Py_CLEAR(clear_module_state->__pyx_n_s_CPU_store);
   Py_CLEAR(clear_module_state->__pyx_n_s_C_2);
-  Py_CLEAR(clear_module_state->__pyx_kp_u_Current_Opcode);
-  Py_CLEAR(clear_module_state->__pyx_kp_u_Current_Operand);
+  Py_CLEAR(clear_module_state->__pyx_kp_u_Current_Address);
+  Py_CLEAR(clear_module_state->__pyx_kp_u_Current_Data);
   Py_CLEAR(clear_module_state->__pyx_kp_u_D);
   Py_CLEAR(clear_module_state->__pyx_n_s_DC);
   Py_CLEAR(clear_module_state->__pyx_n_s_DEC);
   Py_CLEAR(clear_module_state->__pyx_n_s_DIV);
   Py_CLEAR(clear_module_state->__pyx_n_s_D_2);
+  Py_CLEAR(clear_module_state->__pyx_kp_s_Debug_Mode_Enabled);
   Py_CLEAR(clear_module_state->__pyx_n_s_Display);
   Py_CLEAR(clear_module_state->__pyx_kp_u_Display_2);
   Py_CLEAR(clear_module_state->__pyx_kp_u_E);
@@ -3070,6 +3159,7 @@ static int __pyx_m_clear(PyObject *m) {
   Py_CLEAR(clear_module_state->__pyx_n_s_IC);
   Py_CLEAR(clear_module_state->__pyx_n_s_INC);
   Py_CLEAR(clear_module_state->__pyx_kp_s_Incompatible_checksums_0x_x_vs_0);
+  Py_CLEAR(clear_module_state->__pyx_kp_u_Input);
   Py_CLEAR(clear_module_state->__pyx_kp_u_Invalid_Opcode);
   Py_CLEAR(clear_module_state->__pyx_kp_s_Invalid_Opcode_2);
   Py_CLEAR(clear_module_state->__pyx_kp_s_Invalid_Register);
@@ -3081,6 +3171,7 @@ static int __pyx_m_clear(PyObject *m) {
   Py_CLEAR(clear_module_state->__pyx_n_s_LEZ);
   Py_CLEAR(clear_module_state->__pyx_n_s_LT);
   Py_CLEAR(clear_module_state->__pyx_n_s_LZ);
+  Py_CLEAR(clear_module_state->__pyx_kp_u_Loaded);
   Py_CLEAR(clear_module_state->__pyx_n_s_Loader);
   Py_CLEAR(clear_module_state->__pyx_n_s_MOD);
   Py_CLEAR(clear_module_state->__pyx_n_s_MOV);
@@ -3099,43 +3190,66 @@ static int __pyx_m_clear(PyObject *m) {
   Py_CLEAR(clear_module_state->__pyx_n_s_NZ);
   Py_CLEAR(clear_module_state->__pyx_n_s_OR);
   Py_CLEAR(clear_module_state->__pyx_n_s_P);
-  Py_CLEAR(clear_module_state->__pyx_kp_u_PC);
-  Py_CLEAR(clear_module_state->__pyx_n_s_PC_2);
+  Py_CLEAR(clear_module_state->__pyx_n_s_PC);
   Py_CLEAR(clear_module_state->__pyx_n_s_POP);
   Py_CLEAR(clear_module_state->__pyx_n_s_POPA);
   Py_CLEAR(clear_module_state->__pyx_n_s_PUSH);
   Py_CLEAR(clear_module_state->__pyx_n_s_PUSHA);
   Py_CLEAR(clear_module_state->__pyx_n_s_Path);
   Py_CLEAR(clear_module_state->__pyx_n_s_PickleError);
+  Py_CLEAR(clear_module_state->__pyx_kp_u_Program_Counter);
+  Py_CLEAR(clear_module_state->__pyx_kp_u_Program_End);
+  Py_CLEAR(clear_module_state->__pyx_kp_s_Program_Running);
   Py_CLEAR(clear_module_state->__pyx_n_s_RDir);
   Py_CLEAR(clear_module_state->__pyx_n_s_RET);
   Py_CLEAR(clear_module_state->__pyx_n_s_ROMFile);
-  Py_CLEAR(clear_module_state->__pyx_kp_u_Rendered);
+  Py_CLEAR(clear_module_state->__pyx_kp_u_Render_Count);
   Py_CLEAR(clear_module_state->__pyx_n_s_Renderer);
+  Py_CLEAR(clear_module_state->__pyx_n_s_SDLK_BACKSPACE);
+  Py_CLEAR(clear_module_state->__pyx_n_s_SDLK_DOWN);
+  Py_CLEAR(clear_module_state->__pyx_n_s_SDLK_ESCAPE);
+  Py_CLEAR(clear_module_state->__pyx_n_s_SDLK_LEFT);
+  Py_CLEAR(clear_module_state->__pyx_n_s_SDLK_RETURN);
+  Py_CLEAR(clear_module_state->__pyx_n_s_SDLK_RIGHT);
+  Py_CLEAR(clear_module_state->__pyx_n_s_SDLK_UP);
+  Py_CLEAR(clear_module_state->__pyx_n_s_SDLK_a);
+  Py_CLEAR(clear_module_state->__pyx_n_s_SDLK_d);
+  Py_CLEAR(clear_module_state->__pyx_n_s_SDLK_j);
+  Py_CLEAR(clear_module_state->__pyx_n_s_SDLK_k);
+  Py_CLEAR(clear_module_state->__pyx_n_s_SDLK_s);
+  Py_CLEAR(clear_module_state->__pyx_n_s_SDLK_w);
+  Py_CLEAR(clear_module_state->__pyx_n_s_SDLK_x);
+  Py_CLEAR(clear_module_state->__pyx_n_s_SDLK_z);
+  Py_CLEAR(clear_module_state->__pyx_n_s_SDL_KEYDOWN);
+  Py_CLEAR(clear_module_state->__pyx_n_s_SDL_KEYUP);
+  Py_CLEAR(clear_module_state->__pyx_n_s_SDL_QUIT);
   Py_CLEAR(clear_module_state->__pyx_n_s_SHL);
   Py_CLEAR(clear_module_state->__pyx_n_s_SHR);
   Py_CLEAR(clear_module_state->__pyx_n_s_SLP);
-  Py_CLEAR(clear_module_state->__pyx_kp_u_SP);
-  Py_CLEAR(clear_module_state->__pyx_n_s_SP_2);
+  Py_CLEAR(clear_module_state->__pyx_n_s_SP);
   Py_CLEAR(clear_module_state->__pyx_n_s_ST);
   Py_CLEAR(clear_module_state->__pyx_n_s_SUB);
-  Py_CLEAR(clear_module_state->__pyx_kp_u_Stack);
+  Py_CLEAR(clear_module_state->__pyx_kp_u_Stack_Pointer);
+  Py_CLEAR(clear_module_state->__pyx_kp_u_Ticks);
   Py_CLEAR(clear_module_state->__pyx_n_s_ValueError);
+  Py_CLEAR(clear_module_state->__pyx_kp_u_Variables);
   Py_CLEAR(clear_module_state->__pyx_n_s_WAdr);
   Py_CLEAR(clear_module_state->__pyx_n_s_WDir);
   Py_CLEAR(clear_module_state->__pyx_n_s_Window);
   Py_CLEAR(clear_module_state->__pyx_n_s_XOR);
   Py_CLEAR(clear_module_state->__pyx_n_s_Z);
-  Py_CLEAR(clear_module_state->__pyx_kp_s__17);
-  Py_CLEAR(clear_module_state->__pyx_kp_u__19);
   Py_CLEAR(clear_module_state->__pyx_kp_s__2);
-  Py_CLEAR(clear_module_state->__pyx_n_s__20);
-  Py_CLEAR(clear_module_state->__pyx_n_s__51);
+  Py_CLEAR(clear_module_state->__pyx_kp_s__24);
+  Py_CLEAR(clear_module_state->__pyx_kp_u__26);
+  Py_CLEAR(clear_module_state->__pyx_n_s__27);
+  Py_CLEAR(clear_module_state->__pyx_n_s__59);
+  Py_CLEAR(clear_module_state->__pyx_kp_u__9);
   Py_CLEAR(clear_module_state->__pyx_n_s_alu);
   Py_CLEAR(clear_module_state->__pyx_n_s_append);
   Py_CLEAR(clear_module_state->__pyx_n_s_asyncio_coroutines);
   Py_CLEAR(clear_module_state->__pyx_n_s_base);
   Py_CLEAR(clear_module_state->__pyx_n_s_call);
+  Py_CLEAR(clear_module_state->__pyx_n_s_clear);
   Py_CLEAR(clear_module_state->__pyx_n_s_cline_in_traceback);
   Py_CLEAR(clear_module_state->__pyx_n_s_close);
   Py_CLEAR(clear_module_state->__pyx_n_s_curData);
@@ -3150,15 +3264,20 @@ static int __pyx_m_clear(PyObject *m) {
   Py_CLEAR(clear_module_state->__pyx_n_s_fetch);
   Py_CLEAR(clear_module_state->__pyx_n_s_file);
   Py_CLEAR(clear_module_state->__pyx_kp_u_gc);
+  Py_CLEAR(clear_module_state->__pyx_n_s_get_events);
   Py_CLEAR(clear_module_state->__pyx_n_s_getstate);
+  Py_CLEAR(clear_module_state->__pyx_n_s_handleEvents);
   Py_CLEAR(clear_module_state->__pyx_n_s_import);
   Py_CLEAR(clear_module_state->__pyx_n_s_increment);
   Py_CLEAR(clear_module_state->__pyx_n_s_init);
   Py_CLEAR(clear_module_state->__pyx_n_s_initializing);
   Py_CLEAR(clear_module_state->__pyx_kp_s_instructions_txt);
+  Py_CLEAR(clear_module_state->__pyx_kp_u_into_memory);
   Py_CLEAR(clear_module_state->__pyx_n_s_is_coroutine);
   Py_CLEAR(clear_module_state->__pyx_kp_u_isenabled);
   Py_CLEAR(clear_module_state->__pyx_n_s_jump);
+  Py_CLEAR(clear_module_state->__pyx_n_s_key);
+  Py_CLEAR(clear_module_state->__pyx_n_s_keysym);
   Py_CLEAR(clear_module_state->__pyx_n_s_load);
   Py_CLEAR(clear_module_state->__pyx_n_s_location);
   Py_CLEAR(clear_module_state->__pyx_n_s_main);
@@ -3202,6 +3321,7 @@ static int __pyx_m_clear(PyObject *m) {
   Py_CLEAR(clear_module_state->__pyx_n_s_setstate);
   Py_CLEAR(clear_module_state->__pyx_n_s_setstate_cython);
   Py_CLEAR(clear_module_state->__pyx_n_s_show);
+  Py_CLEAR(clear_module_state->__pyx_n_s_sleep);
   Py_CLEAR(clear_module_state->__pyx_n_s_spec);
   Py_CLEAR(clear_module_state->__pyx_n_s_split);
   Py_CLEAR(clear_module_state->__pyx_n_s_stackPointer);
@@ -3209,68 +3329,74 @@ static int __pyx_m_clear(PyObject *m) {
   Py_CLEAR(clear_module_state->__pyx_n_s_store);
   Py_CLEAR(clear_module_state->__pyx_kp_s_stringsource);
   Py_CLEAR(clear_module_state->__pyx_n_s_strip);
+  Py_CLEAR(clear_module_state->__pyx_n_s_sym);
   Py_CLEAR(clear_module_state->__pyx_n_s_test);
   Py_CLEAR(clear_module_state->__pyx_n_s_time);
-  Py_CLEAR(clear_module_state->__pyx_kp_u_times_in);
+  Py_CLEAR(clear_module_state->__pyx_n_s_type);
   Py_CLEAR(clear_module_state->__pyx_n_s_update);
   Py_CLEAR(clear_module_state->__pyx_n_s_use_setstate);
-  Py_CLEAR(clear_module_state->__pyx_kp_u_variable);
   Py_CLEAR(clear_module_state->__pyx_n_s_writeAddress);
   Py_CLEAR(clear_module_state->__pyx_int_0);
   Py_CLEAR(clear_module_state->__pyx_int_1);
   Py_CLEAR(clear_module_state->__pyx_int_2);
   Py_CLEAR(clear_module_state->__pyx_int_3);
+  Py_CLEAR(clear_module_state->__pyx_int_4);
+  Py_CLEAR(clear_module_state->__pyx_int_5);
+  Py_CLEAR(clear_module_state->__pyx_int_6);
   Py_CLEAR(clear_module_state->__pyx_int_16);
   Py_CLEAR(clear_module_state->__pyx_int_45);
   Py_CLEAR(clear_module_state->__pyx_int_71);
   Py_CLEAR(clear_module_state->__pyx_int_73);
+  Py_CLEAR(clear_module_state->__pyx_int_74);
   Py_CLEAR(clear_module_state->__pyx_int_128);
   Py_CLEAR(clear_module_state->__pyx_int_16394);
+  Py_CLEAR(clear_module_state->__pyx_int_16395);
+  Py_CLEAR(clear_module_state->__pyx_int_16396);
+  Py_CLEAR(clear_module_state->__pyx_int_16397);
   Py_CLEAR(clear_module_state->__pyx_int_17408);
-  Py_CLEAR(clear_module_state->__pyx_int_17414);
-  Py_CLEAR(clear_module_state->__pyx_int_21504);
-  Py_CLEAR(clear_module_state->__pyx_int_21510);
+  Py_CLEAR(clear_module_state->__pyx_int_17423);
   Py_CLEAR(clear_module_state->__pyx_int_49152);
-  Py_CLEAR(clear_module_state->__pyx_int_49158);
+  Py_CLEAR(clear_module_state->__pyx_int_49167);
   Py_CLEAR(clear_module_state->__pyx_int_65535);
   Py_CLEAR(clear_module_state->__pyx_int_1481767);
   Py_CLEAR(clear_module_state->__pyx_int_206723160);
   Py_CLEAR(clear_module_state->__pyx_int_235959991);
-  Py_CLEAR(clear_module_state->__pyx_slice__6);
-  Py_CLEAR(clear_module_state->__pyx_slice__7);
-  Py_CLEAR(clear_module_state->__pyx_slice__8);
   Py_CLEAR(clear_module_state->__pyx_tuple__3);
   Py_CLEAR(clear_module_state->__pyx_tuple__4);
   Py_CLEAR(clear_module_state->__pyx_tuple__5);
-  Py_CLEAR(clear_module_state->__pyx_tuple__9);
+  Py_CLEAR(clear_module_state->__pyx_tuple__6);
+  Py_CLEAR(clear_module_state->__pyx_tuple__7);
+  Py_CLEAR(clear_module_state->__pyx_tuple__8);
   Py_CLEAR(clear_module_state->__pyx_slice__10);
   Py_CLEAR(clear_module_state->__pyx_slice__11);
-  Py_CLEAR(clear_module_state->__pyx_slice__12);
-  Py_CLEAR(clear_module_state->__pyx_slice__13);
-  Py_CLEAR(clear_module_state->__pyx_slice__14);
+  Py_CLEAR(clear_module_state->__pyx_slice__17);
+  Py_CLEAR(clear_module_state->__pyx_slice__18);
+  Py_CLEAR(clear_module_state->__pyx_slice__19);
+  Py_CLEAR(clear_module_state->__pyx_slice__20);
+  Py_CLEAR(clear_module_state->__pyx_slice__21);
+  Py_CLEAR(clear_module_state->__pyx_tuple__12);
+  Py_CLEAR(clear_module_state->__pyx_tuple__13);
+  Py_CLEAR(clear_module_state->__pyx_tuple__14);
   Py_CLEAR(clear_module_state->__pyx_tuple__15);
   Py_CLEAR(clear_module_state->__pyx_tuple__16);
-  Py_CLEAR(clear_module_state->__pyx_tuple__18);
-  Py_CLEAR(clear_module_state->__pyx_tuple__21);
   Py_CLEAR(clear_module_state->__pyx_tuple__22);
+  Py_CLEAR(clear_module_state->__pyx_tuple__23);
   Py_CLEAR(clear_module_state->__pyx_tuple__25);
+  Py_CLEAR(clear_module_state->__pyx_tuple__28);
   Py_CLEAR(clear_module_state->__pyx_tuple__29);
-  Py_CLEAR(clear_module_state->__pyx_tuple__34);
+  Py_CLEAR(clear_module_state->__pyx_tuple__33);
   Py_CLEAR(clear_module_state->__pyx_tuple__37);
   Py_CLEAR(clear_module_state->__pyx_tuple__42);
-  Py_CLEAR(clear_module_state->__pyx_tuple__44);
   Py_CLEAR(clear_module_state->__pyx_tuple__45);
-  Py_CLEAR(clear_module_state->__pyx_tuple__47);
-  Py_CLEAR(clear_module_state->__pyx_tuple__49);
-  Py_CLEAR(clear_module_state->__pyx_codeobj__23);
-  Py_CLEAR(clear_module_state->__pyx_codeobj__24);
-  Py_CLEAR(clear_module_state->__pyx_codeobj__26);
-  Py_CLEAR(clear_module_state->__pyx_codeobj__27);
-  Py_CLEAR(clear_module_state->__pyx_codeobj__28);
+  Py_CLEAR(clear_module_state->__pyx_tuple__50);
+  Py_CLEAR(clear_module_state->__pyx_tuple__52);
+  Py_CLEAR(clear_module_state->__pyx_tuple__53);
+  Py_CLEAR(clear_module_state->__pyx_tuple__55);
+  Py_CLEAR(clear_module_state->__pyx_tuple__57);
   Py_CLEAR(clear_module_state->__pyx_codeobj__30);
   Py_CLEAR(clear_module_state->__pyx_codeobj__31);
   Py_CLEAR(clear_module_state->__pyx_codeobj__32);
-  Py_CLEAR(clear_module_state->__pyx_codeobj__33);
+  Py_CLEAR(clear_module_state->__pyx_codeobj__34);
   Py_CLEAR(clear_module_state->__pyx_codeobj__35);
   Py_CLEAR(clear_module_state->__pyx_codeobj__36);
   Py_CLEAR(clear_module_state->__pyx_codeobj__38);
@@ -3278,9 +3404,15 @@ static int __pyx_m_clear(PyObject *m) {
   Py_CLEAR(clear_module_state->__pyx_codeobj__40);
   Py_CLEAR(clear_module_state->__pyx_codeobj__41);
   Py_CLEAR(clear_module_state->__pyx_codeobj__43);
+  Py_CLEAR(clear_module_state->__pyx_codeobj__44);
   Py_CLEAR(clear_module_state->__pyx_codeobj__46);
+  Py_CLEAR(clear_module_state->__pyx_codeobj__47);
   Py_CLEAR(clear_module_state->__pyx_codeobj__48);
-  Py_CLEAR(clear_module_state->__pyx_codeobj__50);
+  Py_CLEAR(clear_module_state->__pyx_codeobj__49);
+  Py_CLEAR(clear_module_state->__pyx_codeobj__51);
+  Py_CLEAR(clear_module_state->__pyx_codeobj__54);
+  Py_CLEAR(clear_module_state->__pyx_codeobj__56);
+  Py_CLEAR(clear_module_state->__pyx_codeobj__58);
   return 0;
 }
 #endif
@@ -3304,21 +3436,24 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
   Py_VISIT(traverse_module_state->__pyx_ptype_7Micro80_3CPU_CPU);
   Py_VISIT(traverse_module_state->__pyx_type_7Micro80_3CPU_CPU);
   Py_VISIT(traverse_module_state->__pyx_kp_s_);
-  Py_VISIT(traverse_module_state->__pyx_kp_u_A);
+  Py_VISIT(traverse_module_state->__pyx_n_s_A);
   Py_VISIT(traverse_module_state->__pyx_n_s_ADD);
   Py_VISIT(traverse_module_state->__pyx_n_s_AND);
-  Py_VISIT(traverse_module_state->__pyx_n_s_A_2);
-  Py_VISIT(traverse_module_state->__pyx_kp_u_Ad);
-  Py_VISIT(traverse_module_state->__pyx_n_s_Ad_2);
+  Py_VISIT(traverse_module_state->__pyx_kp_u_Accumulator);
+  Py_VISIT(traverse_module_state->__pyx_n_s_Ad);
+  Py_VISIT(traverse_module_state->__pyx_kp_u_Address);
   Py_VISIT(traverse_module_state->__pyx_kp_u_B);
   Py_VISIT(traverse_module_state->__pyx_n_s_B_2);
   Py_VISIT(traverse_module_state->__pyx_kp_u_C);
   Py_VISIT(traverse_module_state->__pyx_n_s_CALL);
+  Py_VISIT(traverse_module_state->__pyx_n_s_CLS);
   Py_VISIT(traverse_module_state->__pyx_n_s_CMP);
   Py_VISIT(traverse_module_state->__pyx_n_s_CPU);
+  Py_VISIT(traverse_module_state->__pyx_kp_s_CPU_Initialized);
   Py_VISIT(traverse_module_state->__pyx_n_s_CPU_Loader);
   Py_VISIT(traverse_module_state->__pyx_n_s_CPU___reduce_cython);
   Py_VISIT(traverse_module_state->__pyx_n_s_CPU___setstate_cython);
+  Py_VISIT(traverse_module_state->__pyx_n_s_CPU__handleEvents);
   Py_VISIT(traverse_module_state->__pyx_n_s_CPU_alu);
   Py_VISIT(traverse_module_state->__pyx_n_s_CPU_call);
   Py_VISIT(traverse_module_state->__pyx_n_s_CPU_decrement);
@@ -3335,13 +3470,14 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
   Py_VISIT(traverse_module_state->__pyx_n_s_CPU_runProgram);
   Py_VISIT(traverse_module_state->__pyx_n_s_CPU_store);
   Py_VISIT(traverse_module_state->__pyx_n_s_C_2);
-  Py_VISIT(traverse_module_state->__pyx_kp_u_Current_Opcode);
-  Py_VISIT(traverse_module_state->__pyx_kp_u_Current_Operand);
+  Py_VISIT(traverse_module_state->__pyx_kp_u_Current_Address);
+  Py_VISIT(traverse_module_state->__pyx_kp_u_Current_Data);
   Py_VISIT(traverse_module_state->__pyx_kp_u_D);
   Py_VISIT(traverse_module_state->__pyx_n_s_DC);
   Py_VISIT(traverse_module_state->__pyx_n_s_DEC);
   Py_VISIT(traverse_module_state->__pyx_n_s_DIV);
   Py_VISIT(traverse_module_state->__pyx_n_s_D_2);
+  Py_VISIT(traverse_module_state->__pyx_kp_s_Debug_Mode_Enabled);
   Py_VISIT(traverse_module_state->__pyx_n_s_Display);
   Py_VISIT(traverse_module_state->__pyx_kp_u_Display_2);
   Py_VISIT(traverse_module_state->__pyx_kp_u_E);
@@ -3358,6 +3494,7 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
   Py_VISIT(traverse_module_state->__pyx_n_s_IC);
   Py_VISIT(traverse_module_state->__pyx_n_s_INC);
   Py_VISIT(traverse_module_state->__pyx_kp_s_Incompatible_checksums_0x_x_vs_0);
+  Py_VISIT(traverse_module_state->__pyx_kp_u_Input);
   Py_VISIT(traverse_module_state->__pyx_kp_u_Invalid_Opcode);
   Py_VISIT(traverse_module_state->__pyx_kp_s_Invalid_Opcode_2);
   Py_VISIT(traverse_module_state->__pyx_kp_s_Invalid_Register);
@@ -3369,6 +3506,7 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
   Py_VISIT(traverse_module_state->__pyx_n_s_LEZ);
   Py_VISIT(traverse_module_state->__pyx_n_s_LT);
   Py_VISIT(traverse_module_state->__pyx_n_s_LZ);
+  Py_VISIT(traverse_module_state->__pyx_kp_u_Loaded);
   Py_VISIT(traverse_module_state->__pyx_n_s_Loader);
   Py_VISIT(traverse_module_state->__pyx_n_s_MOD);
   Py_VISIT(traverse_module_state->__pyx_n_s_MOV);
@@ -3387,43 +3525,66 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
   Py_VISIT(traverse_module_state->__pyx_n_s_NZ);
   Py_VISIT(traverse_module_state->__pyx_n_s_OR);
   Py_VISIT(traverse_module_state->__pyx_n_s_P);
-  Py_VISIT(traverse_module_state->__pyx_kp_u_PC);
-  Py_VISIT(traverse_module_state->__pyx_n_s_PC_2);
+  Py_VISIT(traverse_module_state->__pyx_n_s_PC);
   Py_VISIT(traverse_module_state->__pyx_n_s_POP);
   Py_VISIT(traverse_module_state->__pyx_n_s_POPA);
   Py_VISIT(traverse_module_state->__pyx_n_s_PUSH);
   Py_VISIT(traverse_module_state->__pyx_n_s_PUSHA);
   Py_VISIT(traverse_module_state->__pyx_n_s_Path);
   Py_VISIT(traverse_module_state->__pyx_n_s_PickleError);
+  Py_VISIT(traverse_module_state->__pyx_kp_u_Program_Counter);
+  Py_VISIT(traverse_module_state->__pyx_kp_u_Program_End);
+  Py_VISIT(traverse_module_state->__pyx_kp_s_Program_Running);
   Py_VISIT(traverse_module_state->__pyx_n_s_RDir);
   Py_VISIT(traverse_module_state->__pyx_n_s_RET);
   Py_VISIT(traverse_module_state->__pyx_n_s_ROMFile);
-  Py_VISIT(traverse_module_state->__pyx_kp_u_Rendered);
+  Py_VISIT(traverse_module_state->__pyx_kp_u_Render_Count);
   Py_VISIT(traverse_module_state->__pyx_n_s_Renderer);
+  Py_VISIT(traverse_module_state->__pyx_n_s_SDLK_BACKSPACE);
+  Py_VISIT(traverse_module_state->__pyx_n_s_SDLK_DOWN);
+  Py_VISIT(traverse_module_state->__pyx_n_s_SDLK_ESCAPE);
+  Py_VISIT(traverse_module_state->__pyx_n_s_SDLK_LEFT);
+  Py_VISIT(traverse_module_state->__pyx_n_s_SDLK_RETURN);
+  Py_VISIT(traverse_module_state->__pyx_n_s_SDLK_RIGHT);
+  Py_VISIT(traverse_module_state->__pyx_n_s_SDLK_UP);
+  Py_VISIT(traverse_module_state->__pyx_n_s_SDLK_a);
+  Py_VISIT(traverse_module_state->__pyx_n_s_SDLK_d);
+  Py_VISIT(traverse_module_state->__pyx_n_s_SDLK_j);
+  Py_VISIT(traverse_module_state->__pyx_n_s_SDLK_k);
+  Py_VISIT(traverse_module_state->__pyx_n_s_SDLK_s);
+  Py_VISIT(traverse_module_state->__pyx_n_s_SDLK_w);
+  Py_VISIT(traverse_module_state->__pyx_n_s_SDLK_x);
+  Py_VISIT(traverse_module_state->__pyx_n_s_SDLK_z);
+  Py_VISIT(traverse_module_state->__pyx_n_s_SDL_KEYDOWN);
+  Py_VISIT(traverse_module_state->__pyx_n_s_SDL_KEYUP);
+  Py_VISIT(traverse_module_state->__pyx_n_s_SDL_QUIT);
   Py_VISIT(traverse_module_state->__pyx_n_s_SHL);
   Py_VISIT(traverse_module_state->__pyx_n_s_SHR);
   Py_VISIT(traverse_module_state->__pyx_n_s_SLP);
-  Py_VISIT(traverse_module_state->__pyx_kp_u_SP);
-  Py_VISIT(traverse_module_state->__pyx_n_s_SP_2);
+  Py_VISIT(traverse_module_state->__pyx_n_s_SP);
   Py_VISIT(traverse_module_state->__pyx_n_s_ST);
   Py_VISIT(traverse_module_state->__pyx_n_s_SUB);
-  Py_VISIT(traverse_module_state->__pyx_kp_u_Stack);
+  Py_VISIT(traverse_module_state->__pyx_kp_u_Stack_Pointer);
+  Py_VISIT(traverse_module_state->__pyx_kp_u_Ticks);
   Py_VISIT(traverse_module_state->__pyx_n_s_ValueError);
+  Py_VISIT(traverse_module_state->__pyx_kp_u_Variables);
   Py_VISIT(traverse_module_state->__pyx_n_s_WAdr);
   Py_VISIT(traverse_module_state->__pyx_n_s_WDir);
   Py_VISIT(traverse_module_state->__pyx_n_s_Window);
   Py_VISIT(traverse_module_state->__pyx_n_s_XOR);
   Py_VISIT(traverse_module_state->__pyx_n_s_Z);
-  Py_VISIT(traverse_module_state->__pyx_kp_s__17);
-  Py_VISIT(traverse_module_state->__pyx_kp_u__19);
   Py_VISIT(traverse_module_state->__pyx_kp_s__2);
-  Py_VISIT(traverse_module_state->__pyx_n_s__20);
-  Py_VISIT(traverse_module_state->__pyx_n_s__51);
+  Py_VISIT(traverse_module_state->__pyx_kp_s__24);
+  Py_VISIT(traverse_module_state->__pyx_kp_u__26);
+  Py_VISIT(traverse_module_state->__pyx_n_s__27);
+  Py_VISIT(traverse_module_state->__pyx_n_s__59);
+  Py_VISIT(traverse_module_state->__pyx_kp_u__9);
   Py_VISIT(traverse_module_state->__pyx_n_s_alu);
   Py_VISIT(traverse_module_state->__pyx_n_s_append);
   Py_VISIT(traverse_module_state->__pyx_n_s_asyncio_coroutines);
   Py_VISIT(traverse_module_state->__pyx_n_s_base);
   Py_VISIT(traverse_module_state->__pyx_n_s_call);
+  Py_VISIT(traverse_module_state->__pyx_n_s_clear);
   Py_VISIT(traverse_module_state->__pyx_n_s_cline_in_traceback);
   Py_VISIT(traverse_module_state->__pyx_n_s_close);
   Py_VISIT(traverse_module_state->__pyx_n_s_curData);
@@ -3438,15 +3599,20 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
   Py_VISIT(traverse_module_state->__pyx_n_s_fetch);
   Py_VISIT(traverse_module_state->__pyx_n_s_file);
   Py_VISIT(traverse_module_state->__pyx_kp_u_gc);
+  Py_VISIT(traverse_module_state->__pyx_n_s_get_events);
   Py_VISIT(traverse_module_state->__pyx_n_s_getstate);
+  Py_VISIT(traverse_module_state->__pyx_n_s_handleEvents);
   Py_VISIT(traverse_module_state->__pyx_n_s_import);
   Py_VISIT(traverse_module_state->__pyx_n_s_increment);
   Py_VISIT(traverse_module_state->__pyx_n_s_init);
   Py_VISIT(traverse_module_state->__pyx_n_s_initializing);
   Py_VISIT(traverse_module_state->__pyx_kp_s_instructions_txt);
+  Py_VISIT(traverse_module_state->__pyx_kp_u_into_memory);
   Py_VISIT(traverse_module_state->__pyx_n_s_is_coroutine);
   Py_VISIT(traverse_module_state->__pyx_kp_u_isenabled);
   Py_VISIT(traverse_module_state->__pyx_n_s_jump);
+  Py_VISIT(traverse_module_state->__pyx_n_s_key);
+  Py_VISIT(traverse_module_state->__pyx_n_s_keysym);
   Py_VISIT(traverse_module_state->__pyx_n_s_load);
   Py_VISIT(traverse_module_state->__pyx_n_s_location);
   Py_VISIT(traverse_module_state->__pyx_n_s_main);
@@ -3490,6 +3656,7 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
   Py_VISIT(traverse_module_state->__pyx_n_s_setstate);
   Py_VISIT(traverse_module_state->__pyx_n_s_setstate_cython);
   Py_VISIT(traverse_module_state->__pyx_n_s_show);
+  Py_VISIT(traverse_module_state->__pyx_n_s_sleep);
   Py_VISIT(traverse_module_state->__pyx_n_s_spec);
   Py_VISIT(traverse_module_state->__pyx_n_s_split);
   Py_VISIT(traverse_module_state->__pyx_n_s_stackPointer);
@@ -3497,68 +3664,74 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
   Py_VISIT(traverse_module_state->__pyx_n_s_store);
   Py_VISIT(traverse_module_state->__pyx_kp_s_stringsource);
   Py_VISIT(traverse_module_state->__pyx_n_s_strip);
+  Py_VISIT(traverse_module_state->__pyx_n_s_sym);
   Py_VISIT(traverse_module_state->__pyx_n_s_test);
   Py_VISIT(traverse_module_state->__pyx_n_s_time);
-  Py_VISIT(traverse_module_state->__pyx_kp_u_times_in);
+  Py_VISIT(traverse_module_state->__pyx_n_s_type);
   Py_VISIT(traverse_module_state->__pyx_n_s_update);
   Py_VISIT(traverse_module_state->__pyx_n_s_use_setstate);
-  Py_VISIT(traverse_module_state->__pyx_kp_u_variable);
   Py_VISIT(traverse_module_state->__pyx_n_s_writeAddress);
   Py_VISIT(traverse_module_state->__pyx_int_0);
   Py_VISIT(traverse_module_state->__pyx_int_1);
   Py_VISIT(traverse_module_state->__pyx_int_2);
   Py_VISIT(traverse_module_state->__pyx_int_3);
+  Py_VISIT(traverse_module_state->__pyx_int_4);
+  Py_VISIT(traverse_module_state->__pyx_int_5);
+  Py_VISIT(traverse_module_state->__pyx_int_6);
   Py_VISIT(traverse_module_state->__pyx_int_16);
   Py_VISIT(traverse_module_state->__pyx_int_45);
   Py_VISIT(traverse_module_state->__pyx_int_71);
   Py_VISIT(traverse_module_state->__pyx_int_73);
+  Py_VISIT(traverse_module_state->__pyx_int_74);
   Py_VISIT(traverse_module_state->__pyx_int_128);
   Py_VISIT(traverse_module_state->__pyx_int_16394);
+  Py_VISIT(traverse_module_state->__pyx_int_16395);
+  Py_VISIT(traverse_module_state->__pyx_int_16396);
+  Py_VISIT(traverse_module_state->__pyx_int_16397);
   Py_VISIT(traverse_module_state->__pyx_int_17408);
-  Py_VISIT(traverse_module_state->__pyx_int_17414);
-  Py_VISIT(traverse_module_state->__pyx_int_21504);
-  Py_VISIT(traverse_module_state->__pyx_int_21510);
+  Py_VISIT(traverse_module_state->__pyx_int_17423);
   Py_VISIT(traverse_module_state->__pyx_int_49152);
-  Py_VISIT(traverse_module_state->__pyx_int_49158);
+  Py_VISIT(traverse_module_state->__pyx_int_49167);
   Py_VISIT(traverse_module_state->__pyx_int_65535);
   Py_VISIT(traverse_module_state->__pyx_int_1481767);
   Py_VISIT(traverse_module_state->__pyx_int_206723160);
   Py_VISIT(traverse_module_state->__pyx_int_235959991);
-  Py_VISIT(traverse_module_state->__pyx_slice__6);
-  Py_VISIT(traverse_module_state->__pyx_slice__7);
-  Py_VISIT(traverse_module_state->__pyx_slice__8);
   Py_VISIT(traverse_module_state->__pyx_tuple__3);
   Py_VISIT(traverse_module_state->__pyx_tuple__4);
   Py_VISIT(traverse_module_state->__pyx_tuple__5);
-  Py_VISIT(traverse_module_state->__pyx_tuple__9);
+  Py_VISIT(traverse_module_state->__pyx_tuple__6);
+  Py_VISIT(traverse_module_state->__pyx_tuple__7);
+  Py_VISIT(traverse_module_state->__pyx_tuple__8);
   Py_VISIT(traverse_module_state->__pyx_slice__10);
   Py_VISIT(traverse_module_state->__pyx_slice__11);
-  Py_VISIT(traverse_module_state->__pyx_slice__12);
-  Py_VISIT(traverse_module_state->__pyx_slice__13);
-  Py_VISIT(traverse_module_state->__pyx_slice__14);
+  Py_VISIT(traverse_module_state->__pyx_slice__17);
+  Py_VISIT(traverse_module_state->__pyx_slice__18);
+  Py_VISIT(traverse_module_state->__pyx_slice__19);
+  Py_VISIT(traverse_module_state->__pyx_slice__20);
+  Py_VISIT(traverse_module_state->__pyx_slice__21);
+  Py_VISIT(traverse_module_state->__pyx_tuple__12);
+  Py_VISIT(traverse_module_state->__pyx_tuple__13);
+  Py_VISIT(traverse_module_state->__pyx_tuple__14);
   Py_VISIT(traverse_module_state->__pyx_tuple__15);
   Py_VISIT(traverse_module_state->__pyx_tuple__16);
-  Py_VISIT(traverse_module_state->__pyx_tuple__18);
-  Py_VISIT(traverse_module_state->__pyx_tuple__21);
   Py_VISIT(traverse_module_state->__pyx_tuple__22);
+  Py_VISIT(traverse_module_state->__pyx_tuple__23);
   Py_VISIT(traverse_module_state->__pyx_tuple__25);
+  Py_VISIT(traverse_module_state->__pyx_tuple__28);
   Py_VISIT(traverse_module_state->__pyx_tuple__29);
-  Py_VISIT(traverse_module_state->__pyx_tuple__34);
+  Py_VISIT(traverse_module_state->__pyx_tuple__33);
   Py_VISIT(traverse_module_state->__pyx_tuple__37);
   Py_VISIT(traverse_module_state->__pyx_tuple__42);
-  Py_VISIT(traverse_module_state->__pyx_tuple__44);
   Py_VISIT(traverse_module_state->__pyx_tuple__45);
-  Py_VISIT(traverse_module_state->__pyx_tuple__47);
-  Py_VISIT(traverse_module_state->__pyx_tuple__49);
-  Py_VISIT(traverse_module_state->__pyx_codeobj__23);
-  Py_VISIT(traverse_module_state->__pyx_codeobj__24);
-  Py_VISIT(traverse_module_state->__pyx_codeobj__26);
-  Py_VISIT(traverse_module_state->__pyx_codeobj__27);
-  Py_VISIT(traverse_module_state->__pyx_codeobj__28);
+  Py_VISIT(traverse_module_state->__pyx_tuple__50);
+  Py_VISIT(traverse_module_state->__pyx_tuple__52);
+  Py_VISIT(traverse_module_state->__pyx_tuple__53);
+  Py_VISIT(traverse_module_state->__pyx_tuple__55);
+  Py_VISIT(traverse_module_state->__pyx_tuple__57);
   Py_VISIT(traverse_module_state->__pyx_codeobj__30);
   Py_VISIT(traverse_module_state->__pyx_codeobj__31);
   Py_VISIT(traverse_module_state->__pyx_codeobj__32);
-  Py_VISIT(traverse_module_state->__pyx_codeobj__33);
+  Py_VISIT(traverse_module_state->__pyx_codeobj__34);
   Py_VISIT(traverse_module_state->__pyx_codeobj__35);
   Py_VISIT(traverse_module_state->__pyx_codeobj__36);
   Py_VISIT(traverse_module_state->__pyx_codeobj__38);
@@ -3566,9 +3739,15 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
   Py_VISIT(traverse_module_state->__pyx_codeobj__40);
   Py_VISIT(traverse_module_state->__pyx_codeobj__41);
   Py_VISIT(traverse_module_state->__pyx_codeobj__43);
+  Py_VISIT(traverse_module_state->__pyx_codeobj__44);
   Py_VISIT(traverse_module_state->__pyx_codeobj__46);
+  Py_VISIT(traverse_module_state->__pyx_codeobj__47);
   Py_VISIT(traverse_module_state->__pyx_codeobj__48);
-  Py_VISIT(traverse_module_state->__pyx_codeobj__50);
+  Py_VISIT(traverse_module_state->__pyx_codeobj__49);
+  Py_VISIT(traverse_module_state->__pyx_codeobj__51);
+  Py_VISIT(traverse_module_state->__pyx_codeobj__54);
+  Py_VISIT(traverse_module_state->__pyx_codeobj__56);
+  Py_VISIT(traverse_module_state->__pyx_codeobj__58);
   return 0;
 }
 #endif
@@ -3606,21 +3785,24 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
 #endif
 #define __pyx_ptype_7Micro80_3CPU_CPU __pyx_mstate_global->__pyx_ptype_7Micro80_3CPU_CPU
 #define __pyx_kp_s_ __pyx_mstate_global->__pyx_kp_s_
-#define __pyx_kp_u_A __pyx_mstate_global->__pyx_kp_u_A
+#define __pyx_n_s_A __pyx_mstate_global->__pyx_n_s_A
 #define __pyx_n_s_ADD __pyx_mstate_global->__pyx_n_s_ADD
 #define __pyx_n_s_AND __pyx_mstate_global->__pyx_n_s_AND
-#define __pyx_n_s_A_2 __pyx_mstate_global->__pyx_n_s_A_2
-#define __pyx_kp_u_Ad __pyx_mstate_global->__pyx_kp_u_Ad
-#define __pyx_n_s_Ad_2 __pyx_mstate_global->__pyx_n_s_Ad_2
+#define __pyx_kp_u_Accumulator __pyx_mstate_global->__pyx_kp_u_Accumulator
+#define __pyx_n_s_Ad __pyx_mstate_global->__pyx_n_s_Ad
+#define __pyx_kp_u_Address __pyx_mstate_global->__pyx_kp_u_Address
 #define __pyx_kp_u_B __pyx_mstate_global->__pyx_kp_u_B
 #define __pyx_n_s_B_2 __pyx_mstate_global->__pyx_n_s_B_2
 #define __pyx_kp_u_C __pyx_mstate_global->__pyx_kp_u_C
 #define __pyx_n_s_CALL __pyx_mstate_global->__pyx_n_s_CALL
+#define __pyx_n_s_CLS __pyx_mstate_global->__pyx_n_s_CLS
 #define __pyx_n_s_CMP __pyx_mstate_global->__pyx_n_s_CMP
 #define __pyx_n_s_CPU __pyx_mstate_global->__pyx_n_s_CPU
+#define __pyx_kp_s_CPU_Initialized __pyx_mstate_global->__pyx_kp_s_CPU_Initialized
 #define __pyx_n_s_CPU_Loader __pyx_mstate_global->__pyx_n_s_CPU_Loader
 #define __pyx_n_s_CPU___reduce_cython __pyx_mstate_global->__pyx_n_s_CPU___reduce_cython
 #define __pyx_n_s_CPU___setstate_cython __pyx_mstate_global->__pyx_n_s_CPU___setstate_cython
+#define __pyx_n_s_CPU__handleEvents __pyx_mstate_global->__pyx_n_s_CPU__handleEvents
 #define __pyx_n_s_CPU_alu __pyx_mstate_global->__pyx_n_s_CPU_alu
 #define __pyx_n_s_CPU_call __pyx_mstate_global->__pyx_n_s_CPU_call
 #define __pyx_n_s_CPU_decrement __pyx_mstate_global->__pyx_n_s_CPU_decrement
@@ -3637,13 +3819,14 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
 #define __pyx_n_s_CPU_runProgram __pyx_mstate_global->__pyx_n_s_CPU_runProgram
 #define __pyx_n_s_CPU_store __pyx_mstate_global->__pyx_n_s_CPU_store
 #define __pyx_n_s_C_2 __pyx_mstate_global->__pyx_n_s_C_2
-#define __pyx_kp_u_Current_Opcode __pyx_mstate_global->__pyx_kp_u_Current_Opcode
-#define __pyx_kp_u_Current_Operand __pyx_mstate_global->__pyx_kp_u_Current_Operand
+#define __pyx_kp_u_Current_Address __pyx_mstate_global->__pyx_kp_u_Current_Address
+#define __pyx_kp_u_Current_Data __pyx_mstate_global->__pyx_kp_u_Current_Data
 #define __pyx_kp_u_D __pyx_mstate_global->__pyx_kp_u_D
 #define __pyx_n_s_DC __pyx_mstate_global->__pyx_n_s_DC
 #define __pyx_n_s_DEC __pyx_mstate_global->__pyx_n_s_DEC
 #define __pyx_n_s_DIV __pyx_mstate_global->__pyx_n_s_DIV
 #define __pyx_n_s_D_2 __pyx_mstate_global->__pyx_n_s_D_2
+#define __pyx_kp_s_Debug_Mode_Enabled __pyx_mstate_global->__pyx_kp_s_Debug_Mode_Enabled
 #define __pyx_n_s_Display __pyx_mstate_global->__pyx_n_s_Display
 #define __pyx_kp_u_Display_2 __pyx_mstate_global->__pyx_kp_u_Display_2
 #define __pyx_kp_u_E __pyx_mstate_global->__pyx_kp_u_E
@@ -3660,6 +3843,7 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
 #define __pyx_n_s_IC __pyx_mstate_global->__pyx_n_s_IC
 #define __pyx_n_s_INC __pyx_mstate_global->__pyx_n_s_INC
 #define __pyx_kp_s_Incompatible_checksums_0x_x_vs_0 __pyx_mstate_global->__pyx_kp_s_Incompatible_checksums_0x_x_vs_0
+#define __pyx_kp_u_Input __pyx_mstate_global->__pyx_kp_u_Input
 #define __pyx_kp_u_Invalid_Opcode __pyx_mstate_global->__pyx_kp_u_Invalid_Opcode
 #define __pyx_kp_s_Invalid_Opcode_2 __pyx_mstate_global->__pyx_kp_s_Invalid_Opcode_2
 #define __pyx_kp_s_Invalid_Register __pyx_mstate_global->__pyx_kp_s_Invalid_Register
@@ -3671,6 +3855,7 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
 #define __pyx_n_s_LEZ __pyx_mstate_global->__pyx_n_s_LEZ
 #define __pyx_n_s_LT __pyx_mstate_global->__pyx_n_s_LT
 #define __pyx_n_s_LZ __pyx_mstate_global->__pyx_n_s_LZ
+#define __pyx_kp_u_Loaded __pyx_mstate_global->__pyx_kp_u_Loaded
 #define __pyx_n_s_Loader __pyx_mstate_global->__pyx_n_s_Loader
 #define __pyx_n_s_MOD __pyx_mstate_global->__pyx_n_s_MOD
 #define __pyx_n_s_MOV __pyx_mstate_global->__pyx_n_s_MOV
@@ -3689,43 +3874,66 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
 #define __pyx_n_s_NZ __pyx_mstate_global->__pyx_n_s_NZ
 #define __pyx_n_s_OR __pyx_mstate_global->__pyx_n_s_OR
 #define __pyx_n_s_P __pyx_mstate_global->__pyx_n_s_P
-#define __pyx_kp_u_PC __pyx_mstate_global->__pyx_kp_u_PC
-#define __pyx_n_s_PC_2 __pyx_mstate_global->__pyx_n_s_PC_2
+#define __pyx_n_s_PC __pyx_mstate_global->__pyx_n_s_PC
 #define __pyx_n_s_POP __pyx_mstate_global->__pyx_n_s_POP
 #define __pyx_n_s_POPA __pyx_mstate_global->__pyx_n_s_POPA
 #define __pyx_n_s_PUSH __pyx_mstate_global->__pyx_n_s_PUSH
 #define __pyx_n_s_PUSHA __pyx_mstate_global->__pyx_n_s_PUSHA
 #define __pyx_n_s_Path __pyx_mstate_global->__pyx_n_s_Path
 #define __pyx_n_s_PickleError __pyx_mstate_global->__pyx_n_s_PickleError
+#define __pyx_kp_u_Program_Counter __pyx_mstate_global->__pyx_kp_u_Program_Counter
+#define __pyx_kp_u_Program_End __pyx_mstate_global->__pyx_kp_u_Program_End
+#define __pyx_kp_s_Program_Running __pyx_mstate_global->__pyx_kp_s_Program_Running
 #define __pyx_n_s_RDir __pyx_mstate_global->__pyx_n_s_RDir
 #define __pyx_n_s_RET __pyx_mstate_global->__pyx_n_s_RET
 #define __pyx_n_s_ROMFile __pyx_mstate_global->__pyx_n_s_ROMFile
-#define __pyx_kp_u_Rendered __pyx_mstate_global->__pyx_kp_u_Rendered
+#define __pyx_kp_u_Render_Count __pyx_mstate_global->__pyx_kp_u_Render_Count
 #define __pyx_n_s_Renderer __pyx_mstate_global->__pyx_n_s_Renderer
+#define __pyx_n_s_SDLK_BACKSPACE __pyx_mstate_global->__pyx_n_s_SDLK_BACKSPACE
+#define __pyx_n_s_SDLK_DOWN __pyx_mstate_global->__pyx_n_s_SDLK_DOWN
+#define __pyx_n_s_SDLK_ESCAPE __pyx_mstate_global->__pyx_n_s_SDLK_ESCAPE
+#define __pyx_n_s_SDLK_LEFT __pyx_mstate_global->__pyx_n_s_SDLK_LEFT
+#define __pyx_n_s_SDLK_RETURN __pyx_mstate_global->__pyx_n_s_SDLK_RETURN
+#define __pyx_n_s_SDLK_RIGHT __pyx_mstate_global->__pyx_n_s_SDLK_RIGHT
+#define __pyx_n_s_SDLK_UP __pyx_mstate_global->__pyx_n_s_SDLK_UP
+#define __pyx_n_s_SDLK_a __pyx_mstate_global->__pyx_n_s_SDLK_a
+#define __pyx_n_s_SDLK_d __pyx_mstate_global->__pyx_n_s_SDLK_d
+#define __pyx_n_s_SDLK_j __pyx_mstate_global->__pyx_n_s_SDLK_j
+#define __pyx_n_s_SDLK_k __pyx_mstate_global->__pyx_n_s_SDLK_k
+#define __pyx_n_s_SDLK_s __pyx_mstate_global->__pyx_n_s_SDLK_s
+#define __pyx_n_s_SDLK_w __pyx_mstate_global->__pyx_n_s_SDLK_w
+#define __pyx_n_s_SDLK_x __pyx_mstate_global->__pyx_n_s_SDLK_x
+#define __pyx_n_s_SDLK_z __pyx_mstate_global->__pyx_n_s_SDLK_z
+#define __pyx_n_s_SDL_KEYDOWN __pyx_mstate_global->__pyx_n_s_SDL_KEYDOWN
+#define __pyx_n_s_SDL_KEYUP __pyx_mstate_global->__pyx_n_s_SDL_KEYUP
+#define __pyx_n_s_SDL_QUIT __pyx_mstate_global->__pyx_n_s_SDL_QUIT
 #define __pyx_n_s_SHL __pyx_mstate_global->__pyx_n_s_SHL
 #define __pyx_n_s_SHR __pyx_mstate_global->__pyx_n_s_SHR
 #define __pyx_n_s_SLP __pyx_mstate_global->__pyx_n_s_SLP
-#define __pyx_kp_u_SP __pyx_mstate_global->__pyx_kp_u_SP
-#define __pyx_n_s_SP_2 __pyx_mstate_global->__pyx_n_s_SP_2
+#define __pyx_n_s_SP __pyx_mstate_global->__pyx_n_s_SP
 #define __pyx_n_s_ST __pyx_mstate_global->__pyx_n_s_ST
 #define __pyx_n_s_SUB __pyx_mstate_global->__pyx_n_s_SUB
-#define __pyx_kp_u_Stack __pyx_mstate_global->__pyx_kp_u_Stack
+#define __pyx_kp_u_Stack_Pointer __pyx_mstate_global->__pyx_kp_u_Stack_Pointer
+#define __pyx_kp_u_Ticks __pyx_mstate_global->__pyx_kp_u_Ticks
 #define __pyx_n_s_ValueError __pyx_mstate_global->__pyx_n_s_ValueError
+#define __pyx_kp_u_Variables __pyx_mstate_global->__pyx_kp_u_Variables
 #define __pyx_n_s_WAdr __pyx_mstate_global->__pyx_n_s_WAdr
 #define __pyx_n_s_WDir __pyx_mstate_global->__pyx_n_s_WDir
 #define __pyx_n_s_Window __pyx_mstate_global->__pyx_n_s_Window
 #define __pyx_n_s_XOR __pyx_mstate_global->__pyx_n_s_XOR
 #define __pyx_n_s_Z __pyx_mstate_global->__pyx_n_s_Z
-#define __pyx_kp_s__17 __pyx_mstate_global->__pyx_kp_s__17
-#define __pyx_kp_u__19 __pyx_mstate_global->__pyx_kp_u__19
 #define __pyx_kp_s__2 __pyx_mstate_global->__pyx_kp_s__2
-#define __pyx_n_s__20 __pyx_mstate_global->__pyx_n_s__20
-#define __pyx_n_s__51 __pyx_mstate_global->__pyx_n_s__51
+#define __pyx_kp_s__24 __pyx_mstate_global->__pyx_kp_s__24
+#define __pyx_kp_u__26 __pyx_mstate_global->__pyx_kp_u__26
+#define __pyx_n_s__27 __pyx_mstate_global->__pyx_n_s__27
+#define __pyx_n_s__59 __pyx_mstate_global->__pyx_n_s__59
+#define __pyx_kp_u__9 __pyx_mstate_global->__pyx_kp_u__9
 #define __pyx_n_s_alu __pyx_mstate_global->__pyx_n_s_alu
 #define __pyx_n_s_append __pyx_mstate_global->__pyx_n_s_append
 #define __pyx_n_s_asyncio_coroutines __pyx_mstate_global->__pyx_n_s_asyncio_coroutines
 #define __pyx_n_s_base __pyx_mstate_global->__pyx_n_s_base
 #define __pyx_n_s_call __pyx_mstate_global->__pyx_n_s_call
+#define __pyx_n_s_clear __pyx_mstate_global->__pyx_n_s_clear
 #define __pyx_n_s_cline_in_traceback __pyx_mstate_global->__pyx_n_s_cline_in_traceback
 #define __pyx_n_s_close __pyx_mstate_global->__pyx_n_s_close
 #define __pyx_n_s_curData __pyx_mstate_global->__pyx_n_s_curData
@@ -3740,15 +3948,20 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
 #define __pyx_n_s_fetch __pyx_mstate_global->__pyx_n_s_fetch
 #define __pyx_n_s_file __pyx_mstate_global->__pyx_n_s_file
 #define __pyx_kp_u_gc __pyx_mstate_global->__pyx_kp_u_gc
+#define __pyx_n_s_get_events __pyx_mstate_global->__pyx_n_s_get_events
 #define __pyx_n_s_getstate __pyx_mstate_global->__pyx_n_s_getstate
+#define __pyx_n_s_handleEvents __pyx_mstate_global->__pyx_n_s_handleEvents
 #define __pyx_n_s_import __pyx_mstate_global->__pyx_n_s_import
 #define __pyx_n_s_increment __pyx_mstate_global->__pyx_n_s_increment
 #define __pyx_n_s_init __pyx_mstate_global->__pyx_n_s_init
 #define __pyx_n_s_initializing __pyx_mstate_global->__pyx_n_s_initializing
 #define __pyx_kp_s_instructions_txt __pyx_mstate_global->__pyx_kp_s_instructions_txt
+#define __pyx_kp_u_into_memory __pyx_mstate_global->__pyx_kp_u_into_memory
 #define __pyx_n_s_is_coroutine __pyx_mstate_global->__pyx_n_s_is_coroutine
 #define __pyx_kp_u_isenabled __pyx_mstate_global->__pyx_kp_u_isenabled
 #define __pyx_n_s_jump __pyx_mstate_global->__pyx_n_s_jump
+#define __pyx_n_s_key __pyx_mstate_global->__pyx_n_s_key
+#define __pyx_n_s_keysym __pyx_mstate_global->__pyx_n_s_keysym
 #define __pyx_n_s_load __pyx_mstate_global->__pyx_n_s_load
 #define __pyx_n_s_location __pyx_mstate_global->__pyx_n_s_location
 #define __pyx_n_s_main __pyx_mstate_global->__pyx_n_s_main
@@ -3792,6 +4005,7 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
 #define __pyx_n_s_setstate __pyx_mstate_global->__pyx_n_s_setstate
 #define __pyx_n_s_setstate_cython __pyx_mstate_global->__pyx_n_s_setstate_cython
 #define __pyx_n_s_show __pyx_mstate_global->__pyx_n_s_show
+#define __pyx_n_s_sleep __pyx_mstate_global->__pyx_n_s_sleep
 #define __pyx_n_s_spec __pyx_mstate_global->__pyx_n_s_spec
 #define __pyx_n_s_split __pyx_mstate_global->__pyx_n_s_split
 #define __pyx_n_s_stackPointer __pyx_mstate_global->__pyx_n_s_stackPointer
@@ -3799,68 +4013,74 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
 #define __pyx_n_s_store __pyx_mstate_global->__pyx_n_s_store
 #define __pyx_kp_s_stringsource __pyx_mstate_global->__pyx_kp_s_stringsource
 #define __pyx_n_s_strip __pyx_mstate_global->__pyx_n_s_strip
+#define __pyx_n_s_sym __pyx_mstate_global->__pyx_n_s_sym
 #define __pyx_n_s_test __pyx_mstate_global->__pyx_n_s_test
 #define __pyx_n_s_time __pyx_mstate_global->__pyx_n_s_time
-#define __pyx_kp_u_times_in __pyx_mstate_global->__pyx_kp_u_times_in
+#define __pyx_n_s_type __pyx_mstate_global->__pyx_n_s_type
 #define __pyx_n_s_update __pyx_mstate_global->__pyx_n_s_update
 #define __pyx_n_s_use_setstate __pyx_mstate_global->__pyx_n_s_use_setstate
-#define __pyx_kp_u_variable __pyx_mstate_global->__pyx_kp_u_variable
 #define __pyx_n_s_writeAddress __pyx_mstate_global->__pyx_n_s_writeAddress
 #define __pyx_int_0 __pyx_mstate_global->__pyx_int_0
 #define __pyx_int_1 __pyx_mstate_global->__pyx_int_1
 #define __pyx_int_2 __pyx_mstate_global->__pyx_int_2
 #define __pyx_int_3 __pyx_mstate_global->__pyx_int_3
+#define __pyx_int_4 __pyx_mstate_global->__pyx_int_4
+#define __pyx_int_5 __pyx_mstate_global->__pyx_int_5
+#define __pyx_int_6 __pyx_mstate_global->__pyx_int_6
 #define __pyx_int_16 __pyx_mstate_global->__pyx_int_16
 #define __pyx_int_45 __pyx_mstate_global->__pyx_int_45
 #define __pyx_int_71 __pyx_mstate_global->__pyx_int_71
 #define __pyx_int_73 __pyx_mstate_global->__pyx_int_73
+#define __pyx_int_74 __pyx_mstate_global->__pyx_int_74
 #define __pyx_int_128 __pyx_mstate_global->__pyx_int_128
 #define __pyx_int_16394 __pyx_mstate_global->__pyx_int_16394
+#define __pyx_int_16395 __pyx_mstate_global->__pyx_int_16395
+#define __pyx_int_16396 __pyx_mstate_global->__pyx_int_16396
+#define __pyx_int_16397 __pyx_mstate_global->__pyx_int_16397
 #define __pyx_int_17408 __pyx_mstate_global->__pyx_int_17408
-#define __pyx_int_17414 __pyx_mstate_global->__pyx_int_17414
-#define __pyx_int_21504 __pyx_mstate_global->__pyx_int_21504
-#define __pyx_int_21510 __pyx_mstate_global->__pyx_int_21510
+#define __pyx_int_17423 __pyx_mstate_global->__pyx_int_17423
 #define __pyx_int_49152 __pyx_mstate_global->__pyx_int_49152
-#define __pyx_int_49158 __pyx_mstate_global->__pyx_int_49158
+#define __pyx_int_49167 __pyx_mstate_global->__pyx_int_49167
 #define __pyx_int_65535 __pyx_mstate_global->__pyx_int_65535
 #define __pyx_int_1481767 __pyx_mstate_global->__pyx_int_1481767
 #define __pyx_int_206723160 __pyx_mstate_global->__pyx_int_206723160
 #define __pyx_int_235959991 __pyx_mstate_global->__pyx_int_235959991
-#define __pyx_slice__6 __pyx_mstate_global->__pyx_slice__6
-#define __pyx_slice__7 __pyx_mstate_global->__pyx_slice__7
-#define __pyx_slice__8 __pyx_mstate_global->__pyx_slice__8
 #define __pyx_tuple__3 __pyx_mstate_global->__pyx_tuple__3
 #define __pyx_tuple__4 __pyx_mstate_global->__pyx_tuple__4
 #define __pyx_tuple__5 __pyx_mstate_global->__pyx_tuple__5
-#define __pyx_tuple__9 __pyx_mstate_global->__pyx_tuple__9
+#define __pyx_tuple__6 __pyx_mstate_global->__pyx_tuple__6
+#define __pyx_tuple__7 __pyx_mstate_global->__pyx_tuple__7
+#define __pyx_tuple__8 __pyx_mstate_global->__pyx_tuple__8
 #define __pyx_slice__10 __pyx_mstate_global->__pyx_slice__10
 #define __pyx_slice__11 __pyx_mstate_global->__pyx_slice__11
-#define __pyx_slice__12 __pyx_mstate_global->__pyx_slice__12
-#define __pyx_slice__13 __pyx_mstate_global->__pyx_slice__13
-#define __pyx_slice__14 __pyx_mstate_global->__pyx_slice__14
+#define __pyx_slice__17 __pyx_mstate_global->__pyx_slice__17
+#define __pyx_slice__18 __pyx_mstate_global->__pyx_slice__18
+#define __pyx_slice__19 __pyx_mstate_global->__pyx_slice__19
+#define __pyx_slice__20 __pyx_mstate_global->__pyx_slice__20
+#define __pyx_slice__21 __pyx_mstate_global->__pyx_slice__21
+#define __pyx_tuple__12 __pyx_mstate_global->__pyx_tuple__12
+#define __pyx_tuple__13 __pyx_mstate_global->__pyx_tuple__13
+#define __pyx_tuple__14 __pyx_mstate_global->__pyx_tuple__14
 #define __pyx_tuple__15 __pyx_mstate_global->__pyx_tuple__15
 #define __pyx_tuple__16 __pyx_mstate_global->__pyx_tuple__16
-#define __pyx_tuple__18 __pyx_mstate_global->__pyx_tuple__18
-#define __pyx_tuple__21 __pyx_mstate_global->__pyx_tuple__21
 #define __pyx_tuple__22 __pyx_mstate_global->__pyx_tuple__22
+#define __pyx_tuple__23 __pyx_mstate_global->__pyx_tuple__23
 #define __pyx_tuple__25 __pyx_mstate_global->__pyx_tuple__25
+#define __pyx_tuple__28 __pyx_mstate_global->__pyx_tuple__28
 #define __pyx_tuple__29 __pyx_mstate_global->__pyx_tuple__29
-#define __pyx_tuple__34 __pyx_mstate_global->__pyx_tuple__34
+#define __pyx_tuple__33 __pyx_mstate_global->__pyx_tuple__33
 #define __pyx_tuple__37 __pyx_mstate_global->__pyx_tuple__37
 #define __pyx_tuple__42 __pyx_mstate_global->__pyx_tuple__42
-#define __pyx_tuple__44 __pyx_mstate_global->__pyx_tuple__44
 #define __pyx_tuple__45 __pyx_mstate_global->__pyx_tuple__45
-#define __pyx_tuple__47 __pyx_mstate_global->__pyx_tuple__47
-#define __pyx_tuple__49 __pyx_mstate_global->__pyx_tuple__49
-#define __pyx_codeobj__23 __pyx_mstate_global->__pyx_codeobj__23
-#define __pyx_codeobj__24 __pyx_mstate_global->__pyx_codeobj__24
-#define __pyx_codeobj__26 __pyx_mstate_global->__pyx_codeobj__26
-#define __pyx_codeobj__27 __pyx_mstate_global->__pyx_codeobj__27
-#define __pyx_codeobj__28 __pyx_mstate_global->__pyx_codeobj__28
+#define __pyx_tuple__50 __pyx_mstate_global->__pyx_tuple__50
+#define __pyx_tuple__52 __pyx_mstate_global->__pyx_tuple__52
+#define __pyx_tuple__53 __pyx_mstate_global->__pyx_tuple__53
+#define __pyx_tuple__55 __pyx_mstate_global->__pyx_tuple__55
+#define __pyx_tuple__57 __pyx_mstate_global->__pyx_tuple__57
 #define __pyx_codeobj__30 __pyx_mstate_global->__pyx_codeobj__30
 #define __pyx_codeobj__31 __pyx_mstate_global->__pyx_codeobj__31
 #define __pyx_codeobj__32 __pyx_mstate_global->__pyx_codeobj__32
-#define __pyx_codeobj__33 __pyx_mstate_global->__pyx_codeobj__33
+#define __pyx_codeobj__34 __pyx_mstate_global->__pyx_codeobj__34
 #define __pyx_codeobj__35 __pyx_mstate_global->__pyx_codeobj__35
 #define __pyx_codeobj__36 __pyx_mstate_global->__pyx_codeobj__36
 #define __pyx_codeobj__38 __pyx_mstate_global->__pyx_codeobj__38
@@ -3868,9 +4088,15 @@ static int __pyx_m_traverse(PyObject *m, visitproc visit, void *arg) {
 #define __pyx_codeobj__40 __pyx_mstate_global->__pyx_codeobj__40
 #define __pyx_codeobj__41 __pyx_mstate_global->__pyx_codeobj__41
 #define __pyx_codeobj__43 __pyx_mstate_global->__pyx_codeobj__43
+#define __pyx_codeobj__44 __pyx_mstate_global->__pyx_codeobj__44
 #define __pyx_codeobj__46 __pyx_mstate_global->__pyx_codeobj__46
+#define __pyx_codeobj__47 __pyx_mstate_global->__pyx_codeobj__47
 #define __pyx_codeobj__48 __pyx_mstate_global->__pyx_codeobj__48
-#define __pyx_codeobj__50 __pyx_mstate_global->__pyx_codeobj__50
+#define __pyx_codeobj__49 __pyx_mstate_global->__pyx_codeobj__49
+#define __pyx_codeobj__51 __pyx_mstate_global->__pyx_codeobj__51
+#define __pyx_codeobj__54 __pyx_mstate_global->__pyx_codeobj__54
+#define __pyx_codeobj__56 __pyx_mstate_global->__pyx_codeobj__56
+#define __pyx_codeobj__58 __pyx_mstate_global->__pyx_codeobj__58
 /* #### Code section: module_code ### */
 
 /* "Micro80/CPU.py":21
@@ -3991,6 +4217,7 @@ static int __pyx_pf_7Micro80_3CPU_3CPU___init__(struct __pyx_obj_7Micro80_3CPU_C
   Py_ssize_t __pyx_t_6;
   PyObject *__pyx_t_7 = NULL;
   PyObject *__pyx_t_8 = NULL;
+  int __pyx_t_9;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -4591,7 +4818,7 @@ static int __pyx_pf_7Micro80_3CPU_3CPU___init__(struct __pyx_obj_7Micro80_3CPU_C
  *         self.render = sdl2.ext.Renderer(self.window)
  *         self.display = Display(self.memory, 0xC000, 0xFFFF, self.render, self.window)             # <<<<<<<<<<<<<<
  *         self.window.show()
- * 
+ *         print("CPU Initialized...")
  */
   __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_Display); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 47, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
@@ -4627,8 +4854,8 @@ static int __pyx_pf_7Micro80_3CPU_3CPU___init__(struct __pyx_obj_7Micro80_3CPU_C
  *         self.render = sdl2.ext.Renderer(self.window)
  *         self.display = Display(self.memory, 0xC000, 0xFFFF, self.render, self.window)
  *         self.window.show()             # <<<<<<<<<<<<<<
- * 
- *     def runProgram(self):
+ *         print("CPU Initialized...")
+ *         if self.debug:
  */
   __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->window, __pyx_n_s_show); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 48, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
@@ -4656,6 +4883,47 @@ static int __pyx_pf_7Micro80_3CPU_3CPU___init__(struct __pyx_obj_7Micro80_3CPU_C
   }
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
+  /* "Micro80/CPU.py":49
+ *         self.display = Display(self.memory, 0xC000, 0xFFFF, self.render, self.window)
+ *         self.window.show()
+ *         print("CPU Initialized...")             # <<<<<<<<<<<<<<
+ *         if self.debug:
+ *             print("Debug Mode Enabled...")
+ */
+  __pyx_t_4 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_tuple__5, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 49, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+
+  /* "Micro80/CPU.py":50
+ *         self.window.show()
+ *         print("CPU Initialized...")
+ *         if self.debug:             # <<<<<<<<<<<<<<
+ *             print("Debug Mode Enabled...")
+ * 
+ */
+  __pyx_t_9 = __Pyx_PyObject_IsTrue(__pyx_v_self->debug); if (unlikely((__pyx_t_9 < 0))) __PYX_ERR(0, 50, __pyx_L1_error)
+  if (__pyx_t_9) {
+
+    /* "Micro80/CPU.py":51
+ *         print("CPU Initialized...")
+ *         if self.debug:
+ *             print("Debug Mode Enabled...")             # <<<<<<<<<<<<<<
+ * 
+ *     def runProgram(self):
+ */
+    __pyx_t_4 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_tuple__6, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 51, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+
+    /* "Micro80/CPU.py":50
+ *         self.window.show()
+ *         print("CPU Initialized...")
+ *         if self.debug:             # <<<<<<<<<<<<<<
+ *             print("Debug Mode Enabled...")
+ * 
+ */
+  }
+
   /* "Micro80/CPU.py":21
  *     """The CPU class for the Micro80 Emulator"""
  * 
@@ -4682,8 +4950,8 @@ static int __pyx_pf_7Micro80_3CPU_3CPU___init__(struct __pyx_obj_7Micro80_3CPU_C
   return __pyx_r;
 }
 
-/* "Micro80/CPU.py":50
- *         self.window.show()
+/* "Micro80/CPU.py":53
+ *             print("Debug Mode Enabled...")
  * 
  *     def runProgram(self):             # <<<<<<<<<<<<<<
  *         "Runs the program stores in memory"
@@ -4701,6 +4969,8 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_runProgram(struct __pyx_obj_7Micro80
   PyObject *__pyx_v_debug = NULL;
   PyObject *__pyx_v_renderLocations = NULL;
   PyObject *__pyx_v_renderAmount = NULL;
+  PyObject *__pyx_v_ticks = NULL;
+  long __pyx_v_x;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -4709,9 +4979,12 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_runProgram(struct __pyx_obj_7Micro80
   PyObject *__pyx_t_4 = NULL;
   int __pyx_t_5;
   int __pyx_t_6;
-  int __pyx_t_7;
-  Py_ssize_t __pyx_t_8;
-  Py_UCS4 __pyx_t_9;
+  long __pyx_t_7;
+  PyObject *__pyx_t_8 = NULL;
+  PyObject *__pyx_t_9 = NULL;
+  int __pyx_t_10;
+  Py_ssize_t __pyx_t_11;
+  Py_UCS4 __pyx_t_12;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -4725,7 +4998,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_runProgram(struct __pyx_obj_7Micro80
     if (unlikely(!__Pyx_object_dict_version_matches(((PyObject *)__pyx_v_self), __pyx_tp_dict_version, __pyx_obj_dict_version))) {
       PY_UINT64_T __pyx_typedict_guard = __Pyx_get_tp_dict_version(((PyObject *)__pyx_v_self));
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_runProgram); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 50, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_runProgram); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 53, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       if (!__Pyx_IsSameCFunction(__pyx_t_1, (void*) __pyx_pw_7Micro80_3CPU_3CPU_3runProgram)) {
         __Pyx_XDECREF(__pyx_r);
@@ -4748,7 +5021,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_runProgram(struct __pyx_obj_7Micro80
           PyObject *__pyx_callargs[2] = {__pyx_t_4, NULL};
           __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_3, __pyx_callargs+1-__pyx_t_5, 0+__pyx_t_5);
           __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-          if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 50, __pyx_L1_error)
+          if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 53, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_2);
           __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
         }
@@ -4770,7 +5043,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_runProgram(struct __pyx_obj_7Micro80
     #endif
   }
 
-  /* "Micro80/CPU.py":52
+  /* "Micro80/CPU.py":55
  *     def runProgram(self):
  *         "Runs the program stores in memory"
  *         debug = self.debug             # <<<<<<<<<<<<<<
@@ -4782,48 +5055,249 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_runProgram(struct __pyx_obj_7Micro80
   __pyx_v_debug = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "Micro80/CPU.py":53
+  /* "Micro80/CPU.py":56
  *         "Runs the program stores in memory"
  *         debug = self.debug
  *         renderLocations = []             # <<<<<<<<<<<<<<
  *         renderAmount = 0
- *         self.jumpCount = 0
+ *         ticks = 0
  */
-  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 53, __pyx_L1_error)
+  __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 56, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_renderLocations = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "Micro80/CPU.py":54
+  /* "Micro80/CPU.py":57
  *         debug = self.debug
  *         renderLocations = []
  *         renderAmount = 0             # <<<<<<<<<<<<<<
+ *         ticks = 0
  *         self.jumpCount = 0
- *         while self.memory.readAddress(self.RunStatus) == 0x0000:
  */
   __Pyx_INCREF(__pyx_int_0);
   __pyx_v_renderAmount = __pyx_int_0;
 
-  /* "Micro80/CPU.py":55
+  /* "Micro80/CPU.py":58
  *         renderLocations = []
  *         renderAmount = 0
+ *         ticks = 0             # <<<<<<<<<<<<<<
+ *         self.jumpCount = 0
+ *         if self.debug:
+ */
+  __Pyx_INCREF(__pyx_int_0);
+  __pyx_v_ticks = __pyx_int_0;
+
+  /* "Micro80/CPU.py":59
+ *         renderAmount = 0
+ *         ticks = 0
  *         self.jumpCount = 0             # <<<<<<<<<<<<<<
- *         while self.memory.readAddress(self.RunStatus) == 0x0000:
- *             if self.sleepTimer != 0:
+ *         if self.debug:
+ *             for x in range(0x0000, 0x003F):
  */
   __pyx_v_self->jumpCount = 0;
 
-  /* "Micro80/CPU.py":56
- *         renderAmount = 0
+  /* "Micro80/CPU.py":60
+ *         ticks = 0
  *         self.jumpCount = 0
+ *         if self.debug:             # <<<<<<<<<<<<<<
+ *             for x in range(0x0000, 0x003F):
+ *                 (
+ */
+  __pyx_t_6 = __Pyx_PyObject_IsTrue(__pyx_v_self->debug); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 60, __pyx_L1_error)
+  if (__pyx_t_6) {
+
+    /* "Micro80/CPU.py":61
+ *         self.jumpCount = 0
+ *         if self.debug:
+ *             for x in range(0x0000, 0x003F):             # <<<<<<<<<<<<<<
+ *                 (
+ *                     print(x, self.instructions[self.memory.readAddress(x)])
+ */
+    for (__pyx_t_7 = 0x0000; __pyx_t_7 < 0x003F; __pyx_t_7+=1) {
+      __pyx_v_x = __pyx_t_7;
+
+      /* "Micro80/CPU.py":64
+ *                 (
+ *                     print(x, self.instructions[self.memory.readAddress(x)])
+ *                     if self.memory.readAddress(x) <= 0x004A             # <<<<<<<<<<<<<<
+ *                     else print(x, self.memory.readAddress(x))
+ *                 )
+ */
+      __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 64, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_3);
+      __pyx_t_4 = __Pyx_PyInt_From_long(__pyx_v_x); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 64, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_4);
+      __pyx_t_8 = NULL;
+      __pyx_t_5 = 0;
+      #if CYTHON_UNPACK_METHODS
+      if (likely(PyMethod_Check(__pyx_t_3))) {
+        __pyx_t_8 = PyMethod_GET_SELF(__pyx_t_3);
+        if (likely(__pyx_t_8)) {
+          PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
+          __Pyx_INCREF(__pyx_t_8);
+          __Pyx_INCREF(function);
+          __Pyx_DECREF_SET(__pyx_t_3, function);
+          __pyx_t_5 = 1;
+        }
+      }
+      #endif
+      {
+        PyObject *__pyx_callargs[2] = {__pyx_t_8, __pyx_t_4};
+        __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_3, __pyx_callargs+1-__pyx_t_5, 1+__pyx_t_5);
+        __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
+        __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 64, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_2);
+        __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+      }
+      __pyx_t_3 = PyObject_RichCompare(__pyx_t_2, __pyx_int_74, Py_LE); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 64, __pyx_L1_error)
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __pyx_t_6 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 64, __pyx_L1_error)
+      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+      if (__pyx_t_6) {
+
+        /* "Micro80/CPU.py":63
+ *             for x in range(0x0000, 0x003F):
+ *                 (
+ *                     print(x, self.instructions[self.memory.readAddress(x)])             # <<<<<<<<<<<<<<
+ *                     if self.memory.readAddress(x) <= 0x004A
+ *                     else print(x, self.memory.readAddress(x))
+ */
+        __pyx_t_3 = __Pyx_PyInt_From_long(__pyx_v_x); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 63, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_3);
+        if (unlikely(__pyx_v_self->instructions == Py_None)) {
+          PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
+          __PYX_ERR(0, 63, __pyx_L1_error)
+        }
+        __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 63, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_4);
+        __pyx_t_8 = __Pyx_PyInt_From_long(__pyx_v_x); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 63, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_8);
+        __pyx_t_9 = NULL;
+        __pyx_t_5 = 0;
+        #if CYTHON_UNPACK_METHODS
+        if (likely(PyMethod_Check(__pyx_t_4))) {
+          __pyx_t_9 = PyMethod_GET_SELF(__pyx_t_4);
+          if (likely(__pyx_t_9)) {
+            PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_4);
+            __Pyx_INCREF(__pyx_t_9);
+            __Pyx_INCREF(function);
+            __Pyx_DECREF_SET(__pyx_t_4, function);
+            __pyx_t_5 = 1;
+          }
+        }
+        #endif
+        {
+          PyObject *__pyx_callargs[2] = {__pyx_t_9, __pyx_t_8};
+          __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_4, __pyx_callargs+1-__pyx_t_5, 1+__pyx_t_5);
+          __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
+          __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
+          if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 63, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_2);
+          __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+        }
+        __pyx_t_4 = __Pyx_PyDict_GetItem(__pyx_v_self->instructions, __pyx_t_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 63, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_4);
+        __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+        __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 63, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_2);
+        __Pyx_GIVEREF(__pyx_t_3);
+        if (__Pyx_PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_3)) __PYX_ERR(0, 63, __pyx_L1_error);
+        __Pyx_GIVEREF(__pyx_t_4);
+        if (__Pyx_PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_t_4)) __PYX_ERR(0, 63, __pyx_L1_error);
+        __pyx_t_3 = 0;
+        __pyx_t_4 = 0;
+        __pyx_t_4 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_t_2, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 63, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_4);
+        __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+        __pyx_t_1 = __pyx_t_4;
+        __pyx_t_4 = 0;
+      } else {
+
+        /* "Micro80/CPU.py":65
+ *                     print(x, self.instructions[self.memory.readAddress(x)])
+ *                     if self.memory.readAddress(x) <= 0x004A
+ *                     else print(x, self.memory.readAddress(x))             # <<<<<<<<<<<<<<
+ *                 )
+ *         print("Program Running....")
+ */
+        __pyx_t_4 = __Pyx_PyInt_From_long(__pyx_v_x); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 65, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_4);
+        __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 65, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_3);
+        __pyx_t_8 = __Pyx_PyInt_From_long(__pyx_v_x); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 65, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_8);
+        __pyx_t_9 = NULL;
+        __pyx_t_5 = 0;
+        #if CYTHON_UNPACK_METHODS
+        if (likely(PyMethod_Check(__pyx_t_3))) {
+          __pyx_t_9 = PyMethod_GET_SELF(__pyx_t_3);
+          if (likely(__pyx_t_9)) {
+            PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
+            __Pyx_INCREF(__pyx_t_9);
+            __Pyx_INCREF(function);
+            __Pyx_DECREF_SET(__pyx_t_3, function);
+            __pyx_t_5 = 1;
+          }
+        }
+        #endif
+        {
+          PyObject *__pyx_callargs[2] = {__pyx_t_9, __pyx_t_8};
+          __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_3, __pyx_callargs+1-__pyx_t_5, 1+__pyx_t_5);
+          __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
+          __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
+          if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 65, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_2);
+          __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+        }
+        __pyx_t_3 = PyTuple_New(2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 65, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_3);
+        __Pyx_GIVEREF(__pyx_t_4);
+        if (__Pyx_PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_4)) __PYX_ERR(0, 65, __pyx_L1_error);
+        __Pyx_GIVEREF(__pyx_t_2);
+        if (__Pyx_PyTuple_SET_ITEM(__pyx_t_3, 1, __pyx_t_2)) __PYX_ERR(0, 65, __pyx_L1_error);
+        __pyx_t_4 = 0;
+        __pyx_t_2 = 0;
+        __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_t_3, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 65, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_2);
+        __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+        __pyx_t_1 = __pyx_t_2;
+        __pyx_t_2 = 0;
+      }
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    }
+
+    /* "Micro80/CPU.py":60
+ *         ticks = 0
+ *         self.jumpCount = 0
+ *         if self.debug:             # <<<<<<<<<<<<<<
+ *             for x in range(0x0000, 0x003F):
+ *                 (
+ */
+  }
+
+  /* "Micro80/CPU.py":67
+ *                     else print(x, self.memory.readAddress(x))
+ *                 )
+ *         print("Program Running....")             # <<<<<<<<<<<<<<
+ *         while self.memory.readAddress(self.RunStatus) == 0x0000:
+ *             if self.sleepTimer != 0:
+ */
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_tuple__7, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 67, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+  /* "Micro80/CPU.py":68
+ *                 )
+ *         print("Program Running....")
  *         while self.memory.readAddress(self.RunStatus) == 0x0000:             # <<<<<<<<<<<<<<
  *             if self.sleepTimer != 0:
  *                 self.sleepTimer -= 1
  */
   while (1) {
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 56, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 68, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_self->RunStatus); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 56, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_self->RunStatus); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 68, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __pyx_t_4 = NULL;
     __pyx_t_5 = 0;
@@ -4844,16 +5318,16 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_runProgram(struct __pyx_obj_7Micro80
       __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_2, __pyx_callargs+1-__pyx_t_5, 1+__pyx_t_5);
       __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 56, __pyx_L1_error)
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 68, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     }
-    __pyx_t_6 = (__Pyx_PyInt_BoolEqObjC(__pyx_t_1, __pyx_int_0, 0x0000, 0)); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 56, __pyx_L1_error)
+    __pyx_t_6 = (__Pyx_PyInt_BoolEqObjC(__pyx_t_1, __pyx_int_0, 0x0000, 0)); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 68, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     if (!__pyx_t_6) break;
 
-    /* "Micro80/CPU.py":57
- *         self.jumpCount = 0
+    /* "Micro80/CPU.py":69
+ *         print("Program Running....")
  *         while self.memory.readAddress(self.RunStatus) == 0x0000:
  *             if self.sleepTimer != 0:             # <<<<<<<<<<<<<<
  *                 self.sleepTimer -= 1
@@ -4862,26 +5336,26 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_runProgram(struct __pyx_obj_7Micro80
     __pyx_t_6 = (__pyx_v_self->sleepTimer != 0);
     if (__pyx_t_6) {
 
-      /* "Micro80/CPU.py":58
+      /* "Micro80/CPU.py":70
  *         while self.memory.readAddress(self.RunStatus) == 0x0000:
  *             if self.sleepTimer != 0:
  *                 self.sleepTimer -= 1             # <<<<<<<<<<<<<<
  *                 continue
- *             self.fetch()
+ *             self._handleEvents()
  */
       __pyx_v_self->sleepTimer = (__pyx_v_self->sleepTimer - 1);
 
-      /* "Micro80/CPU.py":59
+      /* "Micro80/CPU.py":71
  *             if self.sleepTimer != 0:
  *                 self.sleepTimer -= 1
  *                 continue             # <<<<<<<<<<<<<<
+ *             self._handleEvents()
  *             self.fetch()
- *             self.execute(self.curOpcode, self.curOperand)
  */
-      goto __pyx_L3_continue;
+      goto __pyx_L6_continue;
 
-      /* "Micro80/CPU.py":57
- *         self.jumpCount = 0
+      /* "Micro80/CPU.py":69
+ *         print("Program Running....")
  *         while self.memory.readAddress(self.RunStatus) == 0x0000:
  *             if self.sleepTimer != 0:             # <<<<<<<<<<<<<<
  *                 self.sleepTimer -= 1
@@ -4889,40 +5363,51 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_runProgram(struct __pyx_obj_7Micro80
  */
     }
 
-    /* "Micro80/CPU.py":60
+    /* "Micro80/CPU.py":72
  *                 self.sleepTimer -= 1
  *                 continue
+ *             self._handleEvents()             # <<<<<<<<<<<<<<
+ *             self.fetch()
+ *             self.execute(self.curOpcode, self.curOperand)
+ */
+    __pyx_t_1 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->_handleEvents(__pyx_v_self, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 72, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+    /* "Micro80/CPU.py":73
+ *                 continue
+ *             self._handleEvents()
  *             self.fetch()             # <<<<<<<<<<<<<<
  *             self.execute(self.curOpcode, self.curOperand)
  *             if self.memory.readAddress(0x400A) == 1:
  */
-    __pyx_t_1 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->fetch(__pyx_v_self, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 60, __pyx_L1_error)
+    __pyx_t_1 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->fetch(__pyx_v_self, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 73, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "Micro80/CPU.py":61
- *                 continue
+    /* "Micro80/CPU.py":74
+ *             self._handleEvents()
  *             self.fetch()
  *             self.execute(self.curOpcode, self.curOperand)             # <<<<<<<<<<<<<<
  *             if self.memory.readAddress(0x400A) == 1:
  *                 self.display.render()
  */
-    __pyx_t_5 = __Pyx_PyInt_As_int(__pyx_v_self->curOpcode); if (unlikely((__pyx_t_5 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 61, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyInt_As_int(__pyx_v_self->curOpcode); if (unlikely((__pyx_t_5 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 74, __pyx_L1_error)
     __pyx_t_1 = __pyx_v_self->curOperand;
     __Pyx_INCREF(__pyx_t_1);
-    __pyx_t_2 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->execute(__pyx_v_self, __pyx_t_5, __pyx_t_1, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 61, __pyx_L1_error)
+    __pyx_t_2 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->execute(__pyx_v_self, __pyx_t_5, __pyx_t_1, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 74, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "Micro80/CPU.py":62
+    /* "Micro80/CPU.py":75
  *             self.fetch()
  *             self.execute(self.curOpcode, self.curOperand)
  *             if self.memory.readAddress(0x400A) == 1:             # <<<<<<<<<<<<<<
  *                 self.display.render()
  *                 self.render.present()
  */
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 62, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 75, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __pyx_t_3 = NULL;
     __pyx_t_5 = 0;
@@ -4942,22 +5427,22 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_runProgram(struct __pyx_obj_7Micro80
       PyObject *__pyx_callargs[2] = {__pyx_t_3, __pyx_int_16394};
       __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_1, __pyx_callargs+1-__pyx_t_5, 1+__pyx_t_5);
       __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 62, __pyx_L1_error)
+      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 75, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     }
-    __pyx_t_6 = (__Pyx_PyInt_BoolEqObjC(__pyx_t_2, __pyx_int_1, 1, 0)); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 62, __pyx_L1_error)
+    __pyx_t_6 = (__Pyx_PyInt_BoolEqObjC(__pyx_t_2, __pyx_int_1, 1, 0)); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 75, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     if (__pyx_t_6) {
 
-      /* "Micro80/CPU.py":63
+      /* "Micro80/CPU.py":76
  *             self.execute(self.curOpcode, self.curOperand)
  *             if self.memory.readAddress(0x400A) == 1:
  *                 self.display.render()             # <<<<<<<<<<<<<<
  *                 self.render.present()
  *                 self.window.refresh()
  */
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->display, __pyx_n_s_render); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 63, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->display, __pyx_n_s_render); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 76, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __pyx_t_3 = NULL;
       __pyx_t_5 = 0;
@@ -4977,20 +5462,20 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_runProgram(struct __pyx_obj_7Micro80
         PyObject *__pyx_callargs[2] = {__pyx_t_3, NULL};
         __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_1, __pyx_callargs+1-__pyx_t_5, 0+__pyx_t_5);
         __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 63, __pyx_L1_error)
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 76, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
       }
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-      /* "Micro80/CPU.py":64
+      /* "Micro80/CPU.py":77
  *             if self.memory.readAddress(0x400A) == 1:
  *                 self.display.render()
  *                 self.render.present()             # <<<<<<<<<<<<<<
  *                 self.window.refresh()
  *                 self.memory.writeAddress(0x400A, 0)
  */
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->render, __pyx_n_s_present); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 64, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->render, __pyx_n_s_present); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 77, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __pyx_t_3 = NULL;
       __pyx_t_5 = 0;
@@ -5010,20 +5495,20 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_runProgram(struct __pyx_obj_7Micro80
         PyObject *__pyx_callargs[2] = {__pyx_t_3, NULL};
         __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_1, __pyx_callargs+1-__pyx_t_5, 0+__pyx_t_5);
         __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 64, __pyx_L1_error)
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 77, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
       }
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-      /* "Micro80/CPU.py":65
+      /* "Micro80/CPU.py":78
  *                 self.display.render()
  *                 self.render.present()
  *                 self.window.refresh()             # <<<<<<<<<<<<<<
  *                 self.memory.writeAddress(0x400A, 0)
  *                 renderLocations.append(self.programCounter)
  */
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->window, __pyx_n_s_refresh); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 65, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->window, __pyx_n_s_refresh); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 78, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __pyx_t_3 = NULL;
       __pyx_t_5 = 0;
@@ -5043,51 +5528,51 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_runProgram(struct __pyx_obj_7Micro80
         PyObject *__pyx_callargs[2] = {__pyx_t_3, NULL};
         __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_1, __pyx_callargs+1-__pyx_t_5, 0+__pyx_t_5);
         __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 65, __pyx_L1_error)
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 78, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
       }
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-      /* "Micro80/CPU.py":66
+      /* "Micro80/CPU.py":79
  *                 self.render.present()
  *                 self.window.refresh()
  *                 self.memory.writeAddress(0x400A, 0)             # <<<<<<<<<<<<<<
  *                 renderLocations.append(self.programCounter)
  *                 renderAmount += 1
  */
-      __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_writeAddress); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 66, __pyx_L1_error)
+      __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_writeAddress); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 79, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_tuple__5, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 66, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_tuple__8, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 79, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "Micro80/CPU.py":67
+      /* "Micro80/CPU.py":80
  *                 self.window.refresh()
  *                 self.memory.writeAddress(0x400A, 0)
  *                 renderLocations.append(self.programCounter)             # <<<<<<<<<<<<<<
  *                 renderAmount += 1
- *             if debug:
+ *             ticks += 1
  */
-      __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->programCounter); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 67, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->programCounter); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 80, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_7 = __Pyx_PyList_Append(__pyx_v_renderLocations, __pyx_t_1); if (unlikely(__pyx_t_7 == ((int)-1))) __PYX_ERR(0, 67, __pyx_L1_error)
+      __pyx_t_10 = __Pyx_PyList_Append(__pyx_v_renderLocations, __pyx_t_1); if (unlikely(__pyx_t_10 == ((int)-1))) __PYX_ERR(0, 80, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "Micro80/CPU.py":68
+      /* "Micro80/CPU.py":81
  *                 self.memory.writeAddress(0x400A, 0)
  *                 renderLocations.append(self.programCounter)
  *                 renderAmount += 1             # <<<<<<<<<<<<<<
- *             if debug:
- *                 print(
+ *             ticks += 1
+ *         if debug:
  */
-      __pyx_t_1 = __Pyx_PyInt_AddObjC(__pyx_v_renderAmount, __pyx_int_1, 1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 68, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyInt_AddObjC(__pyx_v_renderAmount, __pyx_int_1, 1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 81, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF_SET(__pyx_v_renderAmount, __pyx_t_1);
       __pyx_t_1 = 0;
 
-      /* "Micro80/CPU.py":62
+      /* "Micro80/CPU.py":75
  *             self.fetch()
  *             self.execute(self.curOpcode, self.curOperand)
  *             if self.memory.readAddress(0x400A) == 1:             # <<<<<<<<<<<<<<
@@ -5096,341 +5581,471 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_runProgram(struct __pyx_obj_7Micro80
  */
     }
 
-    /* "Micro80/CPU.py":69
+    /* "Micro80/CPU.py":82
  *                 renderLocations.append(self.programCounter)
  *                 renderAmount += 1
- *             if debug:             # <<<<<<<<<<<<<<
- *                 print(
- *                     f"Current Opcode: {self.curOpcode}, Current Operand: {self.curOperand}"
- */
-    __pyx_t_6 = __Pyx_PyObject_IsTrue(__pyx_v_debug); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 69, __pyx_L1_error)
-    if (__pyx_t_6) {
-
-      /* "Micro80/CPU.py":71
- *             if debug:
- *                 print(
- *                     f"Current Opcode: {self.curOpcode}, Current Operand: {self.curOperand}"             # <<<<<<<<<<<<<<
- *                 )
- *                 print(
- */
-      __pyx_t_1 = PyTuple_New(4); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 71, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_8 = 0;
-      __pyx_t_9 = 127;
-      __Pyx_INCREF(__pyx_kp_u_Current_Opcode);
-      __pyx_t_8 += 16;
-      __Pyx_GIVEREF(__pyx_kp_u_Current_Opcode);
-      PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_kp_u_Current_Opcode);
-      __pyx_t_2 = __Pyx_PyObject_FormatSimple(__pyx_v_self->curOpcode, __pyx_empty_unicode); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 71, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_9 = (__Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_2) > __pyx_t_9) ? __Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_2) : __pyx_t_9;
-      __pyx_t_8 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_2);
-      __Pyx_GIVEREF(__pyx_t_2);
-      PyTuple_SET_ITEM(__pyx_t_1, 1, __pyx_t_2);
-      __pyx_t_2 = 0;
-      __Pyx_INCREF(__pyx_kp_u_Current_Operand);
-      __pyx_t_8 += 19;
-      __Pyx_GIVEREF(__pyx_kp_u_Current_Operand);
-      PyTuple_SET_ITEM(__pyx_t_1, 2, __pyx_kp_u_Current_Operand);
-      __pyx_t_2 = __Pyx_PyObject_FormatSimple(__pyx_v_self->curOperand, __pyx_empty_unicode); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 71, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_9 = (__Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_2) > __pyx_t_9) ? __Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_2) : __pyx_t_9;
-      __pyx_t_8 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_2);
-      __Pyx_GIVEREF(__pyx_t_2);
-      PyTuple_SET_ITEM(__pyx_t_1, 3, __pyx_t_2);
-      __pyx_t_2 = 0;
-      __pyx_t_2 = __Pyx_PyUnicode_Join(__pyx_t_1, 4, __pyx_t_8, __pyx_t_9); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 71, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_2);
-      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-
-      /* "Micro80/CPU.py":70
- *                 renderAmount += 1
- *             if debug:
- *                 print(             # <<<<<<<<<<<<<<
- *                     f"Current Opcode: {self.curOpcode}, Current Operand: {self.curOperand}"
- *                 )
- */
-      __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_builtin_print, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 70, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_1);
-      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-
-      /* "Micro80/CPU.py":74
- *                 )
- *                 print(
- *                     f"PC: {self.programCounter}, SP: {self.stackPointer}, A: {self.A}, B: {self.B}, C: {self.C}, D: {self.D}, E: {self.E}, F: {self.F}, Ad: {self.adr}"             # <<<<<<<<<<<<<<
- *                 )
- *                 print(f"variable:\n{self.memory.memory[0x4400:0x4406]}")
- */
-      __pyx_t_1 = PyTuple_New(18); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 74, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_8 = 0;
-      __pyx_t_9 = 127;
-      __Pyx_INCREF(__pyx_kp_u_PC);
-      __pyx_t_8 += 4;
-      __Pyx_GIVEREF(__pyx_kp_u_PC);
-      PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_kp_u_PC);
-      __pyx_t_2 = __Pyx_PyUnicode_From_int(__pyx_v_self->programCounter, 0, ' ', 'd'); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 74, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_8 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_2);
-      __Pyx_GIVEREF(__pyx_t_2);
-      PyTuple_SET_ITEM(__pyx_t_1, 1, __pyx_t_2);
-      __pyx_t_2 = 0;
-      __Pyx_INCREF(__pyx_kp_u_SP);
-      __pyx_t_8 += 6;
-      __Pyx_GIVEREF(__pyx_kp_u_SP);
-      PyTuple_SET_ITEM(__pyx_t_1, 2, __pyx_kp_u_SP);
-      __pyx_t_2 = __Pyx_PyUnicode_From_int(__pyx_v_self->stackPointer, 0, ' ', 'd'); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 74, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_8 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_2);
-      __Pyx_GIVEREF(__pyx_t_2);
-      PyTuple_SET_ITEM(__pyx_t_1, 3, __pyx_t_2);
-      __pyx_t_2 = 0;
-      __Pyx_INCREF(__pyx_kp_u_A);
-      __pyx_t_8 += 5;
-      __Pyx_GIVEREF(__pyx_kp_u_A);
-      PyTuple_SET_ITEM(__pyx_t_1, 4, __pyx_kp_u_A);
-      __pyx_t_2 = __Pyx_PyUnicode_From_int(__pyx_v_self->A, 0, ' ', 'd'); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 74, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_8 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_2);
-      __Pyx_GIVEREF(__pyx_t_2);
-      PyTuple_SET_ITEM(__pyx_t_1, 5, __pyx_t_2);
-      __pyx_t_2 = 0;
-      __Pyx_INCREF(__pyx_kp_u_B);
-      __pyx_t_8 += 5;
-      __Pyx_GIVEREF(__pyx_kp_u_B);
-      PyTuple_SET_ITEM(__pyx_t_1, 6, __pyx_kp_u_B);
-      __pyx_t_2 = __Pyx_PyUnicode_From_int(__pyx_v_self->B, 0, ' ', 'd'); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 74, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_8 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_2);
-      __Pyx_GIVEREF(__pyx_t_2);
-      PyTuple_SET_ITEM(__pyx_t_1, 7, __pyx_t_2);
-      __pyx_t_2 = 0;
-      __Pyx_INCREF(__pyx_kp_u_C);
-      __pyx_t_8 += 5;
-      __Pyx_GIVEREF(__pyx_kp_u_C);
-      PyTuple_SET_ITEM(__pyx_t_1, 8, __pyx_kp_u_C);
-      __pyx_t_2 = __Pyx_PyUnicode_From_int(__pyx_v_self->C, 0, ' ', 'd'); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 74, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_8 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_2);
-      __Pyx_GIVEREF(__pyx_t_2);
-      PyTuple_SET_ITEM(__pyx_t_1, 9, __pyx_t_2);
-      __pyx_t_2 = 0;
-      __Pyx_INCREF(__pyx_kp_u_D);
-      __pyx_t_8 += 5;
-      __Pyx_GIVEREF(__pyx_kp_u_D);
-      PyTuple_SET_ITEM(__pyx_t_1, 10, __pyx_kp_u_D);
-      __pyx_t_2 = __Pyx_PyUnicode_From_int(__pyx_v_self->D, 0, ' ', 'd'); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 74, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_8 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_2);
-      __Pyx_GIVEREF(__pyx_t_2);
-      PyTuple_SET_ITEM(__pyx_t_1, 11, __pyx_t_2);
-      __pyx_t_2 = 0;
-      __Pyx_INCREF(__pyx_kp_u_E);
-      __pyx_t_8 += 5;
-      __Pyx_GIVEREF(__pyx_kp_u_E);
-      PyTuple_SET_ITEM(__pyx_t_1, 12, __pyx_kp_u_E);
-      __pyx_t_2 = __Pyx_PyUnicode_From_int(__pyx_v_self->E, 0, ' ', 'd'); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 74, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_8 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_2);
-      __Pyx_GIVEREF(__pyx_t_2);
-      PyTuple_SET_ITEM(__pyx_t_1, 13, __pyx_t_2);
-      __pyx_t_2 = 0;
-      __Pyx_INCREF(__pyx_kp_u_F);
-      __pyx_t_8 += 5;
-      __Pyx_GIVEREF(__pyx_kp_u_F);
-      PyTuple_SET_ITEM(__pyx_t_1, 14, __pyx_kp_u_F);
-      __pyx_t_2 = __Pyx_PyUnicode_From_int(__pyx_v_self->F, 0, ' ', 'd'); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 74, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_8 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_2);
-      __Pyx_GIVEREF(__pyx_t_2);
-      PyTuple_SET_ITEM(__pyx_t_1, 15, __pyx_t_2);
-      __pyx_t_2 = 0;
-      __Pyx_INCREF(__pyx_kp_u_Ad);
-      __pyx_t_8 += 6;
-      __Pyx_GIVEREF(__pyx_kp_u_Ad);
-      PyTuple_SET_ITEM(__pyx_t_1, 16, __pyx_kp_u_Ad);
-      __pyx_t_2 = __Pyx_PyUnicode_From_int(__pyx_v_self->adr, 0, ' ', 'd'); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 74, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_8 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_2);
-      __Pyx_GIVEREF(__pyx_t_2);
-      PyTuple_SET_ITEM(__pyx_t_1, 17, __pyx_t_2);
-      __pyx_t_2 = 0;
-      __pyx_t_2 = __Pyx_PyUnicode_Join(__pyx_t_1, 18, __pyx_t_8, __pyx_t_9); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 74, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_2);
-      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-
-      /* "Micro80/CPU.py":73
- *                     f"Current Opcode: {self.curOpcode}, Current Operand: {self.curOperand}"
- *                 )
- *                 print(             # <<<<<<<<<<<<<<
- *                     f"PC: {self.programCounter}, SP: {self.stackPointer}, A: {self.A}, B: {self.B}, C: {self.C}, D: {self.D}, E: {self.E}, F: {self.F}, Ad: {self.adr}"
- *                 )
- */
-      __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_builtin_print, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 73, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_1);
-      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-
-      /* "Micro80/CPU.py":76
- *                     f"PC: {self.programCounter}, SP: {self.stackPointer}, A: {self.A}, B: {self.B}, C: {self.C}, D: {self.D}, E: {self.E}, F: {self.F}, Ad: {self.adr}"
- *                 )
- *                 print(f"variable:\n{self.memory.memory[0x4400:0x4406]}")             # <<<<<<<<<<<<<<
- *                 print(f"Stack: {self.memory.memory[0x5400:0x5406]}")
- *                 print(f"Display: {self.memory.memory[0xC000:0xC006]}")
- */
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_memory); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 76, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_2 = __Pyx_PyObject_GetSlice(__pyx_t_1, 0x4400, 0x4406, NULL, NULL, &__pyx_slice__6, 1, 1, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 76, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_2);
-      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      __pyx_t_1 = __Pyx_PyObject_FormatSimple(__pyx_t_2, __pyx_empty_unicode); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 76, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_1);
-      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-      __pyx_t_2 = __Pyx_PyUnicode_Concat(__pyx_kp_u_variable, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 76, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_2);
-      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_builtin_print, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 76, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_1);
-      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-
-      /* "Micro80/CPU.py":77
- *                 )
- *                 print(f"variable:\n{self.memory.memory[0x4400:0x4406]}")
- *                 print(f"Stack: {self.memory.memory[0x5400:0x5406]}")             # <<<<<<<<<<<<<<
- *                 print(f"Display: {self.memory.memory[0xC000:0xC006]}")
- *                 print(f"Jump Count: {self.jumpCount}")
- */
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_memory); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 77, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_2 = __Pyx_PyObject_GetSlice(__pyx_t_1, 0x5400, 0x5406, NULL, NULL, &__pyx_slice__7, 1, 1, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 77, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_2);
-      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      __pyx_t_1 = __Pyx_PyObject_FormatSimple(__pyx_t_2, __pyx_empty_unicode); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 77, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_1);
-      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-      __pyx_t_2 = __Pyx_PyUnicode_Concat(__pyx_kp_u_Stack, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 77, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_2);
-      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_builtin_print, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 77, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_1);
-      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-
-      /* "Micro80/CPU.py":78
- *                 print(f"variable:\n{self.memory.memory[0x4400:0x4406]}")
- *                 print(f"Stack: {self.memory.memory[0x5400:0x5406]}")
- *                 print(f"Display: {self.memory.memory[0xC000:0xC006]}")             # <<<<<<<<<<<<<<
- *                 print(f"Jump Count: {self.jumpCount}")
+ *             ticks += 1             # <<<<<<<<<<<<<<
  *         if debug:
+ *             print(f"Jump Count: {self.jumpCount}")
  */
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_memory); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 78, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_2 = __Pyx_PyObject_GetSlice(__pyx_t_1, 0xC000, 0xC006, NULL, NULL, &__pyx_slice__8, 1, 1, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 78, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_2);
-      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      __pyx_t_1 = __Pyx_PyObject_FormatSimple(__pyx_t_2, __pyx_empty_unicode); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 78, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_1);
-      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-      __pyx_t_2 = __Pyx_PyUnicode_Concat(__pyx_kp_u_Display_2, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 78, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_2);
-      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_builtin_print, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 78, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_1);
-      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-
-      /* "Micro80/CPU.py":79
- *                 print(f"Stack: {self.memory.memory[0x5400:0x5406]}")
- *                 print(f"Display: {self.memory.memory[0xC000:0xC006]}")
- *                 print(f"Jump Count: {self.jumpCount}")             # <<<<<<<<<<<<<<
- *         if debug:
- *             print(f"Rendered {renderAmount} times in {renderLocations}")
- */
-      __pyx_t_1 = __Pyx_PyUnicode_From_int(__pyx_v_self->jumpCount, 0, ' ', 'd'); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 79, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_2 = __Pyx_PyUnicode_Concat(__pyx_kp_u_Jump_Count, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 79, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_2);
-      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_builtin_print, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 79, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_1);
-      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-
-      /* "Micro80/CPU.py":69
- *                 renderLocations.append(self.programCounter)
- *                 renderAmount += 1
- *             if debug:             # <<<<<<<<<<<<<<
- *                 print(
- *                     f"Current Opcode: {self.curOpcode}, Current Operand: {self.curOperand}"
- */
-    }
-    __pyx_L3_continue:;
+    __pyx_t_1 = __Pyx_PyInt_AddObjC(__pyx_v_ticks, __pyx_int_1, 1, 1, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 82, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF_SET(__pyx_v_ticks, __pyx_t_1);
+    __pyx_t_1 = 0;
+    __pyx_L6_continue:;
   }
 
-  /* "Micro80/CPU.py":80
- *                 print(f"Display: {self.memory.memory[0xC000:0xC006]}")
- *                 print(f"Jump Count: {self.jumpCount}")
+  /* "Micro80/CPU.py":83
+ *                 renderAmount += 1
+ *             ticks += 1
  *         if debug:             # <<<<<<<<<<<<<<
- *             print(f"Rendered {renderAmount} times in {renderLocations}")
- * 
+ *             print(f"Jump Count: {self.jumpCount}")
+ *             print(f"Render Count: {renderAmount}")
  */
-  __pyx_t_6 = __Pyx_PyObject_IsTrue(__pyx_v_debug); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 80, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_PyObject_IsTrue(__pyx_v_debug); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 83, __pyx_L1_error)
   if (__pyx_t_6) {
 
-    /* "Micro80/CPU.py":81
- *                 print(f"Jump Count: {self.jumpCount}")
+    /* "Micro80/CPU.py":84
+ *             ticks += 1
  *         if debug:
- *             print(f"Rendered {renderAmount} times in {renderLocations}")             # <<<<<<<<<<<<<<
- * 
- *     def fetch(self):
+ *             print(f"Jump Count: {self.jumpCount}")             # <<<<<<<<<<<<<<
+ *             print(f"Render Count: {renderAmount}")
+ *             print(f"Ticks: {ticks}")
  */
-    __pyx_t_1 = PyTuple_New(4); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 81, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyUnicode_From_int(__pyx_v_self->jumpCount, 0, ' ', 'd'); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 84, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_8 = 0;
-    __pyx_t_9 = 127;
-    __Pyx_INCREF(__pyx_kp_u_Rendered);
-    __pyx_t_8 += 9;
-    __Pyx_GIVEREF(__pyx_kp_u_Rendered);
-    PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_kp_u_Rendered);
-    __pyx_t_2 = __Pyx_PyObject_FormatSimple(__pyx_v_renderAmount, __pyx_empty_unicode); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 81, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_9 = (__Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_2) > __pyx_t_9) ? __Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_2) : __pyx_t_9;
-    __pyx_t_8 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_2);
-    __Pyx_GIVEREF(__pyx_t_2);
-    PyTuple_SET_ITEM(__pyx_t_1, 1, __pyx_t_2);
-    __pyx_t_2 = 0;
-    __Pyx_INCREF(__pyx_kp_u_times_in);
-    __pyx_t_8 += 10;
-    __Pyx_GIVEREF(__pyx_kp_u_times_in);
-    PyTuple_SET_ITEM(__pyx_t_1, 2, __pyx_kp_u_times_in);
-    __pyx_t_2 = __Pyx_PyObject_FormatSimple(__pyx_v_renderLocations, __pyx_empty_unicode); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 81, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_9 = (__Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_2) > __pyx_t_9) ? __Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_2) : __pyx_t_9;
-    __pyx_t_8 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_2);
-    __Pyx_GIVEREF(__pyx_t_2);
-    PyTuple_SET_ITEM(__pyx_t_1, 3, __pyx_t_2);
-    __pyx_t_2 = 0;
-    __pyx_t_2 = __Pyx_PyUnicode_Join(__pyx_t_1, 4, __pyx_t_8, __pyx_t_9); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 81, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyUnicode_Concat(__pyx_kp_u_Jump_Count, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 84, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_builtin_print, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 81, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_builtin_print, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 84, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "Micro80/CPU.py":80
- *                 print(f"Display: {self.memory.memory[0xC000:0xC006]}")
- *                 print(f"Jump Count: {self.jumpCount}")
- *         if debug:             # <<<<<<<<<<<<<<
- *             print(f"Rendered {renderAmount} times in {renderLocations}")
+    /* "Micro80/CPU.py":85
+ *         if debug:
+ *             print(f"Jump Count: {self.jumpCount}")
+ *             print(f"Render Count: {renderAmount}")             # <<<<<<<<<<<<<<
+ *             print(f"Ticks: {ticks}")
+ *             print(
+ */
+    __pyx_t_1 = __Pyx_PyObject_FormatSimple(__pyx_v_renderAmount, __pyx_empty_unicode); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 85, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_2 = __Pyx_PyUnicode_Concat(__pyx_kp_u_Render_Count, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 85, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_builtin_print, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 85, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+    /* "Micro80/CPU.py":86
+ *             print(f"Jump Count: {self.jumpCount}")
+ *             print(f"Render Count: {renderAmount}")
+ *             print(f"Ticks: {ticks}")             # <<<<<<<<<<<<<<
+ *             print(
+ *                 f"Accumulator: {self.A}, B: {self.B}, C: {self.C}, D: {self.D}, E: {self.E}, F: {self.F}"
+ */
+    __pyx_t_1 = __Pyx_PyObject_FormatSimple(__pyx_v_ticks, __pyx_empty_unicode); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 86, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_2 = __Pyx_PyUnicode_Concat(__pyx_kp_u_Ticks, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 86, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_builtin_print, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 86, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+    /* "Micro80/CPU.py":88
+ *             print(f"Ticks: {ticks}")
+ *             print(
+ *                 f"Accumulator: {self.A}, B: {self.B}, C: {self.C}, D: {self.D}, E: {self.E}, F: {self.F}"             # <<<<<<<<<<<<<<
+ *             )
+ *             print(
+ */
+    __pyx_t_1 = PyTuple_New(12); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 88, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_11 = 0;
+    __pyx_t_12 = 127;
+    __Pyx_INCREF(__pyx_kp_u_Accumulator);
+    __pyx_t_11 += 13;
+    __Pyx_GIVEREF(__pyx_kp_u_Accumulator);
+    PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_kp_u_Accumulator);
+    __pyx_t_2 = __Pyx_PyUnicode_From_int(__pyx_v_self->A, 0, ' ', 'd'); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 88, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_11 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_2);
+    __Pyx_GIVEREF(__pyx_t_2);
+    PyTuple_SET_ITEM(__pyx_t_1, 1, __pyx_t_2);
+    __pyx_t_2 = 0;
+    __Pyx_INCREF(__pyx_kp_u_B);
+    __pyx_t_11 += 5;
+    __Pyx_GIVEREF(__pyx_kp_u_B);
+    PyTuple_SET_ITEM(__pyx_t_1, 2, __pyx_kp_u_B);
+    __pyx_t_2 = __Pyx_PyUnicode_From_int(__pyx_v_self->B, 0, ' ', 'd'); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 88, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_11 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_2);
+    __Pyx_GIVEREF(__pyx_t_2);
+    PyTuple_SET_ITEM(__pyx_t_1, 3, __pyx_t_2);
+    __pyx_t_2 = 0;
+    __Pyx_INCREF(__pyx_kp_u_C);
+    __pyx_t_11 += 5;
+    __Pyx_GIVEREF(__pyx_kp_u_C);
+    PyTuple_SET_ITEM(__pyx_t_1, 4, __pyx_kp_u_C);
+    __pyx_t_2 = __Pyx_PyUnicode_From_int(__pyx_v_self->C, 0, ' ', 'd'); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 88, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_11 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_2);
+    __Pyx_GIVEREF(__pyx_t_2);
+    PyTuple_SET_ITEM(__pyx_t_1, 5, __pyx_t_2);
+    __pyx_t_2 = 0;
+    __Pyx_INCREF(__pyx_kp_u_D);
+    __pyx_t_11 += 5;
+    __Pyx_GIVEREF(__pyx_kp_u_D);
+    PyTuple_SET_ITEM(__pyx_t_1, 6, __pyx_kp_u_D);
+    __pyx_t_2 = __Pyx_PyUnicode_From_int(__pyx_v_self->D, 0, ' ', 'd'); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 88, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_11 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_2);
+    __Pyx_GIVEREF(__pyx_t_2);
+    PyTuple_SET_ITEM(__pyx_t_1, 7, __pyx_t_2);
+    __pyx_t_2 = 0;
+    __Pyx_INCREF(__pyx_kp_u_E);
+    __pyx_t_11 += 5;
+    __Pyx_GIVEREF(__pyx_kp_u_E);
+    PyTuple_SET_ITEM(__pyx_t_1, 8, __pyx_kp_u_E);
+    __pyx_t_2 = __Pyx_PyUnicode_From_int(__pyx_v_self->E, 0, ' ', 'd'); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 88, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_11 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_2);
+    __Pyx_GIVEREF(__pyx_t_2);
+    PyTuple_SET_ITEM(__pyx_t_1, 9, __pyx_t_2);
+    __pyx_t_2 = 0;
+    __Pyx_INCREF(__pyx_kp_u_F);
+    __pyx_t_11 += 5;
+    __Pyx_GIVEREF(__pyx_kp_u_F);
+    PyTuple_SET_ITEM(__pyx_t_1, 10, __pyx_kp_u_F);
+    __pyx_t_2 = __Pyx_PyUnicode_From_int(__pyx_v_self->F, 0, ' ', 'd'); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 88, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_11 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_2);
+    __Pyx_GIVEREF(__pyx_t_2);
+    PyTuple_SET_ITEM(__pyx_t_1, 11, __pyx_t_2);
+    __pyx_t_2 = 0;
+    __pyx_t_2 = __Pyx_PyUnicode_Join(__pyx_t_1, 12, __pyx_t_11, __pyx_t_12); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 88, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+    /* "Micro80/CPU.py":87
+ *             print(f"Render Count: {renderAmount}")
+ *             print(f"Ticks: {ticks}")
+ *             print(             # <<<<<<<<<<<<<<
+ *                 f"Accumulator: {self.A}, B: {self.B}, C: {self.C}, D: {self.D}, E: {self.E}, F: {self.F}"
+ *             )
+ */
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_builtin_print, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 87, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+    /* "Micro80/CPU.py":91
+ *             )
+ *             print(
+ *                 f"Program Counter: {self.programCounter}, Stack Pointer: {self.stackPointer}, Address: {self.adr}"             # <<<<<<<<<<<<<<
+ *             )
+ *             print(
+ */
+    __pyx_t_1 = PyTuple_New(6); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 91, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_11 = 0;
+    __pyx_t_12 = 127;
+    __Pyx_INCREF(__pyx_kp_u_Program_Counter);
+    __pyx_t_11 += 17;
+    __Pyx_GIVEREF(__pyx_kp_u_Program_Counter);
+    PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_kp_u_Program_Counter);
+    __pyx_t_2 = __Pyx_PyUnicode_From_int(__pyx_v_self->programCounter, 0, ' ', 'd'); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 91, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_11 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_2);
+    __Pyx_GIVEREF(__pyx_t_2);
+    PyTuple_SET_ITEM(__pyx_t_1, 1, __pyx_t_2);
+    __pyx_t_2 = 0;
+    __Pyx_INCREF(__pyx_kp_u_Stack_Pointer);
+    __pyx_t_11 += 17;
+    __Pyx_GIVEREF(__pyx_kp_u_Stack_Pointer);
+    PyTuple_SET_ITEM(__pyx_t_1, 2, __pyx_kp_u_Stack_Pointer);
+    __pyx_t_2 = __Pyx_PyUnicode_From_int(__pyx_v_self->stackPointer, 0, ' ', 'd'); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 91, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_11 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_2);
+    __Pyx_GIVEREF(__pyx_t_2);
+    PyTuple_SET_ITEM(__pyx_t_1, 3, __pyx_t_2);
+    __pyx_t_2 = 0;
+    __Pyx_INCREF(__pyx_kp_u_Address);
+    __pyx_t_11 += 11;
+    __Pyx_GIVEREF(__pyx_kp_u_Address);
+    PyTuple_SET_ITEM(__pyx_t_1, 4, __pyx_kp_u_Address);
+    __pyx_t_2 = __Pyx_PyUnicode_From_int(__pyx_v_self->adr, 0, ' ', 'd'); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 91, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_11 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_2);
+    __Pyx_GIVEREF(__pyx_t_2);
+    PyTuple_SET_ITEM(__pyx_t_1, 5, __pyx_t_2);
+    __pyx_t_2 = 0;
+    __pyx_t_2 = __Pyx_PyUnicode_Join(__pyx_t_1, 6, __pyx_t_11, __pyx_t_12); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 91, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+    /* "Micro80/CPU.py":90
+ *                 f"Accumulator: {self.A}, B: {self.B}, C: {self.C}, D: {self.D}, E: {self.E}, F: {self.F}"
+ *             )
+ *             print(             # <<<<<<<<<<<<<<
+ *                 f"Program Counter: {self.programCounter}, Stack Pointer: {self.stackPointer}, Address: {self.adr}"
+ *             )
+ */
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_builtin_print, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 90, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+    /* "Micro80/CPU.py":94
+ *             )
+ *             print(
+ *                 f"Input: {self.memory.readAddress(0x400B)}, {self.memory.readAddress(0x400C)}, {self.memory.readAddress(0x400D)}"             # <<<<<<<<<<<<<<
+ *             )
+ *             print(f"Variables: {self.memory.memory[0x4400:0x440F]}")
+ */
+    __pyx_t_1 = PyTuple_New(6); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 94, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_11 = 0;
+    __pyx_t_12 = 127;
+    __Pyx_INCREF(__pyx_kp_u_Input);
+    __pyx_t_11 += 7;
+    __Pyx_GIVEREF(__pyx_kp_u_Input);
+    PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_kp_u_Input);
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 94, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __pyx_t_4 = NULL;
+    __pyx_t_5 = 0;
+    #if CYTHON_UNPACK_METHODS
+    if (likely(PyMethod_Check(__pyx_t_3))) {
+      __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_3);
+      if (likely(__pyx_t_4)) {
+        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
+        __Pyx_INCREF(__pyx_t_4);
+        __Pyx_INCREF(function);
+        __Pyx_DECREF_SET(__pyx_t_3, function);
+        __pyx_t_5 = 1;
+      }
+    }
+    #endif
+    {
+      PyObject *__pyx_callargs[2] = {__pyx_t_4, __pyx_int_16395};
+      __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_3, __pyx_callargs+1-__pyx_t_5, 1+__pyx_t_5);
+      __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 94, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    }
+    __pyx_t_3 = __Pyx_PyObject_FormatSimple(__pyx_t_2, __pyx_empty_unicode); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 94, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __pyx_t_12 = (__Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_3) > __pyx_t_12) ? __Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_3) : __pyx_t_12;
+    __pyx_t_11 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_3);
+    __Pyx_GIVEREF(__pyx_t_3);
+    PyTuple_SET_ITEM(__pyx_t_1, 1, __pyx_t_3);
+    __pyx_t_3 = 0;
+    __Pyx_INCREF(__pyx_kp_u__9);
+    __pyx_t_11 += 2;
+    __Pyx_GIVEREF(__pyx_kp_u__9);
+    PyTuple_SET_ITEM(__pyx_t_1, 2, __pyx_kp_u__9);
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 94, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_4 = NULL;
+    __pyx_t_5 = 0;
+    #if CYTHON_UNPACK_METHODS
+    if (likely(PyMethod_Check(__pyx_t_2))) {
+      __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_2);
+      if (likely(__pyx_t_4)) {
+        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
+        __Pyx_INCREF(__pyx_t_4);
+        __Pyx_INCREF(function);
+        __Pyx_DECREF_SET(__pyx_t_2, function);
+        __pyx_t_5 = 1;
+      }
+    }
+    #endif
+    {
+      PyObject *__pyx_callargs[2] = {__pyx_t_4, __pyx_int_16396};
+      __pyx_t_3 = __Pyx_PyObject_FastCall(__pyx_t_2, __pyx_callargs+1-__pyx_t_5, 1+__pyx_t_5);
+      __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+      if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 94, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_3);
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    }
+    __pyx_t_2 = __Pyx_PyObject_FormatSimple(__pyx_t_3, __pyx_empty_unicode); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 94, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __pyx_t_12 = (__Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_2) > __pyx_t_12) ? __Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_2) : __pyx_t_12;
+    __pyx_t_11 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_2);
+    __Pyx_GIVEREF(__pyx_t_2);
+    PyTuple_SET_ITEM(__pyx_t_1, 3, __pyx_t_2);
+    __pyx_t_2 = 0;
+    __Pyx_INCREF(__pyx_kp_u__9);
+    __pyx_t_11 += 2;
+    __Pyx_GIVEREF(__pyx_kp_u__9);
+    PyTuple_SET_ITEM(__pyx_t_1, 4, __pyx_kp_u__9);
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 94, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __pyx_t_4 = NULL;
+    __pyx_t_5 = 0;
+    #if CYTHON_UNPACK_METHODS
+    if (likely(PyMethod_Check(__pyx_t_3))) {
+      __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_3);
+      if (likely(__pyx_t_4)) {
+        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
+        __Pyx_INCREF(__pyx_t_4);
+        __Pyx_INCREF(function);
+        __Pyx_DECREF_SET(__pyx_t_3, function);
+        __pyx_t_5 = 1;
+      }
+    }
+    #endif
+    {
+      PyObject *__pyx_callargs[2] = {__pyx_t_4, __pyx_int_16397};
+      __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_3, __pyx_callargs+1-__pyx_t_5, 1+__pyx_t_5);
+      __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 94, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    }
+    __pyx_t_3 = __Pyx_PyObject_FormatSimple(__pyx_t_2, __pyx_empty_unicode); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 94, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __pyx_t_12 = (__Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_3) > __pyx_t_12) ? __Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_3) : __pyx_t_12;
+    __pyx_t_11 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_3);
+    __Pyx_GIVEREF(__pyx_t_3);
+    PyTuple_SET_ITEM(__pyx_t_1, 5, __pyx_t_3);
+    __pyx_t_3 = 0;
+    __pyx_t_3 = __Pyx_PyUnicode_Join(__pyx_t_1, 6, __pyx_t_11, __pyx_t_12); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 94, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+    /* "Micro80/CPU.py":93
+ *                 f"Program Counter: {self.programCounter}, Stack Pointer: {self.stackPointer}, Address: {self.adr}"
+ *             )
+ *             print(             # <<<<<<<<<<<<<<
+ *                 f"Input: {self.memory.readAddress(0x400B)}, {self.memory.readAddress(0x400C)}, {self.memory.readAddress(0x400D)}"
+ *             )
+ */
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_builtin_print, __pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 93, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+    /* "Micro80/CPU.py":96
+ *                 f"Input: {self.memory.readAddress(0x400B)}, {self.memory.readAddress(0x400C)}, {self.memory.readAddress(0x400D)}"
+ *             )
+ *             print(f"Variables: {self.memory.memory[0x4400:0x440F]}")             # <<<<<<<<<<<<<<
+ *             print(f"Display: {self.memory.memory[0xC000:0xC00F]}")
+ *             print(f"Current Address: {self.adr}, Current Data: {self.memory.curData}")
+ */
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_memory); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 96, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_3 = __Pyx_PyObject_GetSlice(__pyx_t_1, 0x4400, 0x440F, NULL, NULL, &__pyx_slice__10, 1, 1, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 96, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_t_1 = __Pyx_PyObject_FormatSimple(__pyx_t_3, __pyx_empty_unicode); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 96, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __pyx_t_3 = __Pyx_PyUnicode_Concat(__pyx_kp_u_Variables, __pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 96, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_builtin_print, __pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 96, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+    /* "Micro80/CPU.py":97
+ *             )
+ *             print(f"Variables: {self.memory.memory[0x4400:0x440F]}")
+ *             print(f"Display: {self.memory.memory[0xC000:0xC00F]}")             # <<<<<<<<<<<<<<
+ *             print(f"Current Address: {self.adr}, Current Data: {self.memory.curData}")
+ *             print(f"Program End.")
+ */
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_memory); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 97, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_3 = __Pyx_PyObject_GetSlice(__pyx_t_1, 0xC000, 0xC00F, NULL, NULL, &__pyx_slice__11, 1, 1, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 97, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_t_1 = __Pyx_PyObject_FormatSimple(__pyx_t_3, __pyx_empty_unicode); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 97, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __pyx_t_3 = __Pyx_PyUnicode_Concat(__pyx_kp_u_Display_2, __pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 97, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_builtin_print, __pyx_t_3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 97, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+    /* "Micro80/CPU.py":98
+ *             print(f"Variables: {self.memory.memory[0x4400:0x440F]}")
+ *             print(f"Display: {self.memory.memory[0xC000:0xC00F]}")
+ *             print(f"Current Address: {self.adr}, Current Data: {self.memory.curData}")             # <<<<<<<<<<<<<<
+ *             print(f"Program End.")
  * 
+ */
+    __pyx_t_1 = PyTuple_New(4); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 98, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_11 = 0;
+    __pyx_t_12 = 127;
+    __Pyx_INCREF(__pyx_kp_u_Current_Address);
+    __pyx_t_11 += 17;
+    __Pyx_GIVEREF(__pyx_kp_u_Current_Address);
+    PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_kp_u_Current_Address);
+    __pyx_t_3 = __Pyx_PyUnicode_From_int(__pyx_v_self->adr, 0, ' ', 'd'); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 98, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __pyx_t_11 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_3);
+    __Pyx_GIVEREF(__pyx_t_3);
+    PyTuple_SET_ITEM(__pyx_t_1, 1, __pyx_t_3);
+    __pyx_t_3 = 0;
+    __Pyx_INCREF(__pyx_kp_u_Current_Data);
+    __pyx_t_11 += 16;
+    __Pyx_GIVEREF(__pyx_kp_u_Current_Data);
+    PyTuple_SET_ITEM(__pyx_t_1, 2, __pyx_kp_u_Current_Data);
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_curData); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 98, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __pyx_t_2 = __Pyx_PyObject_FormatSimple(__pyx_t_3, __pyx_empty_unicode); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 98, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __pyx_t_12 = (__Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_2) > __pyx_t_12) ? __Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_2) : __pyx_t_12;
+    __pyx_t_11 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_2);
+    __Pyx_GIVEREF(__pyx_t_2);
+    PyTuple_SET_ITEM(__pyx_t_1, 3, __pyx_t_2);
+    __pyx_t_2 = 0;
+    __pyx_t_2 = __Pyx_PyUnicode_Join(__pyx_t_1, 4, __pyx_t_11, __pyx_t_12); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 98, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_builtin_print, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 98, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+    /* "Micro80/CPU.py":99
+ *             print(f"Display: {self.memory.memory[0xC000:0xC00F]}")
+ *             print(f"Current Address: {self.adr}, Current Data: {self.memory.curData}")
+ *             print(f"Program End.")             # <<<<<<<<<<<<<<
+ * 
+ *     def fetch(self):
+ */
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_tuple__12, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 99, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+    /* "Micro80/CPU.py":83
+ *                 renderAmount += 1
+ *             ticks += 1
+ *         if debug:             # <<<<<<<<<<<<<<
+ *             print(f"Jump Count: {self.jumpCount}")
+ *             print(f"Render Count: {renderAmount}")
  */
   }
 
-  /* "Micro80/CPU.py":50
- *         self.window.show()
+  /* "Micro80/CPU.py":53
+ *             print("Debug Mode Enabled...")
  * 
  *     def runProgram(self):             # <<<<<<<<<<<<<<
  *         "Runs the program stores in memory"
@@ -5445,12 +6060,15 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_runProgram(struct __pyx_obj_7Micro80
   __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_4);
+  __Pyx_XDECREF(__pyx_t_8);
+  __Pyx_XDECREF(__pyx_t_9);
   __Pyx_AddTraceback("Micro80.CPU.CPU.runProgram", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = 0;
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_debug);
   __Pyx_XDECREF(__pyx_v_renderLocations);
   __Pyx_XDECREF(__pyx_v_renderAmount);
+  __Pyx_XDECREF(__pyx_v_ticks);
   __Pyx_XGIVEREF(__pyx_r);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
@@ -5507,7 +6125,7 @@ static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_2runProgram(struct __pyx_obj_7Micro
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("runProgram", 1);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_7Micro80_3CPU_3CPU_runProgram(__pyx_v_self, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 50, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_7Micro80_3CPU_3CPU_runProgram(__pyx_v_self, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 53, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -5524,8 +6142,8 @@ static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_2runProgram(struct __pyx_obj_7Micro
   return __pyx_r;
 }
 
-/* "Micro80/CPU.py":83
- *             print(f"Rendered {renderAmount} times in {renderLocations}")
+/* "Micro80/CPU.py":101
+ *             print(f"Program End.")
  * 
  *     def fetch(self):             # <<<<<<<<<<<<<<
  *         "Fetches the current opcode and operand from memory."
@@ -5565,7 +6183,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_fetch(struct __pyx_obj_7Micro80_3CPU
     if (unlikely(!__Pyx_object_dict_version_matches(((PyObject *)__pyx_v_self), __pyx_tp_dict_version, __pyx_obj_dict_version))) {
       PY_UINT64_T __pyx_typedict_guard = __Pyx_get_tp_dict_version(((PyObject *)__pyx_v_self));
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_fetch); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 83, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_fetch); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 101, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       if (!__Pyx_IsSameCFunction(__pyx_t_1, (void*) __pyx_pw_7Micro80_3CPU_3CPU_5fetch)) {
         __Pyx_XDECREF(__pyx_r);
@@ -5588,7 +6206,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_fetch(struct __pyx_obj_7Micro80_3CPU
           PyObject *__pyx_callargs[2] = {__pyx_t_4, NULL};
           __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_3, __pyx_callargs+1-__pyx_t_5, 0+__pyx_t_5);
           __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-          if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 83, __pyx_L1_error)
+          if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 101, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_2);
           __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
         }
@@ -5610,16 +6228,16 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_fetch(struct __pyx_obj_7Micro80_3CPU
     #endif
   }
 
-  /* "Micro80/CPU.py":85
+  /* "Micro80/CPU.py":103
  *     def fetch(self):
  *         "Fetches the current opcode and operand from memory."
  *         self.curOpcode = self.memory.readAddress(self.programCounter)             # <<<<<<<<<<<<<<
  *         if self.programCounter <= 0x3FFF:
  *             self.programCounter += 1
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 85, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 103, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_self->programCounter); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 85, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_self->programCounter); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 103, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_t_4 = NULL;
   __pyx_t_5 = 0;
@@ -5640,7 +6258,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_fetch(struct __pyx_obj_7Micro80_3CPU
     __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_2, __pyx_callargs+1-__pyx_t_5, 1+__pyx_t_5);
     __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 85, __pyx_L1_error)
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 103, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   }
@@ -5650,7 +6268,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_fetch(struct __pyx_obj_7Micro80_3CPU
   __pyx_v_self->curOpcode = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "Micro80/CPU.py":86
+  /* "Micro80/CPU.py":104
  *         "Fetches the current opcode and operand from memory."
  *         self.curOpcode = self.memory.readAddress(self.programCounter)
  *         if self.programCounter <= 0x3FFF:             # <<<<<<<<<<<<<<
@@ -5660,7 +6278,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_fetch(struct __pyx_obj_7Micro80_3CPU
   __pyx_t_6 = (__pyx_v_self->programCounter <= 0x3FFF);
   if (likely(__pyx_t_6)) {
 
-    /* "Micro80/CPU.py":87
+    /* "Micro80/CPU.py":105
  *         self.curOpcode = self.memory.readAddress(self.programCounter)
  *         if self.programCounter <= 0x3FFF:
  *             self.programCounter += 1             # <<<<<<<<<<<<<<
@@ -5669,7 +6287,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_fetch(struct __pyx_obj_7Micro80_3CPU
  */
     __pyx_v_self->programCounter = (__pyx_v_self->programCounter + 1);
 
-    /* "Micro80/CPU.py":86
+    /* "Micro80/CPU.py":104
  *         "Fetches the current opcode and operand from memory."
  *         self.curOpcode = self.memory.readAddress(self.programCounter)
  *         if self.programCounter <= 0x3FFF:             # <<<<<<<<<<<<<<
@@ -5679,84 +6297,87 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_fetch(struct __pyx_obj_7Micro80_3CPU
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":89
+  /* "Micro80/CPU.py":107
  *             self.programCounter += 1
  *         else:
  *             raise ValueError("Memory Overflow")             # <<<<<<<<<<<<<<
- *         singleOpcode = [0x0000, 0x002D] + [x for x in range(0x0035, 0x0046)] + [0x0049]
- *         if self.curOpcode not in singleOpcode:
+ *         singleOpcode = (
+ *             [0x0000, 0x002D] + [x for x in range(0x0035, 0x0046)] + [0x0049, 0x004A]
  */
   /*else*/ {
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__9, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 89, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__13, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 107, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_Raise(__pyx_t_1, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __PYX_ERR(0, 89, __pyx_L1_error)
+    __PYX_ERR(0, 107, __pyx_L1_error)
   }
   __pyx_L3:;
 
-  /* "Micro80/CPU.py":90
- *         else:
+  /* "Micro80/CPU.py":109
  *             raise ValueError("Memory Overflow")
- *         singleOpcode = [0x0000, 0x002D] + [x for x in range(0x0035, 0x0046)] + [0x0049]             # <<<<<<<<<<<<<<
+ *         singleOpcode = (
+ *             [0x0000, 0x002D] + [x for x in range(0x0035, 0x0046)] + [0x0049, 0x004A]             # <<<<<<<<<<<<<<
+ *         )
  *         if self.curOpcode not in singleOpcode:
- *             self.curOperand = self.memory.readAddress(self.programCounter)
  */
-  __pyx_t_1 = PyList_New(2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 90, __pyx_L1_error)
+  __pyx_t_1 = PyList_New(2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 109, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_INCREF(__pyx_int_0);
   __Pyx_GIVEREF(__pyx_int_0);
-  if (__Pyx_PyList_SET_ITEM(__pyx_t_1, 0, __pyx_int_0)) __PYX_ERR(0, 90, __pyx_L1_error);
+  if (__Pyx_PyList_SET_ITEM(__pyx_t_1, 0, __pyx_int_0)) __PYX_ERR(0, 109, __pyx_L1_error);
   __Pyx_INCREF(__pyx_int_45);
   __Pyx_GIVEREF(__pyx_int_45);
-  if (__Pyx_PyList_SET_ITEM(__pyx_t_1, 1, __pyx_int_45)) __PYX_ERR(0, 90, __pyx_L1_error);
+  if (__Pyx_PyList_SET_ITEM(__pyx_t_1, 1, __pyx_int_45)) __PYX_ERR(0, 109, __pyx_L1_error);
   { /* enter inner scope */
-    __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 90, __pyx_L1_error)
+    __pyx_t_2 = PyList_New(0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 109, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     for (__pyx_t_7 = 0x0035; __pyx_t_7 < 0x0046; __pyx_t_7+=1) {
       __pyx_7genexpr__pyx_v_x = __pyx_t_7;
-      __pyx_t_3 = __Pyx_PyInt_From_long(__pyx_7genexpr__pyx_v_x); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 90, __pyx_L1_error)
+      __pyx_t_3 = __Pyx_PyInt_From_long(__pyx_7genexpr__pyx_v_x); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 109, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_3);
-      if (unlikely(__Pyx_ListComp_Append(__pyx_t_2, (PyObject*)__pyx_t_3))) __PYX_ERR(0, 90, __pyx_L1_error)
+      if (unlikely(__Pyx_ListComp_Append(__pyx_t_2, (PyObject*)__pyx_t_3))) __PYX_ERR(0, 109, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     }
   } /* exit inner scope */
-  __pyx_t_3 = PyNumber_Add(__pyx_t_1, __pyx_t_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 90, __pyx_L1_error)
+  __pyx_t_3 = PyNumber_Add(__pyx_t_1, __pyx_t_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 109, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = PyList_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 90, __pyx_L1_error)
+  __pyx_t_2 = PyList_New(2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 109, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_INCREF(__pyx_int_73);
   __Pyx_GIVEREF(__pyx_int_73);
-  if (__Pyx_PyList_SET_ITEM(__pyx_t_2, 0, __pyx_int_73)) __PYX_ERR(0, 90, __pyx_L1_error);
-  __pyx_t_1 = PyNumber_Add(__pyx_t_3, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 90, __pyx_L1_error)
+  if (__Pyx_PyList_SET_ITEM(__pyx_t_2, 0, __pyx_int_73)) __PYX_ERR(0, 109, __pyx_L1_error);
+  __Pyx_INCREF(__pyx_int_74);
+  __Pyx_GIVEREF(__pyx_int_74);
+  if (__Pyx_PyList_SET_ITEM(__pyx_t_2, 1, __pyx_int_74)) __PYX_ERR(0, 109, __pyx_L1_error);
+  __pyx_t_1 = PyNumber_Add(__pyx_t_3, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 109, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_v_singleOpcode = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "Micro80/CPU.py":91
- *             raise ValueError("Memory Overflow")
- *         singleOpcode = [0x0000, 0x002D] + [x for x in range(0x0035, 0x0046)] + [0x0049]
+  /* "Micro80/CPU.py":111
+ *             [0x0000, 0x002D] + [x for x in range(0x0035, 0x0046)] + [0x0049, 0x004A]
+ *         )
  *         if self.curOpcode not in singleOpcode:             # <<<<<<<<<<<<<<
  *             self.curOperand = self.memory.readAddress(self.programCounter)
  *             if self.curOpcode == 0x0047:
  */
-  __pyx_t_6 = (__Pyx_PySequence_ContainsTF(__pyx_v_self->curOpcode, __pyx_v_singleOpcode, Py_NE)); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 91, __pyx_L1_error)
+  __pyx_t_6 = (__Pyx_PySequence_ContainsTF(__pyx_v_self->curOpcode, __pyx_v_singleOpcode, Py_NE)); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 111, __pyx_L1_error)
   if (__pyx_t_6) {
 
-    /* "Micro80/CPU.py":92
- *         singleOpcode = [0x0000, 0x002D] + [x for x in range(0x0035, 0x0046)] + [0x0049]
+    /* "Micro80/CPU.py":112
+ *         )
  *         if self.curOpcode not in singleOpcode:
  *             self.curOperand = self.memory.readAddress(self.programCounter)             # <<<<<<<<<<<<<<
  *             if self.curOpcode == 0x0047:
  *                 self.curOperand = [self.memory.readAddress(self.programCounter)]
  */
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 92, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 112, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_self->programCounter); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 92, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_self->programCounter); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 112, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __pyx_t_4 = NULL;
     __pyx_t_5 = 0;
@@ -5777,7 +6398,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_fetch(struct __pyx_obj_7Micro80_3CPU
       __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_2, __pyx_callargs+1-__pyx_t_5, 1+__pyx_t_5);
       __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 92, __pyx_L1_error)
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 112, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     }
@@ -5787,26 +6408,26 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_fetch(struct __pyx_obj_7Micro80_3CPU
     __pyx_v_self->curOperand = __pyx_t_1;
     __pyx_t_1 = 0;
 
-    /* "Micro80/CPU.py":93
+    /* "Micro80/CPU.py":113
  *         if self.curOpcode not in singleOpcode:
  *             self.curOperand = self.memory.readAddress(self.programCounter)
  *             if self.curOpcode == 0x0047:             # <<<<<<<<<<<<<<
  *                 self.curOperand = [self.memory.readAddress(self.programCounter)]
  *                 self.programCounter += 1
  */
-    __pyx_t_6 = (__Pyx_PyInt_BoolEqObjC(__pyx_v_self->curOpcode, __pyx_int_71, 0x0047, 0)); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 93, __pyx_L1_error)
+    __pyx_t_6 = (__Pyx_PyInt_BoolEqObjC(__pyx_v_self->curOpcode, __pyx_int_71, 0x0047, 0)); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 113, __pyx_L1_error)
     if (__pyx_t_6) {
 
-      /* "Micro80/CPU.py":94
+      /* "Micro80/CPU.py":114
  *             self.curOperand = self.memory.readAddress(self.programCounter)
  *             if self.curOpcode == 0x0047:
  *                 self.curOperand = [self.memory.readAddress(self.programCounter)]             # <<<<<<<<<<<<<<
  *                 self.programCounter += 1
  *                 self.curOperand.append(self.memory.readAddress(self.programCounter))
  */
-      __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 94, __pyx_L1_error)
+      __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 114, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_self->programCounter); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 94, __pyx_L1_error)
+      __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_self->programCounter); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 114, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_3);
       __pyx_t_4 = NULL;
       __pyx_t_5 = 0;
@@ -5827,14 +6448,14 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_fetch(struct __pyx_obj_7Micro80_3CPU
         __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_2, __pyx_callargs+1-__pyx_t_5, 1+__pyx_t_5);
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-        if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 94, __pyx_L1_error)
+        if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 114, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
       }
-      __pyx_t_2 = PyList_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 94, __pyx_L1_error)
+      __pyx_t_2 = PyList_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 114, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_GIVEREF(__pyx_t_1);
-      if (__Pyx_PyList_SET_ITEM(__pyx_t_2, 0, __pyx_t_1)) __PYX_ERR(0, 94, __pyx_L1_error);
+      if (__Pyx_PyList_SET_ITEM(__pyx_t_2, 0, __pyx_t_1)) __PYX_ERR(0, 114, __pyx_L1_error);
       __pyx_t_1 = 0;
       __Pyx_GIVEREF(__pyx_t_2);
       __Pyx_GOTREF(__pyx_v_self->curOperand);
@@ -5842,7 +6463,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_fetch(struct __pyx_obj_7Micro80_3CPU
       __pyx_v_self->curOperand = __pyx_t_2;
       __pyx_t_2 = 0;
 
-      /* "Micro80/CPU.py":95
+      /* "Micro80/CPU.py":115
  *             if self.curOpcode == 0x0047:
  *                 self.curOperand = [self.memory.readAddress(self.programCounter)]
  *                 self.programCounter += 1             # <<<<<<<<<<<<<<
@@ -5851,16 +6472,16 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_fetch(struct __pyx_obj_7Micro80_3CPU
  */
       __pyx_v_self->programCounter = (__pyx_v_self->programCounter + 1);
 
-      /* "Micro80/CPU.py":96
+      /* "Micro80/CPU.py":116
  *                 self.curOperand = [self.memory.readAddress(self.programCounter)]
  *                 self.programCounter += 1
  *                 self.curOperand.append(self.memory.readAddress(self.programCounter))             # <<<<<<<<<<<<<<
  *             self.programCounter += 1
  *         else:
  */
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 96, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 116, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_self->programCounter); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 96, __pyx_L1_error)
+      __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_self->programCounter); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 116, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_3);
       __pyx_t_4 = NULL;
       __pyx_t_5 = 0;
@@ -5881,14 +6502,14 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_fetch(struct __pyx_obj_7Micro80_3CPU
         __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_1, __pyx_callargs+1-__pyx_t_5, 1+__pyx_t_5);
         __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 96, __pyx_L1_error)
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 116, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
       }
-      __pyx_t_8 = __Pyx_PyObject_Append(__pyx_v_self->curOperand, __pyx_t_2); if (unlikely(__pyx_t_8 == ((int)-1))) __PYX_ERR(0, 96, __pyx_L1_error)
+      __pyx_t_8 = __Pyx_PyObject_Append(__pyx_v_self->curOperand, __pyx_t_2); if (unlikely(__pyx_t_8 == ((int)-1))) __PYX_ERR(0, 116, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-      /* "Micro80/CPU.py":93
+      /* "Micro80/CPU.py":113
  *         if self.curOpcode not in singleOpcode:
  *             self.curOperand = self.memory.readAddress(self.programCounter)
  *             if self.curOpcode == 0x0047:             # <<<<<<<<<<<<<<
@@ -5897,7 +6518,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_fetch(struct __pyx_obj_7Micro80_3CPU
  */
     }
 
-    /* "Micro80/CPU.py":97
+    /* "Micro80/CPU.py":117
  *                 self.programCounter += 1
  *                 self.curOperand.append(self.memory.readAddress(self.programCounter))
  *             self.programCounter += 1             # <<<<<<<<<<<<<<
@@ -5906,9 +6527,9 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_fetch(struct __pyx_obj_7Micro80_3CPU
  */
     __pyx_v_self->programCounter = (__pyx_v_self->programCounter + 1);
 
-    /* "Micro80/CPU.py":91
- *             raise ValueError("Memory Overflow")
- *         singleOpcode = [0x0000, 0x002D] + [x for x in range(0x0035, 0x0046)] + [0x0049]
+    /* "Micro80/CPU.py":111
+ *             [0x0000, 0x002D] + [x for x in range(0x0035, 0x0046)] + [0x0049, 0x004A]
+ *         )
  *         if self.curOpcode not in singleOpcode:             # <<<<<<<<<<<<<<
  *             self.curOperand = self.memory.readAddress(self.programCounter)
  *             if self.curOpcode == 0x0047:
@@ -5916,12 +6537,12 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_fetch(struct __pyx_obj_7Micro80_3CPU
     goto __pyx_L6;
   }
 
-  /* "Micro80/CPU.py":99
+  /* "Micro80/CPU.py":119
  *             self.programCounter += 1
  *         else:
  *             self.curOperand = None             # <<<<<<<<<<<<<<
  * 
- *     def execute(self, opcode, operands):
+ *     def _handleEvents(self):
  */
   /*else*/ {
     __Pyx_INCREF(Py_None);
@@ -5932,8 +6553,8 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_fetch(struct __pyx_obj_7Micro80_3CPU
   }
   __pyx_L6:;
 
-  /* "Micro80/CPU.py":83
- *             print(f"Rendered {renderAmount} times in {renderLocations}")
+  /* "Micro80/CPU.py":101
+ *             print(f"Program End.")
  * 
  *     def fetch(self):             # <<<<<<<<<<<<<<
  *         "Fetches the current opcode and operand from memory."
@@ -6008,7 +6629,7 @@ static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_4fetch(struct __pyx_obj_7Micro80_3C
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("fetch", 1);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_7Micro80_3CPU_3CPU_fetch(__pyx_v_self, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 83, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_7Micro80_3CPU_3CPU_fetch(__pyx_v_self, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 101, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -6025,15 +6646,1169 @@ static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_4fetch(struct __pyx_obj_7Micro80_3C
   return __pyx_r;
 }
 
-/* "Micro80/CPU.py":101
+/* "Micro80/CPU.py":121
  *             self.curOperand = None
+ * 
+ *     def _handleEvents(self):             # <<<<<<<<<<<<<<
+ *         "Handles the SDL2 events"
+ *         events = sdl2.ext.get_events()
+ */
+
+static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_7_handleEvents(PyObject *__pyx_v_self, 
+#if CYTHON_METH_FASTCALL
+PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
+#else
+PyObject *__pyx_args, PyObject *__pyx_kwds
+#endif
+); /*proto*/
+static PyObject *__pyx_f_7Micro80_3CPU_3CPU__handleEvents(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, int __pyx_skip_dispatch) {
+  PyObject *__pyx_v_events = NULL;
+  PyObject *__pyx_v_DPadKeys = NULL;
+  PyObject *__pyx_v_ActionKeys = NULL;
+  PyObject *__pyx_v_event = NULL;
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  PyObject *__pyx_t_2 = NULL;
+  PyObject *__pyx_t_3 = NULL;
+  PyObject *__pyx_t_4 = NULL;
+  int __pyx_t_5;
+  Py_ssize_t __pyx_t_6;
+  PyObject *(*__pyx_t_7)(PyObject *);
+  int __pyx_t_8;
+  PyObject *__pyx_t_9 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("_handleEvents", 1);
+  /* Check if called by wrapper */
+  if (unlikely(__pyx_skip_dispatch)) ;
+  /* Check if overridden in Python */
+  else if (unlikely((Py_TYPE(((PyObject *)__pyx_v_self))->tp_dictoffset != 0) || __Pyx_PyType_HasFeature(Py_TYPE(((PyObject *)__pyx_v_self)), (Py_TPFLAGS_IS_ABSTRACT | Py_TPFLAGS_HEAPTYPE)))) {
+    #if CYTHON_USE_DICT_VERSIONS && CYTHON_USE_PYTYPE_LOOKUP && CYTHON_USE_TYPE_SLOTS
+    static PY_UINT64_T __pyx_tp_dict_version = __PYX_DICT_VERSION_INIT, __pyx_obj_dict_version = __PYX_DICT_VERSION_INIT;
+    if (unlikely(!__Pyx_object_dict_version_matches(((PyObject *)__pyx_v_self), __pyx_tp_dict_version, __pyx_obj_dict_version))) {
+      PY_UINT64_T __pyx_typedict_guard = __Pyx_get_tp_dict_version(((PyObject *)__pyx_v_self));
+      #endif
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_handleEvents); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 121, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      if (!__Pyx_IsSameCFunction(__pyx_t_1, (void*) __pyx_pw_7Micro80_3CPU_3CPU_7_handleEvents)) {
+        __Pyx_XDECREF(__pyx_r);
+        __Pyx_INCREF(__pyx_t_1);
+        __pyx_t_3 = __pyx_t_1; __pyx_t_4 = NULL;
+        __pyx_t_5 = 0;
+        #if CYTHON_UNPACK_METHODS
+        if (unlikely(PyMethod_Check(__pyx_t_3))) {
+          __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_3);
+          if (likely(__pyx_t_4)) {
+            PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
+            __Pyx_INCREF(__pyx_t_4);
+            __Pyx_INCREF(function);
+            __Pyx_DECREF_SET(__pyx_t_3, function);
+            __pyx_t_5 = 1;
+          }
+        }
+        #endif
+        {
+          PyObject *__pyx_callargs[2] = {__pyx_t_4, NULL};
+          __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_3, __pyx_callargs+1-__pyx_t_5, 0+__pyx_t_5);
+          __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+          if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 121, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_2);
+          __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+        }
+        __pyx_r = __pyx_t_2;
+        __pyx_t_2 = 0;
+        __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+        goto __pyx_L0;
+      }
+      #if CYTHON_USE_DICT_VERSIONS && CYTHON_USE_PYTYPE_LOOKUP && CYTHON_USE_TYPE_SLOTS
+      __pyx_tp_dict_version = __Pyx_get_tp_dict_version(((PyObject *)__pyx_v_self));
+      __pyx_obj_dict_version = __Pyx_get_object_dict_version(((PyObject *)__pyx_v_self));
+      if (unlikely(__pyx_typedict_guard != __pyx_tp_dict_version)) {
+        __pyx_tp_dict_version = __pyx_obj_dict_version = __PYX_DICT_VERSION_INIT;
+      }
+      #endif
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      #if CYTHON_USE_DICT_VERSIONS && CYTHON_USE_PYTYPE_LOOKUP && CYTHON_USE_TYPE_SLOTS
+    }
+    #endif
+  }
+
+  /* "Micro80/CPU.py":123
+ *     def _handleEvents(self):
+ *         "Handles the SDL2 events"
+ *         events = sdl2.ext.get_events()             # <<<<<<<<<<<<<<
+ *         DPadKeys = {
+ *             sdl2.SDLK_UP: 1,
+ */
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_sdl2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 123, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_ext); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 123, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_get_events); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 123, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  __pyx_t_3 = NULL;
+  __pyx_t_5 = 0;
+  #if CYTHON_UNPACK_METHODS
+  if (likely(PyMethod_Check(__pyx_t_2))) {
+    __pyx_t_3 = PyMethod_GET_SELF(__pyx_t_2);
+    if (likely(__pyx_t_3)) {
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
+      __Pyx_INCREF(__pyx_t_3);
+      __Pyx_INCREF(function);
+      __Pyx_DECREF_SET(__pyx_t_2, function);
+      __pyx_t_5 = 1;
+    }
+  }
+  #endif
+  {
+    PyObject *__pyx_callargs[2] = {__pyx_t_3, NULL};
+    __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_2, __pyx_callargs+1-__pyx_t_5, 0+__pyx_t_5);
+    __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 123, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  }
+  __pyx_v_events = __pyx_t_1;
+  __pyx_t_1 = 0;
+
+  /* "Micro80/CPU.py":125
+ *         events = sdl2.ext.get_events()
+ *         DPadKeys = {
+ *             sdl2.SDLK_UP: 1,             # <<<<<<<<<<<<<<
+ *             sdl2.SDLK_DOWN: 2,
+ *             sdl2.SDLK_LEFT: 3,
+ */
+  __pyx_t_1 = __Pyx_PyDict_NewPresized(8); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 125, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_sdl2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 125, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_SDLK_UP); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 125, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  if (PyDict_SetItem(__pyx_t_1, __pyx_t_3, __pyx_int_1) < 0) __PYX_ERR(0, 125, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+
+  /* "Micro80/CPU.py":126
+ *         DPadKeys = {
+ *             sdl2.SDLK_UP: 1,
+ *             sdl2.SDLK_DOWN: 2,             # <<<<<<<<<<<<<<
+ *             sdl2.SDLK_LEFT: 3,
+ *             sdl2.SDLK_RIGHT: 4,
+ */
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_sdl2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 126, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_SDLK_DOWN); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 126, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  if (PyDict_SetItem(__pyx_t_1, __pyx_t_2, __pyx_int_2) < 0) __PYX_ERR(0, 125, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+  /* "Micro80/CPU.py":127
+ *             sdl2.SDLK_UP: 1,
+ *             sdl2.SDLK_DOWN: 2,
+ *             sdl2.SDLK_LEFT: 3,             # <<<<<<<<<<<<<<
+ *             sdl2.SDLK_RIGHT: 4,
+ *             sdl2.SDLK_w: 1,
+ */
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_sdl2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 127, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_SDLK_LEFT); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 127, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  if (PyDict_SetItem(__pyx_t_1, __pyx_t_3, __pyx_int_3) < 0) __PYX_ERR(0, 125, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+
+  /* "Micro80/CPU.py":128
+ *             sdl2.SDLK_DOWN: 2,
+ *             sdl2.SDLK_LEFT: 3,
+ *             sdl2.SDLK_RIGHT: 4,             # <<<<<<<<<<<<<<
+ *             sdl2.SDLK_w: 1,
+ *             sdl2.SDLK_s: 2,
+ */
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_sdl2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 128, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_SDLK_RIGHT); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 128, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  if (PyDict_SetItem(__pyx_t_1, __pyx_t_2, __pyx_int_4) < 0) __PYX_ERR(0, 125, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+  /* "Micro80/CPU.py":129
+ *             sdl2.SDLK_LEFT: 3,
+ *             sdl2.SDLK_RIGHT: 4,
+ *             sdl2.SDLK_w: 1,             # <<<<<<<<<<<<<<
+ *             sdl2.SDLK_s: 2,
+ *             sdl2.SDLK_a: 3,
+ */
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_sdl2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 129, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_SDLK_w); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 129, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  if (PyDict_SetItem(__pyx_t_1, __pyx_t_3, __pyx_int_1) < 0) __PYX_ERR(0, 125, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+
+  /* "Micro80/CPU.py":130
+ *             sdl2.SDLK_RIGHT: 4,
+ *             sdl2.SDLK_w: 1,
+ *             sdl2.SDLK_s: 2,             # <<<<<<<<<<<<<<
+ *             sdl2.SDLK_a: 3,
+ *             sdl2.SDLK_d: 4,
+ */
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_sdl2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 130, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_SDLK_s); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 130, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  if (PyDict_SetItem(__pyx_t_1, __pyx_t_2, __pyx_int_2) < 0) __PYX_ERR(0, 125, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+  /* "Micro80/CPU.py":131
+ *             sdl2.SDLK_w: 1,
+ *             sdl2.SDLK_s: 2,
+ *             sdl2.SDLK_a: 3,             # <<<<<<<<<<<<<<
+ *             sdl2.SDLK_d: 4,
+ *         }
+ */
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_sdl2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 131, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_SDLK_a); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 131, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  if (PyDict_SetItem(__pyx_t_1, __pyx_t_3, __pyx_int_3) < 0) __PYX_ERR(0, 125, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+
+  /* "Micro80/CPU.py":132
+ *             sdl2.SDLK_s: 2,
+ *             sdl2.SDLK_a: 3,
+ *             sdl2.SDLK_d: 4,             # <<<<<<<<<<<<<<
+ *         }
+ *         ActionKeys = {
+ */
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_sdl2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 132, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_SDLK_d); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 132, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  if (PyDict_SetItem(__pyx_t_1, __pyx_t_2, __pyx_int_4) < 0) __PYX_ERR(0, 125, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_v_DPadKeys = ((PyObject*)__pyx_t_1);
+  __pyx_t_1 = 0;
+
+  /* "Micro80/CPU.py":135
+ *         }
+ *         ActionKeys = {
+ *             sdl2.SDLK_j: 1,             # <<<<<<<<<<<<<<
+ *             sdl2.SDLK_k: 2,
+ *             sdl2.SDLK_z: 3,
+ */
+  __pyx_t_1 = __Pyx_PyDict_NewPresized(6); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 135, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_sdl2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 135, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_SDLK_j); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 135, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  if (PyDict_SetItem(__pyx_t_1, __pyx_t_3, __pyx_int_1) < 0) __PYX_ERR(0, 135, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+
+  /* "Micro80/CPU.py":136
+ *         ActionKeys = {
+ *             sdl2.SDLK_j: 1,
+ *             sdl2.SDLK_k: 2,             # <<<<<<<<<<<<<<
+ *             sdl2.SDLK_z: 3,
+ *             sdl2.SDLK_x: 4,
+ */
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_sdl2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 136, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_SDLK_k); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 136, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  if (PyDict_SetItem(__pyx_t_1, __pyx_t_2, __pyx_int_2) < 0) __PYX_ERR(0, 135, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+  /* "Micro80/CPU.py":137
+ *             sdl2.SDLK_j: 1,
+ *             sdl2.SDLK_k: 2,
+ *             sdl2.SDLK_z: 3,             # <<<<<<<<<<<<<<
+ *             sdl2.SDLK_x: 4,
+ *             sdl2.SDLK_RETURN: 5,
+ */
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_sdl2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 137, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_SDLK_z); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 137, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  if (PyDict_SetItem(__pyx_t_1, __pyx_t_3, __pyx_int_3) < 0) __PYX_ERR(0, 135, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+
+  /* "Micro80/CPU.py":138
+ *             sdl2.SDLK_k: 2,
+ *             sdl2.SDLK_z: 3,
+ *             sdl2.SDLK_x: 4,             # <<<<<<<<<<<<<<
+ *             sdl2.SDLK_RETURN: 5,
+ *             sdl2.SDLK_BACKSPACE: 6,
+ */
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_sdl2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 138, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_SDLK_x); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 138, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  if (PyDict_SetItem(__pyx_t_1, __pyx_t_2, __pyx_int_4) < 0) __PYX_ERR(0, 135, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+  /* "Micro80/CPU.py":139
+ *             sdl2.SDLK_z: 3,
+ *             sdl2.SDLK_x: 4,
+ *             sdl2.SDLK_RETURN: 5,             # <<<<<<<<<<<<<<
+ *             sdl2.SDLK_BACKSPACE: 6,
+ *         }
+ */
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_sdl2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 139, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_SDLK_RETURN); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 139, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  if (PyDict_SetItem(__pyx_t_1, __pyx_t_3, __pyx_int_5) < 0) __PYX_ERR(0, 135, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+
+  /* "Micro80/CPU.py":140
+ *             sdl2.SDLK_x: 4,
+ *             sdl2.SDLK_RETURN: 5,
+ *             sdl2.SDLK_BACKSPACE: 6,             # <<<<<<<<<<<<<<
+ *         }
+ *         for event in events:
+ */
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_sdl2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 140, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_SDLK_BACKSPACE); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 140, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  if (PyDict_SetItem(__pyx_t_1, __pyx_t_2, __pyx_int_6) < 0) __PYX_ERR(0, 135, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_v_ActionKeys = ((PyObject*)__pyx_t_1);
+  __pyx_t_1 = 0;
+
+  /* "Micro80/CPU.py":142
+ *             sdl2.SDLK_BACKSPACE: 6,
+ *         }
+ *         for event in events:             # <<<<<<<<<<<<<<
+ *             if event.type == sdl2.SDL_QUIT:
+ *                 self.memory.writeAddress(self.RunStatus, 0x0001)
+ */
+  if (likely(PyList_CheckExact(__pyx_v_events)) || PyTuple_CheckExact(__pyx_v_events)) {
+    __pyx_t_1 = __pyx_v_events; __Pyx_INCREF(__pyx_t_1);
+    __pyx_t_6 = 0;
+    __pyx_t_7 = NULL;
+  } else {
+    __pyx_t_6 = -1; __pyx_t_1 = PyObject_GetIter(__pyx_v_events); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 142, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_7 = __Pyx_PyObject_GetIterNextFunc(__pyx_t_1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 142, __pyx_L1_error)
+  }
+  for (;;) {
+    if (likely(!__pyx_t_7)) {
+      if (likely(PyList_CheckExact(__pyx_t_1))) {
+        {
+          Py_ssize_t __pyx_temp = __Pyx_PyList_GET_SIZE(__pyx_t_1);
+          #if !CYTHON_ASSUME_SAFE_MACROS
+          if (unlikely((__pyx_temp < 0))) __PYX_ERR(0, 142, __pyx_L1_error)
+          #endif
+          if (__pyx_t_6 >= __pyx_temp) break;
+        }
+        #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
+        __pyx_t_2 = PyList_GET_ITEM(__pyx_t_1, __pyx_t_6); __Pyx_INCREF(__pyx_t_2); __pyx_t_6++; if (unlikely((0 < 0))) __PYX_ERR(0, 142, __pyx_L1_error)
+        #else
+        __pyx_t_2 = __Pyx_PySequence_ITEM(__pyx_t_1, __pyx_t_6); __pyx_t_6++; if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 142, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_2);
+        #endif
+      } else {
+        {
+          Py_ssize_t __pyx_temp = __Pyx_PyTuple_GET_SIZE(__pyx_t_1);
+          #if !CYTHON_ASSUME_SAFE_MACROS
+          if (unlikely((__pyx_temp < 0))) __PYX_ERR(0, 142, __pyx_L1_error)
+          #endif
+          if (__pyx_t_6 >= __pyx_temp) break;
+        }
+        #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
+        __pyx_t_2 = PyTuple_GET_ITEM(__pyx_t_1, __pyx_t_6); __Pyx_INCREF(__pyx_t_2); __pyx_t_6++; if (unlikely((0 < 0))) __PYX_ERR(0, 142, __pyx_L1_error)
+        #else
+        __pyx_t_2 = __Pyx_PySequence_ITEM(__pyx_t_1, __pyx_t_6); __pyx_t_6++; if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 142, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_2);
+        #endif
+      }
+    } else {
+      __pyx_t_2 = __pyx_t_7(__pyx_t_1);
+      if (unlikely(!__pyx_t_2)) {
+        PyObject* exc_type = PyErr_Occurred();
+        if (exc_type) {
+          if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
+          else __PYX_ERR(0, 142, __pyx_L1_error)
+        }
+        break;
+      }
+      __Pyx_GOTREF(__pyx_t_2);
+    }
+    __Pyx_XDECREF_SET(__pyx_v_event, __pyx_t_2);
+    __pyx_t_2 = 0;
+
+    /* "Micro80/CPU.py":143
+ *         }
+ *         for event in events:
+ *             if event.type == sdl2.SDL_QUIT:             # <<<<<<<<<<<<<<
+ *                 self.memory.writeAddress(self.RunStatus, 0x0001)
+ *                 break
+ */
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_event, __pyx_n_s_type); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 143, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_sdl2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 143, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_SDL_QUIT); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 143, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __pyx_t_3 = PyObject_RichCompare(__pyx_t_2, __pyx_t_4, Py_EQ); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 143, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 143, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    if (__pyx_t_8) {
+
+      /* "Micro80/CPU.py":144
+ *         for event in events:
+ *             if event.type == sdl2.SDL_QUIT:
+ *                 self.memory.writeAddress(self.RunStatus, 0x0001)             # <<<<<<<<<<<<<<
+ *                 break
+ *             if event.type == sdl2.SDL_KEYDOWN:
+ */
+      __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_writeAddress); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 144, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_4);
+      __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_self->RunStatus); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 144, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __pyx_t_9 = NULL;
+      __pyx_t_5 = 0;
+      #if CYTHON_UNPACK_METHODS
+      if (likely(PyMethod_Check(__pyx_t_4))) {
+        __pyx_t_9 = PyMethod_GET_SELF(__pyx_t_4);
+        if (likely(__pyx_t_9)) {
+          PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_4);
+          __Pyx_INCREF(__pyx_t_9);
+          __Pyx_INCREF(function);
+          __Pyx_DECREF_SET(__pyx_t_4, function);
+          __pyx_t_5 = 1;
+        }
+      }
+      #endif
+      {
+        PyObject *__pyx_callargs[3] = {__pyx_t_9, __pyx_t_2, __pyx_int_1};
+        __pyx_t_3 = __Pyx_PyObject_FastCall(__pyx_t_4, __pyx_callargs+1-__pyx_t_5, 2+__pyx_t_5);
+        __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
+        __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+        if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 144, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_3);
+        __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+      }
+      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+
+      /* "Micro80/CPU.py":145
+ *             if event.type == sdl2.SDL_QUIT:
+ *                 self.memory.writeAddress(self.RunStatus, 0x0001)
+ *                 break             # <<<<<<<<<<<<<<
+ *             if event.type == sdl2.SDL_KEYDOWN:
+ *                 if event.key.keysym.sym == sdl2.SDLK_ESCAPE:
+ */
+      goto __pyx_L4_break;
+
+      /* "Micro80/CPU.py":143
+ *         }
+ *         for event in events:
+ *             if event.type == sdl2.SDL_QUIT:             # <<<<<<<<<<<<<<
+ *                 self.memory.writeAddress(self.RunStatus, 0x0001)
+ *                 break
+ */
+    }
+
+    /* "Micro80/CPU.py":146
+ *                 self.memory.writeAddress(self.RunStatus, 0x0001)
+ *                 break
+ *             if event.type == sdl2.SDL_KEYDOWN:             # <<<<<<<<<<<<<<
+ *                 if event.key.keysym.sym == sdl2.SDLK_ESCAPE:
+ *                     self.memory.writeAddress(self.RunStatus, 0x0001)
+ */
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_event, __pyx_n_s_type); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 146, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_sdl2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 146, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_SDL_KEYDOWN); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 146, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __pyx_t_4 = PyObject_RichCompare(__pyx_t_3, __pyx_t_2, Py_EQ); __Pyx_XGOTREF(__pyx_t_4); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 146, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_4); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 146, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    if (__pyx_t_8) {
+
+      /* "Micro80/CPU.py":147
+ *                 break
+ *             if event.type == sdl2.SDL_KEYDOWN:
+ *                 if event.key.keysym.sym == sdl2.SDLK_ESCAPE:             # <<<<<<<<<<<<<<
+ *                     self.memory.writeAddress(self.RunStatus, 0x0001)
+ *                     break
+ */
+      __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_event, __pyx_n_s_key); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 147, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_4);
+      __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_keysym); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 147, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+      __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_sym); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 147, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_4);
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_sdl2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 147, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_SDLK_ESCAPE); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 147, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_3);
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __pyx_t_2 = PyObject_RichCompare(__pyx_t_4, __pyx_t_3, Py_EQ); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 147, __pyx_L1_error)
+      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+      __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 147, __pyx_L1_error)
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      if (__pyx_t_8) {
+
+        /* "Micro80/CPU.py":148
+ *             if event.type == sdl2.SDL_KEYDOWN:
+ *                 if event.key.keysym.sym == sdl2.SDLK_ESCAPE:
+ *                     self.memory.writeAddress(self.RunStatus, 0x0001)             # <<<<<<<<<<<<<<
+ *                     break
+ *                 elif event.key.keysym.sym in DPadKeys:
+ */
+        __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_writeAddress); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 148, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_3);
+        __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_self->RunStatus); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 148, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_4);
+        __pyx_t_9 = NULL;
+        __pyx_t_5 = 0;
+        #if CYTHON_UNPACK_METHODS
+        if (likely(PyMethod_Check(__pyx_t_3))) {
+          __pyx_t_9 = PyMethod_GET_SELF(__pyx_t_3);
+          if (likely(__pyx_t_9)) {
+            PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
+            __Pyx_INCREF(__pyx_t_9);
+            __Pyx_INCREF(function);
+            __Pyx_DECREF_SET(__pyx_t_3, function);
+            __pyx_t_5 = 1;
+          }
+        }
+        #endif
+        {
+          PyObject *__pyx_callargs[3] = {__pyx_t_9, __pyx_t_4, __pyx_int_1};
+          __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_3, __pyx_callargs+1-__pyx_t_5, 2+__pyx_t_5);
+          __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
+          __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+          if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 148, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_2);
+          __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+        }
+        __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+        /* "Micro80/CPU.py":149
+ *                 if event.key.keysym.sym == sdl2.SDLK_ESCAPE:
+ *                     self.memory.writeAddress(self.RunStatus, 0x0001)
+ *                     break             # <<<<<<<<<<<<<<
+ *                 elif event.key.keysym.sym in DPadKeys:
+ *                     if self.memory.readAddress(0x400B) == 0x0000:
+ */
+        goto __pyx_L4_break;
+
+        /* "Micro80/CPU.py":147
+ *                 break
+ *             if event.type == sdl2.SDL_KEYDOWN:
+ *                 if event.key.keysym.sym == sdl2.SDLK_ESCAPE:             # <<<<<<<<<<<<<<
+ *                     self.memory.writeAddress(self.RunStatus, 0x0001)
+ *                     break
+ */
+      }
+
+      /* "Micro80/CPU.py":150
+ *                     self.memory.writeAddress(self.RunStatus, 0x0001)
+ *                     break
+ *                 elif event.key.keysym.sym in DPadKeys:             # <<<<<<<<<<<<<<
+ *                     if self.memory.readAddress(0x400B) == 0x0000:
+ *                         self.memory.writeAddress(0x400B, DPadKeys[event.key.keysym.sym])
+ */
+      __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_event, __pyx_n_s_key); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 150, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_keysym); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 150, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_3);
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_sym); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 150, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+      __pyx_t_8 = (__Pyx_PyDict_ContainsTF(__pyx_t_2, __pyx_v_DPadKeys, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 150, __pyx_L1_error)
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      if (__pyx_t_8) {
+
+        /* "Micro80/CPU.py":151
+ *                     break
+ *                 elif event.key.keysym.sym in DPadKeys:
+ *                     if self.memory.readAddress(0x400B) == 0x0000:             # <<<<<<<<<<<<<<
+ *                         self.memory.writeAddress(0x400B, DPadKeys[event.key.keysym.sym])
+ *                     else:
+ */
+        __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 151, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_3);
+        __pyx_t_4 = NULL;
+        __pyx_t_5 = 0;
+        #if CYTHON_UNPACK_METHODS
+        if (likely(PyMethod_Check(__pyx_t_3))) {
+          __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_3);
+          if (likely(__pyx_t_4)) {
+            PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
+            __Pyx_INCREF(__pyx_t_4);
+            __Pyx_INCREF(function);
+            __Pyx_DECREF_SET(__pyx_t_3, function);
+            __pyx_t_5 = 1;
+          }
+        }
+        #endif
+        {
+          PyObject *__pyx_callargs[2] = {__pyx_t_4, __pyx_int_16395};
+          __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_3, __pyx_callargs+1-__pyx_t_5, 1+__pyx_t_5);
+          __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+          if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 151, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_2);
+          __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+        }
+        __pyx_t_8 = (__Pyx_PyInt_BoolEqObjC(__pyx_t_2, __pyx_int_0, 0x0000, 0)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 151, __pyx_L1_error)
+        __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+        if (__pyx_t_8) {
+
+          /* "Micro80/CPU.py":152
+ *                 elif event.key.keysym.sym in DPadKeys:
+ *                     if self.memory.readAddress(0x400B) == 0x0000:
+ *                         self.memory.writeAddress(0x400B, DPadKeys[event.key.keysym.sym])             # <<<<<<<<<<<<<<
+ *                     else:
+ *                         self.memory.writeAddress(0x400C, DPadKeys[event.key.keysym.sym])
+ */
+          __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_writeAddress); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 152, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_3);
+          __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_event, __pyx_n_s_key); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 152, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_4);
+          __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_keysym); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 152, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_9);
+          __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+          __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_9, __pyx_n_s_sym); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 152, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_4);
+          __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
+          __pyx_t_9 = __Pyx_PyDict_GetItem(__pyx_v_DPadKeys, __pyx_t_4); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 152, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_9);
+          __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+          __pyx_t_4 = NULL;
+          __pyx_t_5 = 0;
+          #if CYTHON_UNPACK_METHODS
+          if (likely(PyMethod_Check(__pyx_t_3))) {
+            __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_3);
+            if (likely(__pyx_t_4)) {
+              PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
+              __Pyx_INCREF(__pyx_t_4);
+              __Pyx_INCREF(function);
+              __Pyx_DECREF_SET(__pyx_t_3, function);
+              __pyx_t_5 = 1;
+            }
+          }
+          #endif
+          {
+            PyObject *__pyx_callargs[3] = {__pyx_t_4, __pyx_int_16395, __pyx_t_9};
+            __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_3, __pyx_callargs+1-__pyx_t_5, 2+__pyx_t_5);
+            __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+            __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
+            if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 152, __pyx_L1_error)
+            __Pyx_GOTREF(__pyx_t_2);
+            __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+          }
+          __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+          /* "Micro80/CPU.py":151
+ *                     break
+ *                 elif event.key.keysym.sym in DPadKeys:
+ *                     if self.memory.readAddress(0x400B) == 0x0000:             # <<<<<<<<<<<<<<
+ *                         self.memory.writeAddress(0x400B, DPadKeys[event.key.keysym.sym])
+ *                     else:
+ */
+          goto __pyx_L8;
+        }
+
+        /* "Micro80/CPU.py":154
+ *                         self.memory.writeAddress(0x400B, DPadKeys[event.key.keysym.sym])
+ *                     else:
+ *                         self.memory.writeAddress(0x400C, DPadKeys[event.key.keysym.sym])             # <<<<<<<<<<<<<<
+ *                 elif event.key.keysym.sym in ActionKeys:
+ *                     self.memory.writeAddress(0x400D, ActionKeys[event.key.keysym.sym])
+ */
+        /*else*/ {
+          __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_writeAddress); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 154, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_3);
+          __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_v_event, __pyx_n_s_key); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 154, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_9);
+          __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_9, __pyx_n_s_keysym); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 154, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_4);
+          __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
+          __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_sym); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 154, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_9);
+          __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+          __pyx_t_4 = __Pyx_PyDict_GetItem(__pyx_v_DPadKeys, __pyx_t_9); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 154, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_4);
+          __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
+          __pyx_t_9 = NULL;
+          __pyx_t_5 = 0;
+          #if CYTHON_UNPACK_METHODS
+          if (likely(PyMethod_Check(__pyx_t_3))) {
+            __pyx_t_9 = PyMethod_GET_SELF(__pyx_t_3);
+            if (likely(__pyx_t_9)) {
+              PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
+              __Pyx_INCREF(__pyx_t_9);
+              __Pyx_INCREF(function);
+              __Pyx_DECREF_SET(__pyx_t_3, function);
+              __pyx_t_5 = 1;
+            }
+          }
+          #endif
+          {
+            PyObject *__pyx_callargs[3] = {__pyx_t_9, __pyx_int_16396, __pyx_t_4};
+            __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_3, __pyx_callargs+1-__pyx_t_5, 2+__pyx_t_5);
+            __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
+            __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+            if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 154, __pyx_L1_error)
+            __Pyx_GOTREF(__pyx_t_2);
+            __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+          }
+          __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+        }
+        __pyx_L8:;
+
+        /* "Micro80/CPU.py":150
+ *                     self.memory.writeAddress(self.RunStatus, 0x0001)
+ *                     break
+ *                 elif event.key.keysym.sym in DPadKeys:             # <<<<<<<<<<<<<<
+ *                     if self.memory.readAddress(0x400B) == 0x0000:
+ *                         self.memory.writeAddress(0x400B, DPadKeys[event.key.keysym.sym])
+ */
+        goto __pyx_L7;
+      }
+
+      /* "Micro80/CPU.py":155
+ *                     else:
+ *                         self.memory.writeAddress(0x400C, DPadKeys[event.key.keysym.sym])
+ *                 elif event.key.keysym.sym in ActionKeys:             # <<<<<<<<<<<<<<
+ *                     self.memory.writeAddress(0x400D, ActionKeys[event.key.keysym.sym])
+ *             if event.type == sdl2.SDL_KEYUP:
+ */
+      __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_event, __pyx_n_s_key); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 155, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_keysym); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 155, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_3);
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_sym); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 155, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+      __pyx_t_8 = (__Pyx_PyDict_ContainsTF(__pyx_t_2, __pyx_v_ActionKeys, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 155, __pyx_L1_error)
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      if (__pyx_t_8) {
+
+        /* "Micro80/CPU.py":156
+ *                         self.memory.writeAddress(0x400C, DPadKeys[event.key.keysym.sym])
+ *                 elif event.key.keysym.sym in ActionKeys:
+ *                     self.memory.writeAddress(0x400D, ActionKeys[event.key.keysym.sym])             # <<<<<<<<<<<<<<
+ *             if event.type == sdl2.SDL_KEYUP:
+ *                 if event.key.keysym.sym in DPadKeys:
+ */
+        __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_writeAddress); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 156, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_3);
+        __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_event, __pyx_n_s_key); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 156, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_4);
+        __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_keysym); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 156, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_9);
+        __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+        __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_9, __pyx_n_s_sym); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 156, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_4);
+        __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
+        __pyx_t_9 = __Pyx_PyDict_GetItem(__pyx_v_ActionKeys, __pyx_t_4); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 156, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_9);
+        __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+        __pyx_t_4 = NULL;
+        __pyx_t_5 = 0;
+        #if CYTHON_UNPACK_METHODS
+        if (likely(PyMethod_Check(__pyx_t_3))) {
+          __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_3);
+          if (likely(__pyx_t_4)) {
+            PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
+            __Pyx_INCREF(__pyx_t_4);
+            __Pyx_INCREF(function);
+            __Pyx_DECREF_SET(__pyx_t_3, function);
+            __pyx_t_5 = 1;
+          }
+        }
+        #endif
+        {
+          PyObject *__pyx_callargs[3] = {__pyx_t_4, __pyx_int_16397, __pyx_t_9};
+          __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_3, __pyx_callargs+1-__pyx_t_5, 2+__pyx_t_5);
+          __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+          __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
+          if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 156, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_2);
+          __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+        }
+        __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+        /* "Micro80/CPU.py":155
+ *                     else:
+ *                         self.memory.writeAddress(0x400C, DPadKeys[event.key.keysym.sym])
+ *                 elif event.key.keysym.sym in ActionKeys:             # <<<<<<<<<<<<<<
+ *                     self.memory.writeAddress(0x400D, ActionKeys[event.key.keysym.sym])
+ *             if event.type == sdl2.SDL_KEYUP:
+ */
+      }
+      __pyx_L7:;
+
+      /* "Micro80/CPU.py":146
+ *                 self.memory.writeAddress(self.RunStatus, 0x0001)
+ *                 break
+ *             if event.type == sdl2.SDL_KEYDOWN:             # <<<<<<<<<<<<<<
+ *                 if event.key.keysym.sym == sdl2.SDLK_ESCAPE:
+ *                     self.memory.writeAddress(self.RunStatus, 0x0001)
+ */
+    }
+
+    /* "Micro80/CPU.py":157
+ *                 elif event.key.keysym.sym in ActionKeys:
+ *                     self.memory.writeAddress(0x400D, ActionKeys[event.key.keysym.sym])
+ *             if event.type == sdl2.SDL_KEYUP:             # <<<<<<<<<<<<<<
+ *                 if event.key.keysym.sym in DPadKeys:
+ *                     if (
+ */
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_event, __pyx_n_s_type); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 157, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_sdl2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 157, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_SDL_KEYUP); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 157, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_9);
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __pyx_t_3 = PyObject_RichCompare(__pyx_t_2, __pyx_t_9, Py_EQ); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 157, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
+    __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 157, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    if (__pyx_t_8) {
+
+      /* "Micro80/CPU.py":158
+ *                     self.memory.writeAddress(0x400D, ActionKeys[event.key.keysym.sym])
+ *             if event.type == sdl2.SDL_KEYUP:
+ *                 if event.key.keysym.sym in DPadKeys:             # <<<<<<<<<<<<<<
+ *                     if (
+ *                         self.memory.readAddress(0x400B)
+ */
+      __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_event, __pyx_n_s_key); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 158, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_3);
+      __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_keysym); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 158, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_9);
+      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+      __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_9, __pyx_n_s_sym); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 158, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_3);
+      __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
+      __pyx_t_8 = (__Pyx_PyDict_ContainsTF(__pyx_t_3, __pyx_v_DPadKeys, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 158, __pyx_L1_error)
+      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+      if (__pyx_t_8) {
+
+        /* "Micro80/CPU.py":160
+ *                 if event.key.keysym.sym in DPadKeys:
+ *                     if (
+ *                         self.memory.readAddress(0x400B)             # <<<<<<<<<<<<<<
+ *                         == DPadKeys[event.key.keysym.sym]
+ *                     ):
+ */
+        __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 160, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_9);
+        __pyx_t_2 = NULL;
+        __pyx_t_5 = 0;
+        #if CYTHON_UNPACK_METHODS
+        if (likely(PyMethod_Check(__pyx_t_9))) {
+          __pyx_t_2 = PyMethod_GET_SELF(__pyx_t_9);
+          if (likely(__pyx_t_2)) {
+            PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_9);
+            __Pyx_INCREF(__pyx_t_2);
+            __Pyx_INCREF(function);
+            __Pyx_DECREF_SET(__pyx_t_9, function);
+            __pyx_t_5 = 1;
+          }
+        }
+        #endif
+        {
+          PyObject *__pyx_callargs[2] = {__pyx_t_2, __pyx_int_16395};
+          __pyx_t_3 = __Pyx_PyObject_FastCall(__pyx_t_9, __pyx_callargs+1-__pyx_t_5, 1+__pyx_t_5);
+          __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
+          if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 160, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_3);
+          __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
+        }
+
+        /* "Micro80/CPU.py":161
+ *                     if (
+ *                         self.memory.readAddress(0x400B)
+ *                         == DPadKeys[event.key.keysym.sym]             # <<<<<<<<<<<<<<
+ *                     ):
+ *                         self.memory.writeAddress(0x400B, 0x0000)
+ */
+        __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_v_event, __pyx_n_s_key); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 161, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_9);
+        __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_9, __pyx_n_s_keysym); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 161, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_2);
+        __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
+        __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_sym); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 161, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_9);
+        __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+        __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_DPadKeys, __pyx_t_9); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 161, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_2);
+        __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
+        __pyx_t_9 = PyObject_RichCompare(__pyx_t_3, __pyx_t_2, Py_EQ); __Pyx_XGOTREF(__pyx_t_9); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 161, __pyx_L1_error)
+        __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+        __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+        __pyx_t_8 = __Pyx_PyObject_IsTrue(__pyx_t_9); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 161, __pyx_L1_error)
+        __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
+
+        /* "Micro80/CPU.py":159
+ *             if event.type == sdl2.SDL_KEYUP:
+ *                 if event.key.keysym.sym in DPadKeys:
+ *                     if (             # <<<<<<<<<<<<<<
+ *                         self.memory.readAddress(0x400B)
+ *                         == DPadKeys[event.key.keysym.sym]
+ */
+        if (__pyx_t_8) {
+
+          /* "Micro80/CPU.py":163
+ *                         == DPadKeys[event.key.keysym.sym]
+ *                     ):
+ *                         self.memory.writeAddress(0x400B, 0x0000)             # <<<<<<<<<<<<<<
+ *                     else:
+ *                         self.memory.writeAddress(0x400C, 0x0000)
+ */
+          __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_writeAddress); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 163, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_9);
+          __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_9, __pyx_tuple__14, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 163, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_2);
+          __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
+          __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+          /* "Micro80/CPU.py":159
+ *             if event.type == sdl2.SDL_KEYUP:
+ *                 if event.key.keysym.sym in DPadKeys:
+ *                     if (             # <<<<<<<<<<<<<<
+ *                         self.memory.readAddress(0x400B)
+ *                         == DPadKeys[event.key.keysym.sym]
+ */
+          goto __pyx_L11;
+        }
+
+        /* "Micro80/CPU.py":165
+ *                         self.memory.writeAddress(0x400B, 0x0000)
+ *                     else:
+ *                         self.memory.writeAddress(0x400C, 0x0000)             # <<<<<<<<<<<<<<
+ *                 if event.key.keysym.sym in ActionKeys:
+ *                     self.memory.writeAddress(0x400D, 0x0000)
+ */
+        /*else*/ {
+          __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_writeAddress); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 165, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_2);
+          __pyx_t_9 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_tuple__15, NULL); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 165, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_9);
+          __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+          __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
+        }
+        __pyx_L11:;
+
+        /* "Micro80/CPU.py":158
+ *                     self.memory.writeAddress(0x400D, ActionKeys[event.key.keysym.sym])
+ *             if event.type == sdl2.SDL_KEYUP:
+ *                 if event.key.keysym.sym in DPadKeys:             # <<<<<<<<<<<<<<
+ *                     if (
+ *                         self.memory.readAddress(0x400B)
+ */
+      }
+
+      /* "Micro80/CPU.py":166
+ *                     else:
+ *                         self.memory.writeAddress(0x400C, 0x0000)
+ *                 if event.key.keysym.sym in ActionKeys:             # <<<<<<<<<<<<<<
+ *                     self.memory.writeAddress(0x400D, 0x0000)
+ * 
+ */
+      __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_v_event, __pyx_n_s_key); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 166, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_9);
+      __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_9, __pyx_n_s_keysym); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 166, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
+      __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_sym); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 166, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_9);
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __pyx_t_8 = (__Pyx_PyDict_ContainsTF(__pyx_t_9, __pyx_v_ActionKeys, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 166, __pyx_L1_error)
+      __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
+      if (__pyx_t_8) {
+
+        /* "Micro80/CPU.py":167
+ *                         self.memory.writeAddress(0x400C, 0x0000)
+ *                 if event.key.keysym.sym in ActionKeys:
+ *                     self.memory.writeAddress(0x400D, 0x0000)             # <<<<<<<<<<<<<<
+ * 
+ *     def execute(self, opcode, operands):
+ */
+        __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_writeAddress); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 167, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_9);
+        __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_9, __pyx_tuple__16, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 167, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_2);
+        __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
+        __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+        /* "Micro80/CPU.py":166
+ *                     else:
+ *                         self.memory.writeAddress(0x400C, 0x0000)
+ *                 if event.key.keysym.sym in ActionKeys:             # <<<<<<<<<<<<<<
+ *                     self.memory.writeAddress(0x400D, 0x0000)
+ * 
+ */
+      }
+
+      /* "Micro80/CPU.py":157
+ *                 elif event.key.keysym.sym in ActionKeys:
+ *                     self.memory.writeAddress(0x400D, ActionKeys[event.key.keysym.sym])
+ *             if event.type == sdl2.SDL_KEYUP:             # <<<<<<<<<<<<<<
+ *                 if event.key.keysym.sym in DPadKeys:
+ *                     if (
+ */
+    }
+
+    /* "Micro80/CPU.py":142
+ *             sdl2.SDLK_BACKSPACE: 6,
+ *         }
+ *         for event in events:             # <<<<<<<<<<<<<<
+ *             if event.type == sdl2.SDL_QUIT:
+ *                 self.memory.writeAddress(self.RunStatus, 0x0001)
+ */
+  }
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  goto __pyx_L13_for_end;
+  __pyx_L4_break:;
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  goto __pyx_L13_for_end;
+  __pyx_L13_for_end:;
+
+  /* "Micro80/CPU.py":121
+ *             self.curOperand = None
+ * 
+ *     def _handleEvents(self):             # <<<<<<<<<<<<<<
+ *         "Handles the SDL2 events"
+ *         events = sdl2.ext.get_events()
+ */
+
+  /* function exit code */
+  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_XDECREF(__pyx_t_4);
+  __Pyx_XDECREF(__pyx_t_9);
+  __Pyx_AddTraceback("Micro80.CPU.CPU._handleEvents", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = 0;
+  __pyx_L0:;
+  __Pyx_XDECREF(__pyx_v_events);
+  __Pyx_XDECREF(__pyx_v_DPadKeys);
+  __Pyx_XDECREF(__pyx_v_ActionKeys);
+  __Pyx_XDECREF(__pyx_v_event);
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* Python wrapper */
+static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_7_handleEvents(PyObject *__pyx_v_self, 
+#if CYTHON_METH_FASTCALL
+PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
+#else
+PyObject *__pyx_args, PyObject *__pyx_kwds
+#endif
+); /*proto*/
+PyDoc_STRVAR(__pyx_doc_7Micro80_3CPU_3CPU_6_handleEvents, "Handles the SDL2 events");
+static PyMethodDef __pyx_mdef_7Micro80_3CPU_3CPU_7_handleEvents = {"_handleEvents", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_7Micro80_3CPU_3CPU_7_handleEvents, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_7Micro80_3CPU_3CPU_6_handleEvents};
+static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_7_handleEvents(PyObject *__pyx_v_self, 
+#if CYTHON_METH_FASTCALL
+PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
+#else
+PyObject *__pyx_args, PyObject *__pyx_kwds
+#endif
+) {
+  #if !CYTHON_METH_FASTCALL
+  CYTHON_UNUSED Py_ssize_t __pyx_nargs;
+  #endif
+  CYTHON_UNUSED PyObject *const *__pyx_kwvalues;
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("_handleEvents (wrapper)", 0);
+  #if !CYTHON_METH_FASTCALL
+  #if CYTHON_ASSUME_SAFE_MACROS
+  __pyx_nargs = PyTuple_GET_SIZE(__pyx_args);
+  #else
+  __pyx_nargs = PyTuple_Size(__pyx_args); if (unlikely(__pyx_nargs < 0)) return NULL;
+  #endif
+  #endif
+  __pyx_kwvalues = __Pyx_KwValues_FASTCALL(__pyx_args, __pyx_nargs);
+  if (unlikely(__pyx_nargs > 0)) {
+    __Pyx_RaiseArgtupleInvalid("_handleEvents", 1, 0, 0, __pyx_nargs); return NULL;}
+  if (unlikely(__pyx_kwds) && __Pyx_NumKwargs_FASTCALL(__pyx_kwds) && unlikely(!__Pyx_CheckKeywordStrings(__pyx_kwds, "_handleEvents", 0))) return NULL;
+  __pyx_r = __pyx_pf_7Micro80_3CPU_3CPU_6_handleEvents(((struct __pyx_obj_7Micro80_3CPU_CPU *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_6_handleEvents(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("_handleEvents", 1);
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = __pyx_f_7Micro80_3CPU_3CPU__handleEvents(__pyx_v_self, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 121, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("Micro80.CPU.CPU._handleEvents", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "Micro80/CPU.py":169
+ *                     self.memory.writeAddress(0x400D, 0x0000)
  * 
  *     def execute(self, opcode, operands):             # <<<<<<<<<<<<<<
  *         "Executes the code"
  *         instructions = self.instructions
  */
 
-static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_7execute(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_9execute(PyObject *__pyx_v_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -6067,11 +7842,11 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_execute(struct __pyx_obj_7Micro80_3C
     if (unlikely(!__Pyx_object_dict_version_matches(((PyObject *)__pyx_v_self), __pyx_tp_dict_version, __pyx_obj_dict_version))) {
       PY_UINT64_T __pyx_typedict_guard = __Pyx_get_tp_dict_version(((PyObject *)__pyx_v_self));
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_execute); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 101, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_execute); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 169, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      if (!__Pyx_IsSameCFunction(__pyx_t_1, (void*) __pyx_pw_7Micro80_3CPU_3CPU_7execute)) {
+      if (!__Pyx_IsSameCFunction(__pyx_t_1, (void*) __pyx_pw_7Micro80_3CPU_3CPU_9execute)) {
         __Pyx_XDECREF(__pyx_r);
-        __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 101, __pyx_L1_error)
+        __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 169, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_3);
         __Pyx_INCREF(__pyx_t_1);
         __pyx_t_4 = __pyx_t_1; __pyx_t_5 = NULL;
@@ -6093,7 +7868,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_execute(struct __pyx_obj_7Micro80_3C
           __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_4, __pyx_callargs+1-__pyx_t_6, 2+__pyx_t_6);
           __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
           __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-          if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 101, __pyx_L1_error)
+          if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 169, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_2);
           __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
         }
@@ -6115,64 +7890,117 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_execute(struct __pyx_obj_7Micro80_3C
     #endif
   }
 
-  /* "Micro80/CPU.py":103
+  /* "Micro80/CPU.py":171
  *     def execute(self, opcode, operands):
  *         "Executes the code"
  *         instructions = self.instructions             # <<<<<<<<<<<<<<
- *         if opcode not in instructions:
- *             raise ValueError(f"Invalid Opcode, {opcode}")
+ *         if self.debug:
+ *             print(self.programCounter, instructions[opcode], operands)
  */
   __pyx_t_1 = __pyx_v_self->instructions;
   __Pyx_INCREF(__pyx_t_1);
   __pyx_v_instructions = ((PyObject*)__pyx_t_1);
   __pyx_t_1 = 0;
 
-  /* "Micro80/CPU.py":104
+  /* "Micro80/CPU.py":172
  *         "Executes the code"
  *         instructions = self.instructions
+ *         if self.debug:             # <<<<<<<<<<<<<<
+ *             print(self.programCounter, instructions[opcode], operands)
+ *         if opcode not in instructions:
+ */
+  __pyx_t_7 = __Pyx_PyObject_IsTrue(__pyx_v_self->debug); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 172, __pyx_L1_error)
+  if (__pyx_t_7) {
+
+    /* "Micro80/CPU.py":173
+ *         instructions = self.instructions
+ *         if self.debug:
+ *             print(self.programCounter, instructions[opcode], operands)             # <<<<<<<<<<<<<<
+ *         if opcode not in instructions:
+ *             raise ValueError(f"Invalid Opcode, {opcode}")
+ */
+    __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->programCounter); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 173, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    if (unlikely(__pyx_v_instructions == Py_None)) {
+      PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
+      __PYX_ERR(0, 173, __pyx_L1_error)
+    }
+    __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 173, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_4 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 173, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __pyx_t_2 = PyTuple_New(3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 173, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_GIVEREF(__pyx_t_1);
+    if (__Pyx_PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_1)) __PYX_ERR(0, 173, __pyx_L1_error);
+    __Pyx_GIVEREF(__pyx_t_4);
+    if (__Pyx_PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_t_4)) __PYX_ERR(0, 173, __pyx_L1_error);
+    __Pyx_INCREF(__pyx_v_operands);
+    __Pyx_GIVEREF(__pyx_v_operands);
+    if (__Pyx_PyTuple_SET_ITEM(__pyx_t_2, 2, __pyx_v_operands)) __PYX_ERR(0, 173, __pyx_L1_error);
+    __pyx_t_1 = 0;
+    __pyx_t_4 = 0;
+    __pyx_t_4 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_t_2, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 173, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+
+    /* "Micro80/CPU.py":172
+ *         "Executes the code"
+ *         instructions = self.instructions
+ *         if self.debug:             # <<<<<<<<<<<<<<
+ *             print(self.programCounter, instructions[opcode], operands)
+ *         if opcode not in instructions:
+ */
+  }
+
+  /* "Micro80/CPU.py":174
+ *         if self.debug:
+ *             print(self.programCounter, instructions[opcode], operands)
  *         if opcode not in instructions:             # <<<<<<<<<<<<<<
  *             raise ValueError(f"Invalid Opcode, {opcode}")
  *         if instructions[opcode] == "NOP":
  */
-  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 104, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 174, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
   if (unlikely(__pyx_v_instructions == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not iterable");
-    __PYX_ERR(0, 104, __pyx_L1_error)
+    __PYX_ERR(0, 174, __pyx_L1_error)
   }
-  __pyx_t_7 = (__Pyx_PyDict_ContainsTF(__pyx_t_1, __pyx_v_instructions, Py_NE)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 104, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_t_7 = (__Pyx_PyDict_ContainsTF(__pyx_t_4, __pyx_v_instructions, Py_NE)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 174, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   if (unlikely(__pyx_t_7)) {
 
-    /* "Micro80/CPU.py":105
- *         instructions = self.instructions
+    /* "Micro80/CPU.py":175
+ *             print(self.programCounter, instructions[opcode], operands)
  *         if opcode not in instructions:
  *             raise ValueError(f"Invalid Opcode, {opcode}")             # <<<<<<<<<<<<<<
  *         if instructions[opcode] == "NOP":
  *             pass
  */
-    __pyx_t_1 = __Pyx_PyUnicode_From_int(__pyx_v_opcode, 0, ' ', 'd'); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 105, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_2 = __Pyx_PyUnicode_Concat(__pyx_kp_u_Invalid_Opcode, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 105, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyUnicode_From_int(__pyx_v_opcode, 0, ' ', 'd'); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 175, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
+    __pyx_t_2 = __Pyx_PyUnicode_Concat(__pyx_kp_u_Invalid_Opcode, __pyx_t_4); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 175, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_builtin_ValueError, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 105, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __pyx_t_4 = __Pyx_PyObject_CallOneArg(__pyx_builtin_ValueError, __pyx_t_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 175, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __Pyx_Raise(__pyx_t_1, 0, 0, 0);
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __PYX_ERR(0, 105, __pyx_L1_error)
+    __Pyx_Raise(__pyx_t_4, 0, 0, 0);
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __PYX_ERR(0, 175, __pyx_L1_error)
 
-    /* "Micro80/CPU.py":104
- *         "Executes the code"
- *         instructions = self.instructions
+    /* "Micro80/CPU.py":174
+ *         if self.debug:
+ *             print(self.programCounter, instructions[opcode], operands)
  *         if opcode not in instructions:             # <<<<<<<<<<<<<<
  *             raise ValueError(f"Invalid Opcode, {opcode}")
  *         if instructions[opcode] == "NOP":
  */
   }
 
-  /* "Micro80/CPU.py":106
+  /* "Micro80/CPU.py":176
  *         if opcode not in instructions:
  *             raise ValueError(f"Invalid Opcode, {opcode}")
  *         if instructions[opcode] == "NOP":             # <<<<<<<<<<<<<<
@@ -6181,20 +8009,20 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_execute(struct __pyx_obj_7Micro80_3C
  */
   if (unlikely(__pyx_v_instructions == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-    __PYX_ERR(0, 106, __pyx_L1_error)
+    __PYX_ERR(0, 176, __pyx_L1_error)
   }
-  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 106, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 106, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 176, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
+  __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_4); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 176, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_NOP, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 106, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_NOP, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 176, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   if (__pyx_t_7) {
-    goto __pyx_L4;
+    goto __pyx_L5;
   }
 
-  /* "Micro80/CPU.py":108
+  /* "Micro80/CPU.py":178
  *         if instructions[opcode] == "NOP":
  *             pass
  *         elif instructions[opcode] == "HLT":             # <<<<<<<<<<<<<<
@@ -6203,28 +8031,28 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_execute(struct __pyx_obj_7Micro80_3C
  */
   if (unlikely(__pyx_v_instructions == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-    __PYX_ERR(0, 108, __pyx_L1_error)
+    __PYX_ERR(0, 178, __pyx_L1_error)
   }
-  __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 108, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 178, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 108, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_4 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 178, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_t_1, __pyx_n_s_HLT, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 108, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_t_4, __pyx_n_s_HLT, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 178, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   if (__pyx_t_7) {
 
-    /* "Micro80/CPU.py":109
+    /* "Micro80/CPU.py":179
  *             pass
  *         elif instructions[opcode] == "HLT":
  *             self.memory.writeAddress(self.RunStatus, 0x0001)             # <<<<<<<<<<<<<<
  *         elif instructions[opcode][0:2] == "LD":
  *             self.load(instructions[opcode][2:], operands)
  */
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_writeAddress); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 109, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_writeAddress); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 179, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_self->RunStatus); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 109, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_4);
+    __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->RunStatus); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 179, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
     __pyx_t_3 = NULL;
     __pyx_t_6 = 0;
     #if CYTHON_UNPACK_METHODS
@@ -6240,27 +8068,27 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_execute(struct __pyx_obj_7Micro80_3C
     }
     #endif
     {
-      PyObject *__pyx_callargs[3] = {__pyx_t_3, __pyx_t_4, __pyx_int_1};
-      __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_2, __pyx_callargs+1-__pyx_t_6, 2+__pyx_t_6);
+      PyObject *__pyx_callargs[3] = {__pyx_t_3, __pyx_t_1, __pyx_int_1};
+      __pyx_t_4 = __Pyx_PyObject_FastCall(__pyx_t_2, __pyx_callargs+1-__pyx_t_6, 2+__pyx_t_6);
       __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 109, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 179, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_4);
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     }
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-    /* "Micro80/CPU.py":108
+    /* "Micro80/CPU.py":178
  *         if instructions[opcode] == "NOP":
  *             pass
  *         elif instructions[opcode] == "HLT":             # <<<<<<<<<<<<<<
  *             self.memory.writeAddress(self.RunStatus, 0x0001)
  *         elif instructions[opcode][0:2] == "LD":
  */
-    goto __pyx_L4;
+    goto __pyx_L5;
   }
 
-  /* "Micro80/CPU.py":110
+  /* "Micro80/CPU.py":180
  *         elif instructions[opcode] == "HLT":
  *             self.memory.writeAddress(self.RunStatus, 0x0001)
  *         elif instructions[opcode][0:2] == "LD":             # <<<<<<<<<<<<<<
@@ -6269,21 +8097,21 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_execute(struct __pyx_obj_7Micro80_3C
  */
   if (unlikely(__pyx_v_instructions == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-    __PYX_ERR(0, 110, __pyx_L1_error)
+    __PYX_ERR(0, 180, __pyx_L1_error)
   }
-  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 110, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 110, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 180, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
+  __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_4); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 180, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyObject_GetSlice(__pyx_t_2, 0, 2, NULL, NULL, &__pyx_slice__10, 1, 1, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 110, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  __pyx_t_4 = __Pyx_PyObject_GetSlice(__pyx_t_2, 0, 2, NULL, NULL, &__pyx_slice__17, 1, 1, 1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 180, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_t_1, __pyx_n_s_LD, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 110, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_t_4, __pyx_n_s_LD, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 180, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   if (__pyx_t_7) {
 
-    /* "Micro80/CPU.py":111
+    /* "Micro80/CPU.py":181
  *             self.memory.writeAddress(self.RunStatus, 0x0001)
  *         elif instructions[opcode][0:2] == "LD":
  *             self.load(instructions[opcode][2:], operands)             # <<<<<<<<<<<<<<
@@ -6292,34 +8120,34 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_execute(struct __pyx_obj_7Micro80_3C
  */
     if (unlikely(__pyx_v_instructions == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      __PYX_ERR(0, 111, __pyx_L1_error)
+      __PYX_ERR(0, 181, __pyx_L1_error)
     }
-    __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 111, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 111, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 181, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
+    __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_4); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 181, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_1 = __Pyx_PyObject_GetSlice(__pyx_t_2, 2, 0, NULL, NULL, &__pyx_slice__11, 1, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 111, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __pyx_t_4 = __Pyx_PyObject_GetSlice(__pyx_t_2, 2, 0, NULL, NULL, &__pyx_slice__18, 1, 0, 1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 181, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    if (!(likely(PyString_CheckExact(__pyx_t_1))||((__pyx_t_1) == Py_None) || __Pyx_RaiseUnexpectedTypeError("str", __pyx_t_1))) __PYX_ERR(0, 111, __pyx_L1_error)
-    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_v_operands); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 111, __pyx_L1_error)
-    __pyx_t_2 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->load(__pyx_v_self, ((PyObject*)__pyx_t_1), __pyx_t_6, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 111, __pyx_L1_error)
+    if (!(likely(PyString_CheckExact(__pyx_t_4))||((__pyx_t_4) == Py_None) || __Pyx_RaiseUnexpectedTypeError("str", __pyx_t_4))) __PYX_ERR(0, 181, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_v_operands); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 181, __pyx_L1_error)
+    __pyx_t_2 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->load(__pyx_v_self, ((PyObject*)__pyx_t_4), __pyx_t_6, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 181, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "Micro80/CPU.py":110
+    /* "Micro80/CPU.py":180
  *         elif instructions[opcode] == "HLT":
  *             self.memory.writeAddress(self.RunStatus, 0x0001)
  *         elif instructions[opcode][0:2] == "LD":             # <<<<<<<<<<<<<<
  *             self.load(instructions[opcode][2:], operands)
  *         elif instructions[opcode][0:2] == "ST":
  */
-    goto __pyx_L4;
+    goto __pyx_L5;
   }
 
-  /* "Micro80/CPU.py":112
+  /* "Micro80/CPU.py":182
  *         elif instructions[opcode][0:2] == "LD":
  *             self.load(instructions[opcode][2:], operands)
  *         elif instructions[opcode][0:2] == "ST":             # <<<<<<<<<<<<<<
@@ -6328,21 +8156,21 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_execute(struct __pyx_obj_7Micro80_3C
  */
   if (unlikely(__pyx_v_instructions == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-    __PYX_ERR(0, 112, __pyx_L1_error)
+    __PYX_ERR(0, 182, __pyx_L1_error)
   }
-  __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 112, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 182, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 112, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_4 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 182, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_GetSlice(__pyx_t_1, 0, 2, NULL, NULL, &__pyx_slice__10, 1, 1, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 112, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetSlice(__pyx_t_4, 0, 2, NULL, NULL, &__pyx_slice__17, 1, 1, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 182, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_ST, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 112, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_ST, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 182, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   if (__pyx_t_7) {
 
-    /* "Micro80/CPU.py":113
+    /* "Micro80/CPU.py":183
  *             self.load(instructions[opcode][2:], operands)
  *         elif instructions[opcode][0:2] == "ST":
  *             self.store(instructions[opcode][2:], operands)             # <<<<<<<<<<<<<<
@@ -6351,34 +8179,34 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_execute(struct __pyx_obj_7Micro80_3C
  */
     if (unlikely(__pyx_v_instructions == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      __PYX_ERR(0, 113, __pyx_L1_error)
+      __PYX_ERR(0, 183, __pyx_L1_error)
     }
-    __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 113, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 183, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 113, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_4 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 183, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_2 = __Pyx_PyObject_GetSlice(__pyx_t_1, 2, 0, NULL, NULL, &__pyx_slice__11, 1, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 113, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_GetSlice(__pyx_t_4, 2, 0, NULL, NULL, &__pyx_slice__18, 1, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 183, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    if (!(likely(PyString_CheckExact(__pyx_t_2))||((__pyx_t_2) == Py_None) || __Pyx_RaiseUnexpectedTypeError("str", __pyx_t_2))) __PYX_ERR(0, 113, __pyx_L1_error)
-    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_v_operands); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 113, __pyx_L1_error)
-    __pyx_t_1 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->store(__pyx_v_self, ((PyObject*)__pyx_t_2), __pyx_t_6, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 113, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    if (!(likely(PyString_CheckExact(__pyx_t_2))||((__pyx_t_2) == Py_None) || __Pyx_RaiseUnexpectedTypeError("str", __pyx_t_2))) __PYX_ERR(0, 183, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_v_operands); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 183, __pyx_L1_error)
+    __pyx_t_4 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->store(__pyx_v_self, ((PyObject*)__pyx_t_2), __pyx_t_6, 0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 183, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-    /* "Micro80/CPU.py":112
+    /* "Micro80/CPU.py":182
  *         elif instructions[opcode][0:2] == "LD":
  *             self.load(instructions[opcode][2:], operands)
  *         elif instructions[opcode][0:2] == "ST":             # <<<<<<<<<<<<<<
  *             self.store(instructions[opcode][2:], operands)
  *         elif instructions[opcode] in [
  */
-    goto __pyx_L4;
+    goto __pyx_L5;
   }
 
-  /* "Micro80/CPU.py":114
+  /* "Micro80/CPU.py":184
  *         elif instructions[opcode][0:2] == "ST":
  *             self.store(instructions[opcode][2:], operands)
  *         elif instructions[opcode] in [             # <<<<<<<<<<<<<<
@@ -6387,87 +8215,87 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_execute(struct __pyx_obj_7Micro80_3C
  */
   if (unlikely(__pyx_v_instructions == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-    __PYX_ERR(0, 114, __pyx_L1_error)
+    __PYX_ERR(0, 184, __pyx_L1_error)
   }
-  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 114, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 114, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 184, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
+  __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_4); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 184, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_ADD, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 114, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_ADD, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 184, __pyx_L1_error)
   if (!__pyx_t_8) {
   } else {
     __pyx_t_7 = __pyx_t_8;
-    goto __pyx_L5_bool_binop_done;
+    goto __pyx_L6_bool_binop_done;
   }
-  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_SUB, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 114, __pyx_L1_error)
+  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_SUB, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 184, __pyx_L1_error)
   if (!__pyx_t_8) {
   } else {
     __pyx_t_7 = __pyx_t_8;
-    goto __pyx_L5_bool_binop_done;
+    goto __pyx_L6_bool_binop_done;
   }
-  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_MUL, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 114, __pyx_L1_error)
+  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_MUL, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 184, __pyx_L1_error)
   if (!__pyx_t_8) {
   } else {
     __pyx_t_7 = __pyx_t_8;
-    goto __pyx_L5_bool_binop_done;
+    goto __pyx_L6_bool_binop_done;
   }
-  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_DIV, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 114, __pyx_L1_error)
+  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_DIV, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 184, __pyx_L1_error)
   if (!__pyx_t_8) {
   } else {
     __pyx_t_7 = __pyx_t_8;
-    goto __pyx_L5_bool_binop_done;
+    goto __pyx_L6_bool_binop_done;
   }
-  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_MOD, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 114, __pyx_L1_error)
+  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_MOD, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 184, __pyx_L1_error)
   if (!__pyx_t_8) {
   } else {
     __pyx_t_7 = __pyx_t_8;
-    goto __pyx_L5_bool_binop_done;
+    goto __pyx_L6_bool_binop_done;
   }
-  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_AND, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 114, __pyx_L1_error)
+  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_AND, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 184, __pyx_L1_error)
   if (!__pyx_t_8) {
   } else {
     __pyx_t_7 = __pyx_t_8;
-    goto __pyx_L5_bool_binop_done;
+    goto __pyx_L6_bool_binop_done;
   }
-  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_OR, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 114, __pyx_L1_error)
+  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_OR, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 184, __pyx_L1_error)
   if (!__pyx_t_8) {
   } else {
     __pyx_t_7 = __pyx_t_8;
-    goto __pyx_L5_bool_binop_done;
+    goto __pyx_L6_bool_binop_done;
   }
-  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_XOR, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 114, __pyx_L1_error)
+  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_XOR, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 184, __pyx_L1_error)
   if (!__pyx_t_8) {
   } else {
     __pyx_t_7 = __pyx_t_8;
-    goto __pyx_L5_bool_binop_done;
+    goto __pyx_L6_bool_binop_done;
   }
-  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_NOT, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 114, __pyx_L1_error)
+  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_NOT, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 184, __pyx_L1_error)
   if (!__pyx_t_8) {
   } else {
     __pyx_t_7 = __pyx_t_8;
-    goto __pyx_L5_bool_binop_done;
+    goto __pyx_L6_bool_binop_done;
   }
-  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_SHL, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 114, __pyx_L1_error)
+  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_SHL, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 184, __pyx_L1_error)
   if (!__pyx_t_8) {
   } else {
     __pyx_t_7 = __pyx_t_8;
-    goto __pyx_L5_bool_binop_done;
+    goto __pyx_L6_bool_binop_done;
   }
-  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_SHR, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 114, __pyx_L1_error)
+  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_SHR, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 184, __pyx_L1_error)
   if (!__pyx_t_8) {
   } else {
     __pyx_t_7 = __pyx_t_8;
-    goto __pyx_L5_bool_binop_done;
+    goto __pyx_L6_bool_binop_done;
   }
-  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_CMP, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 114, __pyx_L1_error)
+  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_CMP, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 184, __pyx_L1_error)
   __pyx_t_7 = __pyx_t_8;
-  __pyx_L5_bool_binop_done:;
+  __pyx_L6_bool_binop_done:;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_t_8 = __pyx_t_7;
   if (__pyx_t_8) {
 
-    /* "Micro80/CPU.py":128
+    /* "Micro80/CPU.py":198
  *             "CMP",
  *         ]:
  *             self.alu(instructions[opcode], operands)             # <<<<<<<<<<<<<<
@@ -6476,31 +8304,31 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_execute(struct __pyx_obj_7Micro80_3C
  */
     if (unlikely(__pyx_v_instructions == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      __PYX_ERR(0, 128, __pyx_L1_error)
+      __PYX_ERR(0, 198, __pyx_L1_error)
     }
-    __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 128, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 198, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 128, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_4 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 198, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    if (!(likely(PyString_CheckExact(__pyx_t_1))||((__pyx_t_1) == Py_None) || __Pyx_RaiseUnexpectedTypeError("str", __pyx_t_1))) __PYX_ERR(0, 128, __pyx_L1_error)
-    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_v_operands); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 128, __pyx_L1_error)
-    __pyx_t_2 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->alu(__pyx_v_self, ((PyObject*)__pyx_t_1), __pyx_t_6, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 128, __pyx_L1_error)
+    if (!(likely(PyString_CheckExact(__pyx_t_4))||((__pyx_t_4) == Py_None) || __Pyx_RaiseUnexpectedTypeError("str", __pyx_t_4))) __PYX_ERR(0, 198, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_v_operands); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 198, __pyx_L1_error)
+    __pyx_t_2 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->alu(__pyx_v_self, ((PyObject*)__pyx_t_4), __pyx_t_6, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 198, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "Micro80/CPU.py":114
+    /* "Micro80/CPU.py":184
  *         elif instructions[opcode][0:2] == "ST":
  *             self.store(instructions[opcode][2:], operands)
  *         elif instructions[opcode] in [             # <<<<<<<<<<<<<<
  *             "ADD",
  *             "SUB",
  */
-    goto __pyx_L4;
+    goto __pyx_L5;
   }
 
-  /* "Micro80/CPU.py":129
+  /* "Micro80/CPU.py":199
  *         ]:
  *             self.alu(instructions[opcode], operands)
  *         elif instructions[opcode][0] == "J":             # <<<<<<<<<<<<<<
@@ -6509,21 +8337,21 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_execute(struct __pyx_obj_7Micro80_3C
  */
   if (unlikely(__pyx_v_instructions == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-    __PYX_ERR(0, 129, __pyx_L1_error)
+    __PYX_ERR(0, 199, __pyx_L1_error)
   }
-  __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 129, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 199, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 129, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_4 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 199, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_GetItemInt(__pyx_t_1, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 129, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_GetItemInt(__pyx_t_4, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 199, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_J, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 129, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_J, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 199, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   if (__pyx_t_8) {
 
-    /* "Micro80/CPU.py":130
+    /* "Micro80/CPU.py":200
  *             self.alu(instructions[opcode], operands)
  *         elif instructions[opcode][0] == "J":
  *             self.jump(instructions[opcode][1:], operands)             # <<<<<<<<<<<<<<
@@ -6532,34 +8360,34 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_execute(struct __pyx_obj_7Micro80_3C
  */
     if (unlikely(__pyx_v_instructions == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      __PYX_ERR(0, 130, __pyx_L1_error)
+      __PYX_ERR(0, 200, __pyx_L1_error)
     }
-    __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 130, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 200, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 130, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_4 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 200, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_2 = __Pyx_PyObject_GetSlice(__pyx_t_1, 1, 0, NULL, NULL, &__pyx_slice__12, 1, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 130, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_GetSlice(__pyx_t_4, 1, 0, NULL, NULL, &__pyx_slice__19, 1, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 200, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    if (!(likely(PyString_CheckExact(__pyx_t_2))||((__pyx_t_2) == Py_None) || __Pyx_RaiseUnexpectedTypeError("str", __pyx_t_2))) __PYX_ERR(0, 130, __pyx_L1_error)
-    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_v_operands); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 130, __pyx_L1_error)
-    __pyx_t_1 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->jump(__pyx_v_self, ((PyObject*)__pyx_t_2), __pyx_t_6, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 130, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    if (!(likely(PyString_CheckExact(__pyx_t_2))||((__pyx_t_2) == Py_None) || __Pyx_RaiseUnexpectedTypeError("str", __pyx_t_2))) __PYX_ERR(0, 200, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_v_operands); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 200, __pyx_L1_error)
+    __pyx_t_4 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->jump(__pyx_v_self, ((PyObject*)__pyx_t_2), __pyx_t_6, 0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 200, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-    /* "Micro80/CPU.py":129
+    /* "Micro80/CPU.py":199
  *         ]:
  *             self.alu(instructions[opcode], operands)
  *         elif instructions[opcode][0] == "J":             # <<<<<<<<<<<<<<
  *             self.jump(instructions[opcode][1:], operands)
  *         elif instructions[opcode] == "CALL":
  */
-    goto __pyx_L4;
+    goto __pyx_L5;
   }
 
-  /* "Micro80/CPU.py":131
+  /* "Micro80/CPU.py":201
  *         elif instructions[opcode][0] == "J":
  *             self.jump(instructions[opcode][1:], operands)
  *         elif instructions[opcode] == "CALL":             # <<<<<<<<<<<<<<
@@ -6568,40 +8396,40 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_execute(struct __pyx_obj_7Micro80_3C
  */
   if (unlikely(__pyx_v_instructions == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-    __PYX_ERR(0, 131, __pyx_L1_error)
+    __PYX_ERR(0, 201, __pyx_L1_error)
   }
-  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 131, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 131, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 201, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
+  __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_4); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 201, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_CALL, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 131, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_CALL, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 201, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   if (__pyx_t_8) {
 
-    /* "Micro80/CPU.py":132
+    /* "Micro80/CPU.py":202
  *             self.jump(instructions[opcode][1:], operands)
  *         elif instructions[opcode] == "CALL":
  *             self.call(operands)             # <<<<<<<<<<<<<<
  *         elif instructions[opcode] == "RET":
  *             self.ret()
  */
-    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_v_operands); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 132, __pyx_L1_error)
-    __pyx_t_2 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->call(__pyx_v_self, __pyx_t_6, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 132, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_v_operands); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 202, __pyx_L1_error)
+    __pyx_t_2 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->call(__pyx_v_self, __pyx_t_6, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 202, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "Micro80/CPU.py":131
+    /* "Micro80/CPU.py":201
  *         elif instructions[opcode][0] == "J":
  *             self.jump(instructions[opcode][1:], operands)
  *         elif instructions[opcode] == "CALL":             # <<<<<<<<<<<<<<
  *             self.call(operands)
  *         elif instructions[opcode] == "RET":
  */
-    goto __pyx_L4;
+    goto __pyx_L5;
   }
 
-  /* "Micro80/CPU.py":133
+  /* "Micro80/CPU.py":203
  *         elif instructions[opcode] == "CALL":
  *             self.call(operands)
  *         elif instructions[opcode] == "RET":             # <<<<<<<<<<<<<<
@@ -6610,39 +8438,39 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_execute(struct __pyx_obj_7Micro80_3C
  */
   if (unlikely(__pyx_v_instructions == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-    __PYX_ERR(0, 133, __pyx_L1_error)
+    __PYX_ERR(0, 203, __pyx_L1_error)
   }
-  __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 133, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 203, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 133, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_4 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 203, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_1, __pyx_n_s_RET, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 133, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_4, __pyx_n_s_RET, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 203, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   if (__pyx_t_8) {
 
-    /* "Micro80/CPU.py":134
+    /* "Micro80/CPU.py":204
  *             self.call(operands)
  *         elif instructions[opcode] == "RET":
  *             self.ret()             # <<<<<<<<<<<<<<
  *         elif instructions[opcode] == "PUSH":
  *             self.push(operands)
  */
-    __pyx_t_1 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->ret(__pyx_v_self, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 134, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_t_4 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->ret(__pyx_v_self, 0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 204, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-    /* "Micro80/CPU.py":133
+    /* "Micro80/CPU.py":203
  *         elif instructions[opcode] == "CALL":
  *             self.call(operands)
  *         elif instructions[opcode] == "RET":             # <<<<<<<<<<<<<<
  *             self.ret()
  *         elif instructions[opcode] == "PUSH":
  */
-    goto __pyx_L4;
+    goto __pyx_L5;
   }
 
-  /* "Micro80/CPU.py":135
+  /* "Micro80/CPU.py":205
  *         elif instructions[opcode] == "RET":
  *             self.ret()
  *         elif instructions[opcode] == "PUSH":             # <<<<<<<<<<<<<<
@@ -6651,40 +8479,40 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_execute(struct __pyx_obj_7Micro80_3C
  */
   if (unlikely(__pyx_v_instructions == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-    __PYX_ERR(0, 135, __pyx_L1_error)
+    __PYX_ERR(0, 205, __pyx_L1_error)
   }
-  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 135, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 135, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 205, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
+  __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_4); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 205, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_PUSH, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 135, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_PUSH, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 205, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   if (__pyx_t_8) {
 
-    /* "Micro80/CPU.py":136
+    /* "Micro80/CPU.py":206
  *             self.ret()
  *         elif instructions[opcode] == "PUSH":
  *             self.push(operands)             # <<<<<<<<<<<<<<
  *         elif instructions[opcode] == "POP":
  *             self.pop(operands)
  */
-    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_v_operands); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 136, __pyx_L1_error)
-    __pyx_t_2 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->push(__pyx_v_self, __pyx_t_6, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 136, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_v_operands); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 206, __pyx_L1_error)
+    __pyx_t_2 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->push(__pyx_v_self, __pyx_t_6, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 206, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "Micro80/CPU.py":135
+    /* "Micro80/CPU.py":205
  *         elif instructions[opcode] == "RET":
  *             self.ret()
  *         elif instructions[opcode] == "PUSH":             # <<<<<<<<<<<<<<
  *             self.push(operands)
  *         elif instructions[opcode] == "POP":
  */
-    goto __pyx_L4;
+    goto __pyx_L5;
   }
 
-  /* "Micro80/CPU.py":137
+  /* "Micro80/CPU.py":207
  *         elif instructions[opcode] == "PUSH":
  *             self.push(operands)
  *         elif instructions[opcode] == "POP":             # <<<<<<<<<<<<<<
@@ -6693,40 +8521,40 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_execute(struct __pyx_obj_7Micro80_3C
  */
   if (unlikely(__pyx_v_instructions == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-    __PYX_ERR(0, 137, __pyx_L1_error)
+    __PYX_ERR(0, 207, __pyx_L1_error)
   }
-  __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 137, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 207, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 137, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_4 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 207, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_1, __pyx_n_s_POP, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 137, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_4, __pyx_n_s_POP, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 207, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   if (__pyx_t_8) {
 
-    /* "Micro80/CPU.py":138
+    /* "Micro80/CPU.py":208
  *             self.push(operands)
  *         elif instructions[opcode] == "POP":
  *             self.pop(operands)             # <<<<<<<<<<<<<<
  *         elif instructions[opcode] == "PUSHA":
  *             self.pushAll()
  */
-    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_v_operands); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 138, __pyx_L1_error)
-    __pyx_t_1 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->pop(__pyx_v_self, __pyx_t_6, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 138, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_v_operands); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 208, __pyx_L1_error)
+    __pyx_t_4 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->pop(__pyx_v_self, __pyx_t_6, 0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 208, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-    /* "Micro80/CPU.py":137
+    /* "Micro80/CPU.py":207
  *         elif instructions[opcode] == "PUSH":
  *             self.push(operands)
  *         elif instructions[opcode] == "POP":             # <<<<<<<<<<<<<<
  *             self.pop(operands)
  *         elif instructions[opcode] == "PUSHA":
  */
-    goto __pyx_L4;
+    goto __pyx_L5;
   }
 
-  /* "Micro80/CPU.py":139
+  /* "Micro80/CPU.py":209
  *         elif instructions[opcode] == "POP":
  *             self.pop(operands)
  *         elif instructions[opcode] == "PUSHA":             # <<<<<<<<<<<<<<
@@ -6735,39 +8563,39 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_execute(struct __pyx_obj_7Micro80_3C
  */
   if (unlikely(__pyx_v_instructions == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-    __PYX_ERR(0, 139, __pyx_L1_error)
+    __PYX_ERR(0, 209, __pyx_L1_error)
   }
-  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 139, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 139, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 209, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
+  __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_4); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 209, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_PUSHA, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 139, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_PUSHA, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 209, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   if (__pyx_t_8) {
 
-    /* "Micro80/CPU.py":140
+    /* "Micro80/CPU.py":210
  *             self.pop(operands)
  *         elif instructions[opcode] == "PUSHA":
  *             self.pushAll()             # <<<<<<<<<<<<<<
  *         elif instructions[opcode] == "POPA":
  *             self.popAll()
  */
-    __pyx_t_2 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->pushAll(__pyx_v_self, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 140, __pyx_L1_error)
+    __pyx_t_2 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->pushAll(__pyx_v_self, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 210, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "Micro80/CPU.py":139
+    /* "Micro80/CPU.py":209
  *         elif instructions[opcode] == "POP":
  *             self.pop(operands)
  *         elif instructions[opcode] == "PUSHA":             # <<<<<<<<<<<<<<
  *             self.pushAll()
  *         elif instructions[opcode] == "POPA":
  */
-    goto __pyx_L4;
+    goto __pyx_L5;
   }
 
-  /* "Micro80/CPU.py":141
+  /* "Micro80/CPU.py":211
  *         elif instructions[opcode] == "PUSHA":
  *             self.pushAll()
  *         elif instructions[opcode] == "POPA":             # <<<<<<<<<<<<<<
@@ -6776,108 +8604,134 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_execute(struct __pyx_obj_7Micro80_3C
  */
   if (unlikely(__pyx_v_instructions == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-    __PYX_ERR(0, 141, __pyx_L1_error)
+    __PYX_ERR(0, 211, __pyx_L1_error)
   }
-  __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 141, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 211, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 141, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_4 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 211, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_1, __pyx_n_s_POPA, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 141, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_4, __pyx_n_s_POPA, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 211, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   if (__pyx_t_8) {
 
-    /* "Micro80/CPU.py":142
+    /* "Micro80/CPU.py":212
  *             self.pushAll()
  *         elif instructions[opcode] == "POPA":
  *             self.popAll()             # <<<<<<<<<<<<<<
  *         elif instructions[opcode] == "SLP":
- *             self.sleepTimer = operands
+ *             time.sleep(operands)
  */
-    __pyx_t_1 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->popAll(__pyx_v_self, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 142, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_t_4 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->popAll(__pyx_v_self, 0); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 212, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-    /* "Micro80/CPU.py":141
+    /* "Micro80/CPU.py":211
  *         elif instructions[opcode] == "PUSHA":
  *             self.pushAll()
  *         elif instructions[opcode] == "POPA":             # <<<<<<<<<<<<<<
  *             self.popAll()
  *         elif instructions[opcode] == "SLP":
  */
-    goto __pyx_L4;
+    goto __pyx_L5;
   }
 
-  /* "Micro80/CPU.py":143
+  /* "Micro80/CPU.py":213
  *         elif instructions[opcode] == "POPA":
  *             self.popAll()
  *         elif instructions[opcode] == "SLP":             # <<<<<<<<<<<<<<
- *             self.sleepTimer = operands
+ *             time.sleep(operands)
  *         elif instructions[opcode] == "WDir":
  */
   if (unlikely(__pyx_v_instructions == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-    __PYX_ERR(0, 143, __pyx_L1_error)
+    __PYX_ERR(0, 213, __pyx_L1_error)
   }
-  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 143, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 143, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 213, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
+  __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_4); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 213, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_SLP, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 143, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_SLP, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 213, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   if (__pyx_t_8) {
 
-    /* "Micro80/CPU.py":144
+    /* "Micro80/CPU.py":214
  *             self.popAll()
  *         elif instructions[opcode] == "SLP":
- *             self.sleepTimer = operands             # <<<<<<<<<<<<<<
+ *             time.sleep(operands)             # <<<<<<<<<<<<<<
  *         elif instructions[opcode] == "WDir":
  *             self.memory.writeAddress(self.adr, operands)
  */
-    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_v_operands); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 144, __pyx_L1_error)
-    __pyx_v_self->sleepTimer = __pyx_t_6;
+    __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_time); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 214, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_sleep); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 214, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __pyx_t_4 = NULL;
+    __pyx_t_6 = 0;
+    #if CYTHON_UNPACK_METHODS
+    if (unlikely(PyMethod_Check(__pyx_t_1))) {
+      __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_1);
+      if (likely(__pyx_t_4)) {
+        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_1);
+        __Pyx_INCREF(__pyx_t_4);
+        __Pyx_INCREF(function);
+        __Pyx_DECREF_SET(__pyx_t_1, function);
+        __pyx_t_6 = 1;
+      }
+    }
+    #endif
+    {
+      PyObject *__pyx_callargs[2] = {__pyx_t_4, __pyx_v_operands};
+      __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_1, __pyx_callargs+1-__pyx_t_6, 1+__pyx_t_6);
+      __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 214, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    }
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "Micro80/CPU.py":143
+    /* "Micro80/CPU.py":213
  *         elif instructions[opcode] == "POPA":
  *             self.popAll()
  *         elif instructions[opcode] == "SLP":             # <<<<<<<<<<<<<<
- *             self.sleepTimer = operands
+ *             time.sleep(operands)
  *         elif instructions[opcode] == "WDir":
  */
-    goto __pyx_L4;
+    goto __pyx_L5;
   }
 
-  /* "Micro80/CPU.py":145
+  /* "Micro80/CPU.py":215
  *         elif instructions[opcode] == "SLP":
- *             self.sleepTimer = operands
+ *             time.sleep(operands)
  *         elif instructions[opcode] == "WDir":             # <<<<<<<<<<<<<<
  *             self.memory.writeAddress(self.adr, operands)
  *         elif instructions[opcode] == "RDir":
  */
   if (unlikely(__pyx_v_instructions == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-    __PYX_ERR(0, 145, __pyx_L1_error)
+    __PYX_ERR(0, 215, __pyx_L1_error)
   }
-  __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 145, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 215, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 145, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 215, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_1, __pyx_n_s_WDir, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 145, __pyx_L1_error)
+  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_1, __pyx_n_s_WDir, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 215, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   if (__pyx_t_8) {
 
-    /* "Micro80/CPU.py":146
- *             self.sleepTimer = operands
+    /* "Micro80/CPU.py":216
+ *             time.sleep(operands)
  *         elif instructions[opcode] == "WDir":
  *             self.memory.writeAddress(self.adr, operands)             # <<<<<<<<<<<<<<
  *         elif instructions[opcode] == "RDir":
  *             self.memory.readAddress(operands)
  */
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_writeAddress); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 146, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_writeAddress); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 216, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_self->adr); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 146, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_self->adr); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 216, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __pyx_t_3 = NULL;
     __pyx_t_6 = 0;
@@ -6898,23 +8752,23 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_execute(struct __pyx_obj_7Micro80_3C
       __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_2, __pyx_callargs+1-__pyx_t_6, 2+__pyx_t_6);
       __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 146, __pyx_L1_error)
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 216, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     }
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "Micro80/CPU.py":145
+    /* "Micro80/CPU.py":215
  *         elif instructions[opcode] == "SLP":
- *             self.sleepTimer = operands
+ *             time.sleep(operands)
  *         elif instructions[opcode] == "WDir":             # <<<<<<<<<<<<<<
  *             self.memory.writeAddress(self.adr, operands)
  *         elif instructions[opcode] == "RDir":
  */
-    goto __pyx_L4;
+    goto __pyx_L5;
   }
 
-  /* "Micro80/CPU.py":147
+  /* "Micro80/CPU.py":217
  *         elif instructions[opcode] == "WDir":
  *             self.memory.writeAddress(self.adr, operands)
  *         elif instructions[opcode] == "RDir":             # <<<<<<<<<<<<<<
@@ -6923,25 +8777,25 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_execute(struct __pyx_obj_7Micro80_3C
  */
   if (unlikely(__pyx_v_instructions == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-    __PYX_ERR(0, 147, __pyx_L1_error)
+    __PYX_ERR(0, 217, __pyx_L1_error)
   }
-  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 147, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 217, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 147, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 217, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_RDir, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 147, __pyx_L1_error)
+  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_RDir, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 217, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   if (__pyx_t_8) {
 
-    /* "Micro80/CPU.py":148
+    /* "Micro80/CPU.py":218
  *             self.memory.writeAddress(self.adr, operands)
  *         elif instructions[opcode] == "RDir":
  *             self.memory.readAddress(operands)             # <<<<<<<<<<<<<<
  *         elif instructions[opcode] == "WAdr":
  *             self.adr = operands
  */
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 148, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 218, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __pyx_t_4 = NULL;
     __pyx_t_6 = 0;
@@ -6961,23 +8815,23 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_execute(struct __pyx_obj_7Micro80_3C
       PyObject *__pyx_callargs[2] = {__pyx_t_4, __pyx_v_operands};
       __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_1, __pyx_callargs+1-__pyx_t_6, 1+__pyx_t_6);
       __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 148, __pyx_L1_error)
+      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 218, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     }
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "Micro80/CPU.py":147
+    /* "Micro80/CPU.py":217
  *         elif instructions[opcode] == "WDir":
  *             self.memory.writeAddress(self.adr, operands)
  *         elif instructions[opcode] == "RDir":             # <<<<<<<<<<<<<<
  *             self.memory.readAddress(operands)
  *         elif instructions[opcode] == "WAdr":
  */
-    goto __pyx_L4;
+    goto __pyx_L5;
   }
 
-  /* "Micro80/CPU.py":149
+  /* "Micro80/CPU.py":219
  *         elif instructions[opcode] == "RDir":
  *             self.memory.readAddress(operands)
  *         elif instructions[opcode] == "WAdr":             # <<<<<<<<<<<<<<
@@ -6986,38 +8840,38 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_execute(struct __pyx_obj_7Micro80_3C
  */
   if (unlikely(__pyx_v_instructions == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-    __PYX_ERR(0, 149, __pyx_L1_error)
+    __PYX_ERR(0, 219, __pyx_L1_error)
   }
-  __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 149, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 219, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 149, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 219, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_1, __pyx_n_s_WAdr, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 149, __pyx_L1_error)
+  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_1, __pyx_n_s_WAdr, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 219, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   if (__pyx_t_8) {
 
-    /* "Micro80/CPU.py":150
+    /* "Micro80/CPU.py":220
  *             self.memory.readAddress(operands)
  *         elif instructions[opcode] == "WAdr":
  *             self.adr = operands             # <<<<<<<<<<<<<<
  *         elif instructions[opcode] == "MOV":
  *             data = self.memory.readAddress(operands[0])
  */
-    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_v_operands); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 150, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_v_operands); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 220, __pyx_L1_error)
     __pyx_v_self->adr = __pyx_t_6;
 
-    /* "Micro80/CPU.py":149
+    /* "Micro80/CPU.py":219
  *         elif instructions[opcode] == "RDir":
  *             self.memory.readAddress(operands)
  *         elif instructions[opcode] == "WAdr":             # <<<<<<<<<<<<<<
  *             self.adr = operands
  *         elif instructions[opcode] == "MOV":
  */
-    goto __pyx_L4;
+    goto __pyx_L5;
   }
 
-  /* "Micro80/CPU.py":151
+  /* "Micro80/CPU.py":221
  *         elif instructions[opcode] == "WAdr":
  *             self.adr = operands
  *         elif instructions[opcode] == "MOV":             # <<<<<<<<<<<<<<
@@ -7026,27 +8880,27 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_execute(struct __pyx_obj_7Micro80_3C
  */
   if (unlikely(__pyx_v_instructions == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-    __PYX_ERR(0, 151, __pyx_L1_error)
+    __PYX_ERR(0, 221, __pyx_L1_error)
   }
-  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 151, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 221, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 151, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 221, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_MOV, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 151, __pyx_L1_error)
+  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_MOV, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 221, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   if (__pyx_t_8) {
 
-    /* "Micro80/CPU.py":152
+    /* "Micro80/CPU.py":222
  *             self.adr = operands
  *         elif instructions[opcode] == "MOV":
  *             data = self.memory.readAddress(operands[0])             # <<<<<<<<<<<<<<
  *             location = self.memory.readAddress(operands[1])
  *             self.memory.writeAddress(location, data)
  */
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 152, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 222, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_4 = __Pyx_GetItemInt(__pyx_v_operands, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 152, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_GetItemInt(__pyx_v_operands, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 222, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __pyx_t_3 = NULL;
     __pyx_t_6 = 0;
@@ -7067,23 +8921,23 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_execute(struct __pyx_obj_7Micro80_3C
       __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_1, __pyx_callargs+1-__pyx_t_6, 1+__pyx_t_6);
       __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 152, __pyx_L1_error)
+      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 222, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     }
     __pyx_v_data = __pyx_t_2;
     __pyx_t_2 = 0;
 
-    /* "Micro80/CPU.py":153
+    /* "Micro80/CPU.py":223
  *         elif instructions[opcode] == "MOV":
  *             data = self.memory.readAddress(operands[0])
  *             location = self.memory.readAddress(operands[1])             # <<<<<<<<<<<<<<
  *             self.memory.writeAddress(location, data)
  *         elif instructions[opcode][0:3] == "INC" or instructions[opcode][0:2] == "IC":
  */
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 153, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 223, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_4 = __Pyx_GetItemInt(__pyx_v_operands, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 153, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_GetItemInt(__pyx_v_operands, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 223, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __pyx_t_3 = NULL;
     __pyx_t_6 = 0;
@@ -7104,21 +8958,21 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_execute(struct __pyx_obj_7Micro80_3C
       __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_1, __pyx_callargs+1-__pyx_t_6, 1+__pyx_t_6);
       __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 153, __pyx_L1_error)
+      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 223, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     }
     __pyx_v_location = __pyx_t_2;
     __pyx_t_2 = 0;
 
-    /* "Micro80/CPU.py":154
+    /* "Micro80/CPU.py":224
  *             data = self.memory.readAddress(operands[0])
  *             location = self.memory.readAddress(operands[1])
  *             self.memory.writeAddress(location, data)             # <<<<<<<<<<<<<<
  *         elif instructions[opcode][0:3] == "INC" or instructions[opcode][0:2] == "IC":
  *             if instructions[opcode][0:3] == "INC":
  */
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_writeAddress); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 154, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_writeAddress); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 224, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __pyx_t_4 = NULL;
     __pyx_t_6 = 0;
@@ -7138,23 +8992,23 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_execute(struct __pyx_obj_7Micro80_3C
       PyObject *__pyx_callargs[3] = {__pyx_t_4, __pyx_v_location, __pyx_v_data};
       __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_1, __pyx_callargs+1-__pyx_t_6, 2+__pyx_t_6);
       __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 154, __pyx_L1_error)
+      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 224, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     }
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "Micro80/CPU.py":151
+    /* "Micro80/CPU.py":221
  *         elif instructions[opcode] == "WAdr":
  *             self.adr = operands
  *         elif instructions[opcode] == "MOV":             # <<<<<<<<<<<<<<
  *             data = self.memory.readAddress(operands[0])
  *             location = self.memory.readAddress(operands[1])
  */
-    goto __pyx_L4;
+    goto __pyx_L5;
   }
 
-  /* "Micro80/CPU.py":155
+  /* "Micro80/CPU.py":225
  *             location = self.memory.readAddress(operands[1])
  *             self.memory.writeAddress(location, data)
  *         elif instructions[opcode][0:3] == "INC" or instructions[opcode][0:2] == "IC":             # <<<<<<<<<<<<<<
@@ -7163,42 +9017,42 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_execute(struct __pyx_obj_7Micro80_3C
  */
   if (unlikely(__pyx_v_instructions == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-    __PYX_ERR(0, 155, __pyx_L1_error)
+    __PYX_ERR(0, 225, __pyx_L1_error)
   }
-  __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 155, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 225, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 155, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 225, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_GetSlice(__pyx_t_1, 0, 3, NULL, NULL, &__pyx_slice__13, 1, 1, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 155, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetSlice(__pyx_t_1, 0, 3, NULL, NULL, &__pyx_slice__20, 1, 1, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 225, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_INC, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 155, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_INC, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 225, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   if (!__pyx_t_7) {
   } else {
     __pyx_t_8 = __pyx_t_7;
-    goto __pyx_L17_bool_binop_done;
+    goto __pyx_L18_bool_binop_done;
   }
   if (unlikely(__pyx_v_instructions == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-    __PYX_ERR(0, 155, __pyx_L1_error)
+    __PYX_ERR(0, 225, __pyx_L1_error)
   }
-  __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 155, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 225, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 155, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 225, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_GetSlice(__pyx_t_1, 0, 2, NULL, NULL, &__pyx_slice__10, 1, 1, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 155, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetSlice(__pyx_t_1, 0, 2, NULL, NULL, &__pyx_slice__17, 1, 1, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 225, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_IC, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 155, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_IC, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 225, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_t_8 = __pyx_t_7;
-  __pyx_L17_bool_binop_done:;
+  __pyx_L18_bool_binop_done:;
   if (__pyx_t_8) {
 
-    /* "Micro80/CPU.py":156
+    /* "Micro80/CPU.py":226
  *             self.memory.writeAddress(location, data)
  *         elif instructions[opcode][0:3] == "INC" or instructions[opcode][0:2] == "IC":
  *             if instructions[opcode][0:3] == "INC":             # <<<<<<<<<<<<<<
@@ -7207,21 +9061,21 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_execute(struct __pyx_obj_7Micro80_3C
  */
     if (unlikely(__pyx_v_instructions == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      __PYX_ERR(0, 156, __pyx_L1_error)
+      __PYX_ERR(0, 226, __pyx_L1_error)
     }
-    __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 156, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 226, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 156, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 226, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_2 = __Pyx_PyObject_GetSlice(__pyx_t_1, 0, 3, NULL, NULL, &__pyx_slice__13, 1, 1, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 156, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_GetSlice(__pyx_t_1, 0, 3, NULL, NULL, &__pyx_slice__20, 1, 1, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 226, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_INC, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 156, __pyx_L1_error)
+    __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_INC, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 226, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     if (__pyx_t_8) {
 
-      /* "Micro80/CPU.py":157
+      /* "Micro80/CPU.py":227
  *         elif instructions[opcode][0:3] == "INC" or instructions[opcode][0:2] == "IC":
  *             if instructions[opcode][0:3] == "INC":
  *                 self.increment(instructions[opcode][3:])             # <<<<<<<<<<<<<<
@@ -7230,33 +9084,33 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_execute(struct __pyx_obj_7Micro80_3C
  */
       if (unlikely(__pyx_v_instructions == Py_None)) {
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        __PYX_ERR(0, 157, __pyx_L1_error)
+        __PYX_ERR(0, 227, __pyx_L1_error)
       }
-      __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 157, __pyx_L1_error)
+      __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 227, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 157, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 227, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-      __pyx_t_2 = __Pyx_PyObject_GetSlice(__pyx_t_1, 3, 0, NULL, NULL, &__pyx_slice__14, 1, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 157, __pyx_L1_error)
+      __pyx_t_2 = __Pyx_PyObject_GetSlice(__pyx_t_1, 3, 0, NULL, NULL, &__pyx_slice__21, 1, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 227, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      if (!(likely(PyString_CheckExact(__pyx_t_2))||((__pyx_t_2) == Py_None) || __Pyx_RaiseUnexpectedTypeError("str", __pyx_t_2))) __PYX_ERR(0, 157, __pyx_L1_error)
-      __pyx_t_1 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->increment(__pyx_v_self, ((PyObject*)__pyx_t_2), 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 157, __pyx_L1_error)
+      if (!(likely(PyString_CheckExact(__pyx_t_2))||((__pyx_t_2) == Py_None) || __Pyx_RaiseUnexpectedTypeError("str", __pyx_t_2))) __PYX_ERR(0, 227, __pyx_L1_error)
+      __pyx_t_1 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->increment(__pyx_v_self, ((PyObject*)__pyx_t_2), 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 227, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "Micro80/CPU.py":156
+      /* "Micro80/CPU.py":226
  *             self.memory.writeAddress(location, data)
  *         elif instructions[opcode][0:3] == "INC" or instructions[opcode][0:2] == "IC":
  *             if instructions[opcode][0:3] == "INC":             # <<<<<<<<<<<<<<
  *                 self.increment(instructions[opcode][3:])
  *             else:
  */
-      goto __pyx_L19;
+      goto __pyx_L20;
     }
 
-    /* "Micro80/CPU.py":159
+    /* "Micro80/CPU.py":229
  *                 self.increment(instructions[opcode][3:])
  *             else:
  *                 if instructions[opcode][2:] == "Ad":             # <<<<<<<<<<<<<<
@@ -7266,21 +9120,21 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_execute(struct __pyx_obj_7Micro80_3C
     /*else*/ {
       if (unlikely(__pyx_v_instructions == Py_None)) {
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        __PYX_ERR(0, 159, __pyx_L1_error)
+        __PYX_ERR(0, 229, __pyx_L1_error)
       }
-      __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 159, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 229, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 159, __pyx_L1_error)
+      __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 229, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      __pyx_t_1 = __Pyx_PyObject_GetSlice(__pyx_t_2, 2, 0, NULL, NULL, &__pyx_slice__11, 1, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 159, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetSlice(__pyx_t_2, 2, 0, NULL, NULL, &__pyx_slice__18, 1, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 229, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-      __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_1, __pyx_n_s_Ad_2, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 159, __pyx_L1_error)
+      __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_1, __pyx_n_s_Ad, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 229, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
       if (likely(__pyx_t_8)) {
 
-        /* "Micro80/CPU.py":160
+        /* "Micro80/CPU.py":230
  *             else:
  *                 if instructions[opcode][2:] == "Ad":
  *                     self.adr += 1             # <<<<<<<<<<<<<<
@@ -7289,17 +9143,17 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_execute(struct __pyx_obj_7Micro80_3C
  */
         __pyx_v_self->adr = (__pyx_v_self->adr + 1);
 
-        /* "Micro80/CPU.py":159
+        /* "Micro80/CPU.py":229
  *                 self.increment(instructions[opcode][3:])
  *             else:
  *                 if instructions[opcode][2:] == "Ad":             # <<<<<<<<<<<<<<
  *                     self.adr += 1
  *                 else:
  */
-        goto __pyx_L20;
+        goto __pyx_L21;
       }
 
-      /* "Micro80/CPU.py":162
+      /* "Micro80/CPU.py":232
  *                     self.adr += 1
  *                 else:
  *                     raise ValueError("Invalid Opcode")             # <<<<<<<<<<<<<<
@@ -7307,27 +9161,27 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_execute(struct __pyx_obj_7Micro80_3C
  *             if instructions[opcode][0:3] == "DEC":
  */
       /*else*/ {
-        __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__15, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 162, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__22, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 232, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
         __Pyx_Raise(__pyx_t_1, 0, 0, 0);
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-        __PYX_ERR(0, 162, __pyx_L1_error)
+        __PYX_ERR(0, 232, __pyx_L1_error)
       }
-      __pyx_L20:;
+      __pyx_L21:;
     }
-    __pyx_L19:;
+    __pyx_L20:;
 
-    /* "Micro80/CPU.py":155
+    /* "Micro80/CPU.py":225
  *             location = self.memory.readAddress(operands[1])
  *             self.memory.writeAddress(location, data)
  *         elif instructions[opcode][0:3] == "INC" or instructions[opcode][0:2] == "IC":             # <<<<<<<<<<<<<<
  *             if instructions[opcode][0:3] == "INC":
  *                 self.increment(instructions[opcode][3:])
  */
-    goto __pyx_L4;
+    goto __pyx_L5;
   }
 
-  /* "Micro80/CPU.py":163
+  /* "Micro80/CPU.py":233
  *                 else:
  *                     raise ValueError("Invalid Opcode")
  *         elif instructions[opcode][0:3] == "DEC" or instructions[opcode][0:2] == "DC":             # <<<<<<<<<<<<<<
@@ -7336,42 +9190,42 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_execute(struct __pyx_obj_7Micro80_3C
  */
   if (unlikely(__pyx_v_instructions == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-    __PYX_ERR(0, 163, __pyx_L1_error)
+    __PYX_ERR(0, 233, __pyx_L1_error)
   }
-  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 163, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 233, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 163, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 233, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyObject_GetSlice(__pyx_t_2, 0, 3, NULL, NULL, &__pyx_slice__13, 1, 1, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 163, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetSlice(__pyx_t_2, 0, 3, NULL, NULL, &__pyx_slice__20, 1, 1, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 233, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_t_1, __pyx_n_s_DEC, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 163, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_t_1, __pyx_n_s_DEC, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 233, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   if (!__pyx_t_7) {
   } else {
     __pyx_t_8 = __pyx_t_7;
-    goto __pyx_L21_bool_binop_done;
+    goto __pyx_L22_bool_binop_done;
   }
   if (unlikely(__pyx_v_instructions == Py_None)) {
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-    __PYX_ERR(0, 163, __pyx_L1_error)
+    __PYX_ERR(0, 233, __pyx_L1_error)
   }
-  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 163, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 233, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 163, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 233, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyObject_GetSlice(__pyx_t_2, 0, 2, NULL, NULL, &__pyx_slice__10, 1, 1, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 163, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetSlice(__pyx_t_2, 0, 2, NULL, NULL, &__pyx_slice__17, 1, 1, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 233, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_t_1, __pyx_n_s_DC, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 163, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_t_1, __pyx_n_s_DC, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 233, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_t_8 = __pyx_t_7;
-  __pyx_L21_bool_binop_done:;
-  if (likely(__pyx_t_8)) {
+  __pyx_L22_bool_binop_done:;
+  if (__pyx_t_8) {
 
-    /* "Micro80/CPU.py":164
+    /* "Micro80/CPU.py":234
  *                     raise ValueError("Invalid Opcode")
  *         elif instructions[opcode][0:3] == "DEC" or instructions[opcode][0:2] == "DC":
  *             if instructions[opcode][0:3] == "DEC":             # <<<<<<<<<<<<<<
@@ -7380,21 +9234,21 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_execute(struct __pyx_obj_7Micro80_3C
  */
     if (unlikely(__pyx_v_instructions == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-      __PYX_ERR(0, 164, __pyx_L1_error)
+      __PYX_ERR(0, 234, __pyx_L1_error)
     }
-    __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 164, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 234, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 164, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 234, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_1 = __Pyx_PyObject_GetSlice(__pyx_t_2, 0, 3, NULL, NULL, &__pyx_slice__13, 1, 1, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 164, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetSlice(__pyx_t_2, 0, 3, NULL, NULL, &__pyx_slice__20, 1, 1, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 234, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_1, __pyx_n_s_DEC, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 164, __pyx_L1_error)
+    __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_1, __pyx_n_s_DEC, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 234, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     if (__pyx_t_8) {
 
-      /* "Micro80/CPU.py":165
+      /* "Micro80/CPU.py":235
  *         elif instructions[opcode][0:3] == "DEC" or instructions[opcode][0:2] == "DC":
  *             if instructions[opcode][0:3] == "DEC":
  *                 self.decrement(instructions[opcode][3:])             # <<<<<<<<<<<<<<
@@ -7403,33 +9257,33 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_execute(struct __pyx_obj_7Micro80_3C
  */
       if (unlikely(__pyx_v_instructions == Py_None)) {
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        __PYX_ERR(0, 165, __pyx_L1_error)
+        __PYX_ERR(0, 235, __pyx_L1_error)
       }
-      __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 165, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 235, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 165, __pyx_L1_error)
+      __pyx_t_2 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 235, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      __pyx_t_1 = __Pyx_PyObject_GetSlice(__pyx_t_2, 3, 0, NULL, NULL, &__pyx_slice__14, 1, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 165, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetSlice(__pyx_t_2, 3, 0, NULL, NULL, &__pyx_slice__21, 1, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 235, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-      if (!(likely(PyString_CheckExact(__pyx_t_1))||((__pyx_t_1) == Py_None) || __Pyx_RaiseUnexpectedTypeError("str", __pyx_t_1))) __PYX_ERR(0, 165, __pyx_L1_error)
-      __pyx_t_2 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->decrement(__pyx_v_self, ((PyObject*)__pyx_t_1), 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 165, __pyx_L1_error)
+      if (!(likely(PyString_CheckExact(__pyx_t_1))||((__pyx_t_1) == Py_None) || __Pyx_RaiseUnexpectedTypeError("str", __pyx_t_1))) __PYX_ERR(0, 235, __pyx_L1_error)
+      __pyx_t_2 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->decrement(__pyx_v_self, ((PyObject*)__pyx_t_1), 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 235, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-      /* "Micro80/CPU.py":164
+      /* "Micro80/CPU.py":234
  *                     raise ValueError("Invalid Opcode")
  *         elif instructions[opcode][0:3] == "DEC" or instructions[opcode][0:2] == "DC":
  *             if instructions[opcode][0:3] == "DEC":             # <<<<<<<<<<<<<<
  *                 self.decrement(instructions[opcode][3:])
  *             else:
  */
-      goto __pyx_L23;
+      goto __pyx_L24;
     }
 
-    /* "Micro80/CPU.py":167
+    /* "Micro80/CPU.py":237
  *                 self.decrement(instructions[opcode][3:])
  *             else:
  *                 if instructions[opcode][2:] == "Ad":             # <<<<<<<<<<<<<<
@@ -7439,21 +9293,21 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_execute(struct __pyx_obj_7Micro80_3C
     /*else*/ {
       if (unlikely(__pyx_v_instructions == Py_None)) {
         PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
-        __PYX_ERR(0, 167, __pyx_L1_error)
+        __PYX_ERR(0, 237, __pyx_L1_error)
       }
-      __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 167, __pyx_L1_error)
+      __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 237, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 167, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 237, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-      __pyx_t_2 = __Pyx_PyObject_GetSlice(__pyx_t_1, 2, 0, NULL, NULL, &__pyx_slice__11, 1, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 167, __pyx_L1_error)
+      __pyx_t_2 = __Pyx_PyObject_GetSlice(__pyx_t_1, 2, 0, NULL, NULL, &__pyx_slice__18, 1, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 237, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_Ad_2, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 167, __pyx_L1_error)
+      __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_2, __pyx_n_s_Ad, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 237, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
       if (likely(__pyx_t_8)) {
 
-        /* "Micro80/CPU.py":168
+        /* "Micro80/CPU.py":238
  *             else:
  *                 if instructions[opcode][2:] == "Ad":
  *                     self.adr -= 1             # <<<<<<<<<<<<<<
@@ -7462,68 +9316,197 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_execute(struct __pyx_obj_7Micro80_3C
  */
         __pyx_v_self->adr = (__pyx_v_self->adr - 1);
 
-        /* "Micro80/CPU.py":167
+        /* "Micro80/CPU.py":237
  *                 self.decrement(instructions[opcode][3:])
  *             else:
  *                 if instructions[opcode][2:] == "Ad":             # <<<<<<<<<<<<<<
  *                     self.adr -= 1
  *                 else:
  */
-        goto __pyx_L24;
+        goto __pyx_L25;
       }
 
-      /* "Micro80/CPU.py":170
+      /* "Micro80/CPU.py":240
  *                     self.adr -= 1
  *                 else:
  *                     raise ValueError("Invalid Opcode")             # <<<<<<<<<<<<<<
- *         else:
- *             raise ValueError(f"Invalid Opcode, {opcode}")
+ *         elif instructions[opcode] == "CLS":
+ *             self.display.clear()
  */
       /*else*/ {
-        __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__15, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 170, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__22, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 240, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_Raise(__pyx_t_2, 0, 0, 0);
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-        __PYX_ERR(0, 170, __pyx_L1_error)
+        __PYX_ERR(0, 240, __pyx_L1_error)
       }
-      __pyx_L24:;
+      __pyx_L25:;
     }
-    __pyx_L23:;
+    __pyx_L24:;
 
-    /* "Micro80/CPU.py":163
+    /* "Micro80/CPU.py":233
  *                 else:
  *                     raise ValueError("Invalid Opcode")
  *         elif instructions[opcode][0:3] == "DEC" or instructions[opcode][0:2] == "DC":             # <<<<<<<<<<<<<<
  *             if instructions[opcode][0:3] == "DEC":
  *                 self.decrement(instructions[opcode][3:])
  */
-    goto __pyx_L4;
+    goto __pyx_L5;
   }
 
-  /* "Micro80/CPU.py":172
+  /* "Micro80/CPU.py":241
+ *                 else:
  *                     raise ValueError("Invalid Opcode")
+ *         elif instructions[opcode] == "CLS":             # <<<<<<<<<<<<<<
+ *             self.display.clear()
+ *             self.render.present()
+ */
+  if (unlikely(__pyx_v_instructions == Py_None)) {
+    PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
+    __PYX_ERR(0, 241, __pyx_L1_error)
+  }
+  __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_opcode); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 241, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_1 = __Pyx_PyDict_GetItem(__pyx_v_instructions, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 241, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  __pyx_t_8 = (__Pyx_PyString_Equals(__pyx_t_1, __pyx_n_s_CLS, Py_EQ)); if (unlikely((__pyx_t_8 < 0))) __PYX_ERR(0, 241, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  if (likely(__pyx_t_8)) {
+
+    /* "Micro80/CPU.py":242
+ *                     raise ValueError("Invalid Opcode")
+ *         elif instructions[opcode] == "CLS":
+ *             self.display.clear()             # <<<<<<<<<<<<<<
+ *             self.render.present()
+ *             self.window.refresh()
+ */
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->display, __pyx_n_s_clear); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 242, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_4 = NULL;
+    __pyx_t_6 = 0;
+    #if CYTHON_UNPACK_METHODS
+    if (likely(PyMethod_Check(__pyx_t_2))) {
+      __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_2);
+      if (likely(__pyx_t_4)) {
+        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
+        __Pyx_INCREF(__pyx_t_4);
+        __Pyx_INCREF(function);
+        __Pyx_DECREF_SET(__pyx_t_2, function);
+        __pyx_t_6 = 1;
+      }
+    }
+    #endif
+    {
+      PyObject *__pyx_callargs[2] = {__pyx_t_4, NULL};
+      __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_2, __pyx_callargs+1-__pyx_t_6, 0+__pyx_t_6);
+      __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 242, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    }
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+    /* "Micro80/CPU.py":243
+ *         elif instructions[opcode] == "CLS":
+ *             self.display.clear()
+ *             self.render.present()             # <<<<<<<<<<<<<<
+ *             self.window.refresh()
+ *         else:
+ */
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->render, __pyx_n_s_present); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 243, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_4 = NULL;
+    __pyx_t_6 = 0;
+    #if CYTHON_UNPACK_METHODS
+    if (likely(PyMethod_Check(__pyx_t_2))) {
+      __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_2);
+      if (likely(__pyx_t_4)) {
+        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
+        __Pyx_INCREF(__pyx_t_4);
+        __Pyx_INCREF(function);
+        __Pyx_DECREF_SET(__pyx_t_2, function);
+        __pyx_t_6 = 1;
+      }
+    }
+    #endif
+    {
+      PyObject *__pyx_callargs[2] = {__pyx_t_4, NULL};
+      __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_2, __pyx_callargs+1-__pyx_t_6, 0+__pyx_t_6);
+      __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 243, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    }
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+    /* "Micro80/CPU.py":244
+ *             self.display.clear()
+ *             self.render.present()
+ *             self.window.refresh()             # <<<<<<<<<<<<<<
+ *         else:
+ *             raise ValueError(f"Invalid Opcode, {opcode}")
+ */
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->window, __pyx_n_s_refresh); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 244, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_4 = NULL;
+    __pyx_t_6 = 0;
+    #if CYTHON_UNPACK_METHODS
+    if (likely(PyMethod_Check(__pyx_t_2))) {
+      __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_2);
+      if (likely(__pyx_t_4)) {
+        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
+        __Pyx_INCREF(__pyx_t_4);
+        __Pyx_INCREF(function);
+        __Pyx_DECREF_SET(__pyx_t_2, function);
+        __pyx_t_6 = 1;
+      }
+    }
+    #endif
+    {
+      PyObject *__pyx_callargs[2] = {__pyx_t_4, NULL};
+      __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_2, __pyx_callargs+1-__pyx_t_6, 0+__pyx_t_6);
+      __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 244, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    }
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+
+    /* "Micro80/CPU.py":241
+ *                 else:
+ *                     raise ValueError("Invalid Opcode")
+ *         elif instructions[opcode] == "CLS":             # <<<<<<<<<<<<<<
+ *             self.display.clear()
+ *             self.render.present()
+ */
+    goto __pyx_L5;
+  }
+
+  /* "Micro80/CPU.py":246
+ *             self.window.refresh()
  *         else:
  *             raise ValueError(f"Invalid Opcode, {opcode}")             # <<<<<<<<<<<<<<
  * 
  *     def popAll(self):
  */
   /*else*/ {
-    __pyx_t_2 = __Pyx_PyUnicode_From_int(__pyx_v_opcode, 0, ' ', 'd'); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 172, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_1 = __Pyx_PyUnicode_Concat(__pyx_kp_u_Invalid_Opcode, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 172, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyUnicode_From_int(__pyx_v_opcode, 0, ' ', 'd'); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 246, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_builtin_ValueError, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 172, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyUnicode_Concat(__pyx_kp_u_Invalid_Opcode, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 246, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __Pyx_Raise(__pyx_t_2, 0, 0, 0);
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_builtin_ValueError, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 246, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __PYX_ERR(0, 172, __pyx_L1_error)
+    __Pyx_Raise(__pyx_t_1, 0, 0, 0);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __PYX_ERR(0, 246, __pyx_L1_error)
   }
-  __pyx_L4:;
+  __pyx_L5:;
 
-  /* "Micro80/CPU.py":101
- *             self.curOperand = None
+  /* "Micro80/CPU.py":169
+ *                     self.memory.writeAddress(0x400D, 0x0000)
  * 
  *     def execute(self, opcode, operands):             # <<<<<<<<<<<<<<
  *         "Executes the code"
@@ -7551,16 +9534,16 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_execute(struct __pyx_obj_7Micro80_3C
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_7execute(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_9execute(PyObject *__pyx_v_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_7Micro80_3CPU_3CPU_6execute, "Executes the code");
-static PyMethodDef __pyx_mdef_7Micro80_3CPU_3CPU_7execute = {"execute", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_7Micro80_3CPU_3CPU_7execute, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_7Micro80_3CPU_3CPU_6execute};
-static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_7execute(PyObject *__pyx_v_self, 
+PyDoc_STRVAR(__pyx_doc_7Micro80_3CPU_3CPU_8execute, "Executes the code");
+static PyMethodDef __pyx_mdef_7Micro80_3CPU_3CPU_9execute = {"execute", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_7Micro80_3CPU_3CPU_9execute, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_7Micro80_3CPU_3CPU_8execute};
+static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_9execute(PyObject *__pyx_v_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -7607,7 +9590,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
           (void)__Pyx_Arg_NewRef_FASTCALL(values[0]);
           kw_args--;
         }
-        else if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 101, __pyx_L3_error)
+        else if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 169, __pyx_L3_error)
         else goto __pyx_L5_argtuple_error;
         CYTHON_FALLTHROUGH;
         case  1:
@@ -7615,14 +9598,14 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
           (void)__Pyx_Arg_NewRef_FASTCALL(values[1]);
           kw_args--;
         }
-        else if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 101, __pyx_L3_error)
+        else if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 169, __pyx_L3_error)
         else {
-          __Pyx_RaiseArgtupleInvalid("execute", 1, 2, 2, 1); __PYX_ERR(0, 101, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("execute", 1, 2, 2, 1); __PYX_ERR(0, 169, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
         const Py_ssize_t kwd_pos_args = __pyx_nargs;
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values + 0, kwd_pos_args, "execute") < 0)) __PYX_ERR(0, 101, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values + 0, kwd_pos_args, "execute") < 0)) __PYX_ERR(0, 169, __pyx_L3_error)
       }
     } else if (unlikely(__pyx_nargs != 2)) {
       goto __pyx_L5_argtuple_error;
@@ -7630,12 +9613,12 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
       values[0] = __Pyx_Arg_FASTCALL(__pyx_args, 0);
       values[1] = __Pyx_Arg_FASTCALL(__pyx_args, 1);
     }
-    __pyx_v_opcode = __Pyx_PyInt_As_int(values[0]); if (unlikely((__pyx_v_opcode == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 101, __pyx_L3_error)
+    __pyx_v_opcode = __Pyx_PyInt_As_int(values[0]); if (unlikely((__pyx_v_opcode == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 169, __pyx_L3_error)
     __pyx_v_operands = values[1];
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("execute", 1, 2, 2, __pyx_nargs); __PYX_ERR(0, 101, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("execute", 1, 2, 2, __pyx_nargs); __PYX_ERR(0, 169, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -7649,7 +9632,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_7Micro80_3CPU_3CPU_6execute(((struct __pyx_obj_7Micro80_3CPU_CPU *)__pyx_v_self), __pyx_v_opcode, __pyx_v_operands);
+  __pyx_r = __pyx_pf_7Micro80_3CPU_3CPU_8execute(((struct __pyx_obj_7Micro80_3CPU_CPU *)__pyx_v_self), __pyx_v_opcode, __pyx_v_operands);
 
   /* function exit code */
   {
@@ -7662,7 +9645,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_6execute(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, int __pyx_v_opcode, PyObject *__pyx_v_operands) {
+static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_8execute(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, int __pyx_v_opcode, PyObject *__pyx_v_operands) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -7671,7 +9654,7 @@ static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_6execute(struct __pyx_obj_7Micro80_
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("execute", 1);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_7Micro80_3CPU_3CPU_execute(__pyx_v_self, __pyx_v_opcode, __pyx_v_operands, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 101, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_7Micro80_3CPU_3CPU_execute(__pyx_v_self, __pyx_v_opcode, __pyx_v_operands, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 169, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -7688,7 +9671,7 @@ static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_6execute(struct __pyx_obj_7Micro80_
   return __pyx_r;
 }
 
-/* "Micro80/CPU.py":174
+/* "Micro80/CPU.py":248
  *             raise ValueError(f"Invalid Opcode, {opcode}")
  * 
  *     def popAll(self):             # <<<<<<<<<<<<<<
@@ -7696,7 +9679,7 @@ static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_6execute(struct __pyx_obj_7Micro80_
  *         self.pop(self.stackPointer)
  */
 
-static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_9popAll(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_11popAll(PyObject *__pyx_v_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -7724,9 +9707,9 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_popAll(struct __pyx_obj_7Micro80_3CP
     if (unlikely(!__Pyx_object_dict_version_matches(((PyObject *)__pyx_v_self), __pyx_tp_dict_version, __pyx_obj_dict_version))) {
       PY_UINT64_T __pyx_typedict_guard = __Pyx_get_tp_dict_version(((PyObject *)__pyx_v_self));
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_popAll); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 174, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_popAll); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 248, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      if (!__Pyx_IsSameCFunction(__pyx_t_1, (void*) __pyx_pw_7Micro80_3CPU_3CPU_9popAll)) {
+      if (!__Pyx_IsSameCFunction(__pyx_t_1, (void*) __pyx_pw_7Micro80_3CPU_3CPU_11popAll)) {
         __Pyx_XDECREF(__pyx_r);
         __Pyx_INCREF(__pyx_t_1);
         __pyx_t_3 = __pyx_t_1; __pyx_t_4 = NULL;
@@ -7747,7 +9730,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_popAll(struct __pyx_obj_7Micro80_3CP
           PyObject *__pyx_callargs[2] = {__pyx_t_4, NULL};
           __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_3, __pyx_callargs+1-__pyx_t_5, 0+__pyx_t_5);
           __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-          if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 174, __pyx_L1_error)
+          if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 248, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_2);
           __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
         }
@@ -7769,95 +9752,95 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_popAll(struct __pyx_obj_7Micro80_3CP
     #endif
   }
 
-  /* "Micro80/CPU.py":176
+  /* "Micro80/CPU.py":250
  *     def popAll(self):
  *         "Pops off all of the registers from the stack."
  *         self.pop(self.stackPointer)             # <<<<<<<<<<<<<<
  *         self.pop(self.programCounter)
  *         self.pop(self.F)
  */
-  __pyx_t_1 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->pop(__pyx_v_self, __pyx_v_self->stackPointer, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 176, __pyx_L1_error)
+  __pyx_t_1 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->pop(__pyx_v_self, __pyx_v_self->stackPointer, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 250, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "Micro80/CPU.py":177
+  /* "Micro80/CPU.py":251
  *         "Pops off all of the registers from the stack."
  *         self.pop(self.stackPointer)
  *         self.pop(self.programCounter)             # <<<<<<<<<<<<<<
  *         self.pop(self.F)
  *         self.pop(self.E)
  */
-  __pyx_t_1 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->pop(__pyx_v_self, __pyx_v_self->programCounter, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 177, __pyx_L1_error)
+  __pyx_t_1 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->pop(__pyx_v_self, __pyx_v_self->programCounter, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 251, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "Micro80/CPU.py":178
+  /* "Micro80/CPU.py":252
  *         self.pop(self.stackPointer)
  *         self.pop(self.programCounter)
  *         self.pop(self.F)             # <<<<<<<<<<<<<<
  *         self.pop(self.E)
  *         self.pop(self.D)
  */
-  __pyx_t_1 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->pop(__pyx_v_self, __pyx_v_self->F, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 178, __pyx_L1_error)
+  __pyx_t_1 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->pop(__pyx_v_self, __pyx_v_self->F, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 252, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "Micro80/CPU.py":179
+  /* "Micro80/CPU.py":253
  *         self.pop(self.programCounter)
  *         self.pop(self.F)
  *         self.pop(self.E)             # <<<<<<<<<<<<<<
  *         self.pop(self.D)
  *         self.pop(self.C)
  */
-  __pyx_t_1 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->pop(__pyx_v_self, __pyx_v_self->E, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 179, __pyx_L1_error)
+  __pyx_t_1 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->pop(__pyx_v_self, __pyx_v_self->E, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 253, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "Micro80/CPU.py":180
+  /* "Micro80/CPU.py":254
  *         self.pop(self.F)
  *         self.pop(self.E)
  *         self.pop(self.D)             # <<<<<<<<<<<<<<
  *         self.pop(self.C)
  *         self.pop(self.B)
  */
-  __pyx_t_1 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->pop(__pyx_v_self, __pyx_v_self->D, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 180, __pyx_L1_error)
+  __pyx_t_1 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->pop(__pyx_v_self, __pyx_v_self->D, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 254, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "Micro80/CPU.py":181
+  /* "Micro80/CPU.py":255
  *         self.pop(self.E)
  *         self.pop(self.D)
  *         self.pop(self.C)             # <<<<<<<<<<<<<<
  *         self.pop(self.B)
  *         self.pop(self.A)
  */
-  __pyx_t_1 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->pop(__pyx_v_self, __pyx_v_self->C, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 181, __pyx_L1_error)
+  __pyx_t_1 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->pop(__pyx_v_self, __pyx_v_self->C, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 255, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "Micro80/CPU.py":182
+  /* "Micro80/CPU.py":256
  *         self.pop(self.D)
  *         self.pop(self.C)
  *         self.pop(self.B)             # <<<<<<<<<<<<<<
  *         self.pop(self.A)
  * 
  */
-  __pyx_t_1 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->pop(__pyx_v_self, __pyx_v_self->B, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 182, __pyx_L1_error)
+  __pyx_t_1 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->pop(__pyx_v_self, __pyx_v_self->B, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 256, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "Micro80/CPU.py":183
+  /* "Micro80/CPU.py":257
  *         self.pop(self.C)
  *         self.pop(self.B)
  *         self.pop(self.A)             # <<<<<<<<<<<<<<
  * 
  *     def pushAll(self):
  */
-  __pyx_t_1 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->pop(__pyx_v_self, __pyx_v_self->A, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 183, __pyx_L1_error)
+  __pyx_t_1 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->pop(__pyx_v_self, __pyx_v_self->A, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 257, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "Micro80/CPU.py":174
+  /* "Micro80/CPU.py":248
  *             raise ValueError(f"Invalid Opcode, {opcode}")
  * 
  *     def popAll(self):             # <<<<<<<<<<<<<<
@@ -7882,16 +9865,16 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_popAll(struct __pyx_obj_7Micro80_3CP
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_9popAll(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_11popAll(PyObject *__pyx_v_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_7Micro80_3CPU_3CPU_8popAll, "Pops off all of the registers from the stack.");
-static PyMethodDef __pyx_mdef_7Micro80_3CPU_3CPU_9popAll = {"popAll", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_7Micro80_3CPU_3CPU_9popAll, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_7Micro80_3CPU_3CPU_8popAll};
-static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_9popAll(PyObject *__pyx_v_self, 
+PyDoc_STRVAR(__pyx_doc_7Micro80_3CPU_3CPU_10popAll, "Pops off all of the registers from the stack.");
+static PyMethodDef __pyx_mdef_7Micro80_3CPU_3CPU_11popAll = {"popAll", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_7Micro80_3CPU_3CPU_11popAll, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_7Micro80_3CPU_3CPU_10popAll};
+static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_11popAll(PyObject *__pyx_v_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -7916,14 +9899,14 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   if (unlikely(__pyx_nargs > 0)) {
     __Pyx_RaiseArgtupleInvalid("popAll", 1, 0, 0, __pyx_nargs); return NULL;}
   if (unlikely(__pyx_kwds) && __Pyx_NumKwargs_FASTCALL(__pyx_kwds) && unlikely(!__Pyx_CheckKeywordStrings(__pyx_kwds, "popAll", 0))) return NULL;
-  __pyx_r = __pyx_pf_7Micro80_3CPU_3CPU_8popAll(((struct __pyx_obj_7Micro80_3CPU_CPU *)__pyx_v_self));
+  __pyx_r = __pyx_pf_7Micro80_3CPU_3CPU_10popAll(((struct __pyx_obj_7Micro80_3CPU_CPU *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_8popAll(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self) {
+static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_10popAll(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -7932,7 +9915,7 @@ static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_8popAll(struct __pyx_obj_7Micro80_3
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("popAll", 1);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_7Micro80_3CPU_3CPU_popAll(__pyx_v_self, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 174, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_7Micro80_3CPU_3CPU_popAll(__pyx_v_self, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 248, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -7949,7 +9932,7 @@ static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_8popAll(struct __pyx_obj_7Micro80_3
   return __pyx_r;
 }
 
-/* "Micro80/CPU.py":185
+/* "Micro80/CPU.py":259
  *         self.pop(self.A)
  * 
  *     def pushAll(self):             # <<<<<<<<<<<<<<
@@ -7957,7 +9940,7 @@ static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_8popAll(struct __pyx_obj_7Micro80_3
  *         self.push(self.A)
  */
 
-static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_11pushAll(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_13pushAll(PyObject *__pyx_v_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -7985,9 +9968,9 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_pushAll(struct __pyx_obj_7Micro80_3C
     if (unlikely(!__Pyx_object_dict_version_matches(((PyObject *)__pyx_v_self), __pyx_tp_dict_version, __pyx_obj_dict_version))) {
       PY_UINT64_T __pyx_typedict_guard = __Pyx_get_tp_dict_version(((PyObject *)__pyx_v_self));
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_pushAll); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 185, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_pushAll); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 259, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      if (!__Pyx_IsSameCFunction(__pyx_t_1, (void*) __pyx_pw_7Micro80_3CPU_3CPU_11pushAll)) {
+      if (!__Pyx_IsSameCFunction(__pyx_t_1, (void*) __pyx_pw_7Micro80_3CPU_3CPU_13pushAll)) {
         __Pyx_XDECREF(__pyx_r);
         __Pyx_INCREF(__pyx_t_1);
         __pyx_t_3 = __pyx_t_1; __pyx_t_4 = NULL;
@@ -8008,7 +9991,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_pushAll(struct __pyx_obj_7Micro80_3C
           PyObject *__pyx_callargs[2] = {__pyx_t_4, NULL};
           __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_3, __pyx_callargs+1-__pyx_t_5, 0+__pyx_t_5);
           __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-          if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 185, __pyx_L1_error)
+          if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 259, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_2);
           __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
         }
@@ -8030,95 +10013,95 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_pushAll(struct __pyx_obj_7Micro80_3C
     #endif
   }
 
-  /* "Micro80/CPU.py":187
+  /* "Micro80/CPU.py":261
  *     def pushAll(self):
  *         "Pushes all of the registers onto the stack."
  *         self.push(self.A)             # <<<<<<<<<<<<<<
  *         self.push(self.B)
  *         self.push(self.C)
  */
-  __pyx_t_1 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->push(__pyx_v_self, __pyx_v_self->A, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 187, __pyx_L1_error)
+  __pyx_t_1 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->push(__pyx_v_self, __pyx_v_self->A, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 261, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "Micro80/CPU.py":188
+  /* "Micro80/CPU.py":262
  *         "Pushes all of the registers onto the stack."
  *         self.push(self.A)
  *         self.push(self.B)             # <<<<<<<<<<<<<<
  *         self.push(self.C)
  *         self.push(self.D)
  */
-  __pyx_t_1 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->push(__pyx_v_self, __pyx_v_self->B, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 188, __pyx_L1_error)
+  __pyx_t_1 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->push(__pyx_v_self, __pyx_v_self->B, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 262, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "Micro80/CPU.py":189
+  /* "Micro80/CPU.py":263
  *         self.push(self.A)
  *         self.push(self.B)
  *         self.push(self.C)             # <<<<<<<<<<<<<<
  *         self.push(self.D)
  *         self.push(self.E)
  */
-  __pyx_t_1 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->push(__pyx_v_self, __pyx_v_self->C, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 189, __pyx_L1_error)
+  __pyx_t_1 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->push(__pyx_v_self, __pyx_v_self->C, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 263, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "Micro80/CPU.py":190
+  /* "Micro80/CPU.py":264
  *         self.push(self.B)
  *         self.push(self.C)
  *         self.push(self.D)             # <<<<<<<<<<<<<<
  *         self.push(self.E)
  *         self.push(self.F)
  */
-  __pyx_t_1 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->push(__pyx_v_self, __pyx_v_self->D, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 190, __pyx_L1_error)
+  __pyx_t_1 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->push(__pyx_v_self, __pyx_v_self->D, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 264, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "Micro80/CPU.py":191
+  /* "Micro80/CPU.py":265
  *         self.push(self.C)
  *         self.push(self.D)
  *         self.push(self.E)             # <<<<<<<<<<<<<<
  *         self.push(self.F)
  *         self.push(self.programCounter)
  */
-  __pyx_t_1 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->push(__pyx_v_self, __pyx_v_self->E, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 191, __pyx_L1_error)
+  __pyx_t_1 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->push(__pyx_v_self, __pyx_v_self->E, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 265, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "Micro80/CPU.py":192
+  /* "Micro80/CPU.py":266
  *         self.push(self.D)
  *         self.push(self.E)
  *         self.push(self.F)             # <<<<<<<<<<<<<<
  *         self.push(self.programCounter)
  *         self.push(self.stackPointer)
  */
-  __pyx_t_1 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->push(__pyx_v_self, __pyx_v_self->F, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 192, __pyx_L1_error)
+  __pyx_t_1 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->push(__pyx_v_self, __pyx_v_self->F, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 266, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "Micro80/CPU.py":193
+  /* "Micro80/CPU.py":267
  *         self.push(self.E)
  *         self.push(self.F)
  *         self.push(self.programCounter)             # <<<<<<<<<<<<<<
  *         self.push(self.stackPointer)
  * 
  */
-  __pyx_t_1 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->push(__pyx_v_self, __pyx_v_self->programCounter, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 193, __pyx_L1_error)
+  __pyx_t_1 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->push(__pyx_v_self, __pyx_v_self->programCounter, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 267, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "Micro80/CPU.py":194
+  /* "Micro80/CPU.py":268
  *         self.push(self.F)
  *         self.push(self.programCounter)
  *         self.push(self.stackPointer)             # <<<<<<<<<<<<<<
  * 
  *     def pop(self, operands):
  */
-  __pyx_t_1 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->push(__pyx_v_self, __pyx_v_self->stackPointer, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 194, __pyx_L1_error)
+  __pyx_t_1 = ((struct __pyx_vtabstruct_7Micro80_3CPU_CPU *)__pyx_v_self->__pyx_vtab)->push(__pyx_v_self, __pyx_v_self->stackPointer, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 268, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "Micro80/CPU.py":185
+  /* "Micro80/CPU.py":259
  *         self.pop(self.A)
  * 
  *     def pushAll(self):             # <<<<<<<<<<<<<<
@@ -8143,16 +10126,16 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_pushAll(struct __pyx_obj_7Micro80_3C
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_11pushAll(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_13pushAll(PyObject *__pyx_v_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_7Micro80_3CPU_3CPU_10pushAll, "Pushes all of the registers onto the stack.");
-static PyMethodDef __pyx_mdef_7Micro80_3CPU_3CPU_11pushAll = {"pushAll", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_7Micro80_3CPU_3CPU_11pushAll, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_7Micro80_3CPU_3CPU_10pushAll};
-static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_11pushAll(PyObject *__pyx_v_self, 
+PyDoc_STRVAR(__pyx_doc_7Micro80_3CPU_3CPU_12pushAll, "Pushes all of the registers onto the stack.");
+static PyMethodDef __pyx_mdef_7Micro80_3CPU_3CPU_13pushAll = {"pushAll", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_7Micro80_3CPU_3CPU_13pushAll, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_7Micro80_3CPU_3CPU_12pushAll};
+static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_13pushAll(PyObject *__pyx_v_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -8177,14 +10160,14 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   if (unlikely(__pyx_nargs > 0)) {
     __Pyx_RaiseArgtupleInvalid("pushAll", 1, 0, 0, __pyx_nargs); return NULL;}
   if (unlikely(__pyx_kwds) && __Pyx_NumKwargs_FASTCALL(__pyx_kwds) && unlikely(!__Pyx_CheckKeywordStrings(__pyx_kwds, "pushAll", 0))) return NULL;
-  __pyx_r = __pyx_pf_7Micro80_3CPU_3CPU_10pushAll(((struct __pyx_obj_7Micro80_3CPU_CPU *)__pyx_v_self));
+  __pyx_r = __pyx_pf_7Micro80_3CPU_3CPU_12pushAll(((struct __pyx_obj_7Micro80_3CPU_CPU *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_10pushAll(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self) {
+static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_12pushAll(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -8193,7 +10176,7 @@ static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_10pushAll(struct __pyx_obj_7Micro80
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("pushAll", 1);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_7Micro80_3CPU_3CPU_pushAll(__pyx_v_self, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 185, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_7Micro80_3CPU_3CPU_pushAll(__pyx_v_self, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 259, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -8210,7 +10193,7 @@ static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_10pushAll(struct __pyx_obj_7Micro80
   return __pyx_r;
 }
 
-/* "Micro80/CPU.py":196
+/* "Micro80/CPU.py":270
  *         self.push(self.stackPointer)
  * 
  *     def pop(self, operands):             # <<<<<<<<<<<<<<
@@ -8218,7 +10201,7 @@ static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_10pushAll(struct __pyx_obj_7Micro80
  *         self.stackPointer -= 1
  */
 
-static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_13pop(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_15pop(PyObject *__pyx_v_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -8250,11 +10233,11 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_pop(struct __pyx_obj_7Micro80_3CPU_C
     if (unlikely(!__Pyx_object_dict_version_matches(((PyObject *)__pyx_v_self), __pyx_tp_dict_version, __pyx_obj_dict_version))) {
       PY_UINT64_T __pyx_typedict_guard = __Pyx_get_tp_dict_version(((PyObject *)__pyx_v_self));
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_pop); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 196, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_pop); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 270, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      if (!__Pyx_IsSameCFunction(__pyx_t_1, (void*) __pyx_pw_7Micro80_3CPU_3CPU_13pop)) {
+      if (!__Pyx_IsSameCFunction(__pyx_t_1, (void*) __pyx_pw_7Micro80_3CPU_3CPU_15pop)) {
         __Pyx_XDECREF(__pyx_r);
-        __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 196, __pyx_L1_error)
+        __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 270, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_3);
         __Pyx_INCREF(__pyx_t_1);
         __pyx_t_4 = __pyx_t_1; __pyx_t_5 = NULL;
@@ -8276,7 +10259,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_pop(struct __pyx_obj_7Micro80_3CPU_C
           __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_4, __pyx_callargs+1-__pyx_t_6, 1+__pyx_t_6);
           __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
           __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-          if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 196, __pyx_L1_error)
+          if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 270, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_2);
           __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
         }
@@ -8298,7 +10281,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_pop(struct __pyx_obj_7Micro80_3CPU_C
     #endif
   }
 
-  /* "Micro80/CPU.py":198
+  /* "Micro80/CPU.py":272
  *     def pop(self, operands):
  *         "Pops off the top of the stack and stores it in the given address."
  *         self.stackPointer -= 1             # <<<<<<<<<<<<<<
@@ -8307,43 +10290,43 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_pop(struct __pyx_obj_7Micro80_3CPU_C
  */
   __pyx_v_self->stackPointer = (__pyx_v_self->stackPointer - 1);
 
-  /* "Micro80/CPU.py":199
+  /* "Micro80/CPU.py":273
  *         "Pops off the top of the stack and stores it in the given address."
  *         self.stackPointer -= 1
  *         if operands != None:             # <<<<<<<<<<<<<<
  *             self.memory.writeAddress(
  *                 operands, self.memory.readAddress(self.stackPointer)
  */
-  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 199, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 273, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PyObject_RichCompare(__pyx_t_1, Py_None, Py_NE); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 199, __pyx_L1_error)
+  __pyx_t_2 = PyObject_RichCompare(__pyx_t_1, Py_None, Py_NE); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 273, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_7 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 199, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 273, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   if (__pyx_t_7) {
 
-    /* "Micro80/CPU.py":200
+    /* "Micro80/CPU.py":274
  *         self.stackPointer -= 1
  *         if operands != None:
  *             self.memory.writeAddress(             # <<<<<<<<<<<<<<
  *                 operands, self.memory.readAddress(self.stackPointer)
  *             )
  */
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_writeAddress); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 200, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_writeAddress); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 274, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
 
-    /* "Micro80/CPU.py":201
+    /* "Micro80/CPU.py":275
  *         if operands != None:
  *             self.memory.writeAddress(
  *                 operands, self.memory.readAddress(self.stackPointer)             # <<<<<<<<<<<<<<
  *             )
  *         else:
  */
-    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 201, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 275, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 201, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 275, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_8 = __Pyx_PyInt_From_int(__pyx_v_self->stackPointer); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 201, __pyx_L1_error)
+    __pyx_t_8 = __Pyx_PyInt_From_int(__pyx_v_self->stackPointer); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 275, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
     __pyx_t_9 = NULL;
     __pyx_t_6 = 0;
@@ -8364,7 +10347,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_pop(struct __pyx_obj_7Micro80_3CPU_C
       __pyx_t_3 = __Pyx_PyObject_FastCall(__pyx_t_5, __pyx_callargs+1-__pyx_t_6, 1+__pyx_t_6);
       __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
       __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-      if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 201, __pyx_L1_error)
+      if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 275, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_3);
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
     }
@@ -8388,13 +10371,13 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_pop(struct __pyx_obj_7Micro80_3CPU_C
       __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 200, __pyx_L1_error)
+      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 274, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     }
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "Micro80/CPU.py":199
+    /* "Micro80/CPU.py":273
  *         "Pops off the top of the stack and stores it in the given address."
  *         self.stackPointer -= 1
  *         if operands != None:             # <<<<<<<<<<<<<<
@@ -8404,7 +10387,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_pop(struct __pyx_obj_7Micro80_3CPU_C
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":204
+  /* "Micro80/CPU.py":278
  *             )
  *         else:
  *             self.memory.writeAddress(self.stackPointer + 1, 0)             # <<<<<<<<<<<<<<
@@ -8412,9 +10395,9 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_pop(struct __pyx_obj_7Micro80_3CPU_C
  *     def push(self, operands):
  */
   /*else*/ {
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_writeAddress); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 204, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_writeAddress); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 278, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_3 = __Pyx_PyInt_From_long((__pyx_v_self->stackPointer + 1)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 204, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyInt_From_long((__pyx_v_self->stackPointer + 1)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 278, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __pyx_t_4 = NULL;
     __pyx_t_6 = 0;
@@ -8435,7 +10418,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_pop(struct __pyx_obj_7Micro80_3CPU_C
       __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_1, __pyx_callargs+1-__pyx_t_6, 2+__pyx_t_6);
       __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 204, __pyx_L1_error)
+      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 278, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     }
@@ -8443,7 +10426,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_pop(struct __pyx_obj_7Micro80_3CPU_C
   }
   __pyx_L3:;
 
-  /* "Micro80/CPU.py":196
+  /* "Micro80/CPU.py":270
  *         self.push(self.stackPointer)
  * 
  *     def pop(self, operands):             # <<<<<<<<<<<<<<
@@ -8471,16 +10454,16 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_pop(struct __pyx_obj_7Micro80_3CPU_C
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_13pop(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_15pop(PyObject *__pyx_v_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_7Micro80_3CPU_3CPU_12pop, "Pops off the top of the stack and stores it in the given address.");
-static PyMethodDef __pyx_mdef_7Micro80_3CPU_3CPU_13pop = {"pop", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_7Micro80_3CPU_3CPU_13pop, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_7Micro80_3CPU_3CPU_12pop};
-static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_13pop(PyObject *__pyx_v_self, 
+PyDoc_STRVAR(__pyx_doc_7Micro80_3CPU_3CPU_14pop, "Pops off the top of the stack and stores it in the given address.");
+static PyMethodDef __pyx_mdef_7Micro80_3CPU_3CPU_15pop = {"pop", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_7Micro80_3CPU_3CPU_15pop, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_7Micro80_3CPU_3CPU_14pop};
+static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_15pop(PyObject *__pyx_v_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -8524,23 +10507,23 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
           (void)__Pyx_Arg_NewRef_FASTCALL(values[0]);
           kw_args--;
         }
-        else if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 196, __pyx_L3_error)
+        else if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 270, __pyx_L3_error)
         else goto __pyx_L5_argtuple_error;
       }
       if (unlikely(kw_args > 0)) {
         const Py_ssize_t kwd_pos_args = __pyx_nargs;
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values + 0, kwd_pos_args, "pop") < 0)) __PYX_ERR(0, 196, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values + 0, kwd_pos_args, "pop") < 0)) __PYX_ERR(0, 270, __pyx_L3_error)
       }
     } else if (unlikely(__pyx_nargs != 1)) {
       goto __pyx_L5_argtuple_error;
     } else {
       values[0] = __Pyx_Arg_FASTCALL(__pyx_args, 0);
     }
-    __pyx_v_operands = __Pyx_PyInt_As_int(values[0]); if (unlikely((__pyx_v_operands == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 196, __pyx_L3_error)
+    __pyx_v_operands = __Pyx_PyInt_As_int(values[0]); if (unlikely((__pyx_v_operands == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 270, __pyx_L3_error)
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("pop", 1, 1, 1, __pyx_nargs); __PYX_ERR(0, 196, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("pop", 1, 1, 1, __pyx_nargs); __PYX_ERR(0, 270, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -8554,7 +10537,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_7Micro80_3CPU_3CPU_12pop(((struct __pyx_obj_7Micro80_3CPU_CPU *)__pyx_v_self), __pyx_v_operands);
+  __pyx_r = __pyx_pf_7Micro80_3CPU_3CPU_14pop(((struct __pyx_obj_7Micro80_3CPU_CPU *)__pyx_v_self), __pyx_v_operands);
 
   /* function exit code */
   {
@@ -8567,7 +10550,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_12pop(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, int __pyx_v_operands) {
+static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_14pop(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, int __pyx_v_operands) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -8576,7 +10559,7 @@ static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_12pop(struct __pyx_obj_7Micro80_3CP
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("pop", 1);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_7Micro80_3CPU_3CPU_pop(__pyx_v_self, __pyx_v_operands, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 196, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_7Micro80_3CPU_3CPU_pop(__pyx_v_self, __pyx_v_operands, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 270, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -8593,7 +10576,7 @@ static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_12pop(struct __pyx_obj_7Micro80_3CP
   return __pyx_r;
 }
 
-/* "Micro80/CPU.py":206
+/* "Micro80/CPU.py":280
  *             self.memory.writeAddress(self.stackPointer + 1, 0)
  * 
  *     def push(self, operands):             # <<<<<<<<<<<<<<
@@ -8601,7 +10584,7 @@ static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_12pop(struct __pyx_obj_7Micro80_3CP
  *         self.memory.writeAddress(self.stackPointer, operands)
  */
 
-static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_15push(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_17push(PyObject *__pyx_v_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -8630,11 +10613,11 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_push(struct __pyx_obj_7Micro80_3CPU_
     if (unlikely(!__Pyx_object_dict_version_matches(((PyObject *)__pyx_v_self), __pyx_tp_dict_version, __pyx_obj_dict_version))) {
       PY_UINT64_T __pyx_typedict_guard = __Pyx_get_tp_dict_version(((PyObject *)__pyx_v_self));
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_push); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 206, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_push); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 280, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      if (!__Pyx_IsSameCFunction(__pyx_t_1, (void*) __pyx_pw_7Micro80_3CPU_3CPU_15push)) {
+      if (!__Pyx_IsSameCFunction(__pyx_t_1, (void*) __pyx_pw_7Micro80_3CPU_3CPU_17push)) {
         __Pyx_XDECREF(__pyx_r);
-        __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 206, __pyx_L1_error)
+        __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 280, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_3);
         __Pyx_INCREF(__pyx_t_1);
         __pyx_t_4 = __pyx_t_1; __pyx_t_5 = NULL;
@@ -8656,7 +10639,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_push(struct __pyx_obj_7Micro80_3CPU_
           __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_4, __pyx_callargs+1-__pyx_t_6, 1+__pyx_t_6);
           __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
           __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-          if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 206, __pyx_L1_error)
+          if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 280, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_2);
           __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
         }
@@ -8678,18 +10661,18 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_push(struct __pyx_obj_7Micro80_3CPU_
     #endif
   }
 
-  /* "Micro80/CPU.py":208
+  /* "Micro80/CPU.py":282
  *     def push(self, operands):
  *         "Pushes the given data onto the stack."
  *         self.memory.writeAddress(self.stackPointer, operands)             # <<<<<<<<<<<<<<
  *         self.stackPointer += 1
  * 
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_writeAddress); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 208, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_writeAddress); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 282, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_self->stackPointer); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 208, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_self->stackPointer); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 282, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 208, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 282, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_t_5 = NULL;
   __pyx_t_6 = 0;
@@ -8711,13 +10694,13 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_push(struct __pyx_obj_7Micro80_3CPU_
     __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 208, __pyx_L1_error)
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 282, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "Micro80/CPU.py":209
+  /* "Micro80/CPU.py":283
  *         "Pushes the given data onto the stack."
  *         self.memory.writeAddress(self.stackPointer, operands)
  *         self.stackPointer += 1             # <<<<<<<<<<<<<<
@@ -8726,7 +10709,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_push(struct __pyx_obj_7Micro80_3CPU_
  */
   __pyx_v_self->stackPointer = (__pyx_v_self->stackPointer + 1);
 
-  /* "Micro80/CPU.py":206
+  /* "Micro80/CPU.py":280
  *             self.memory.writeAddress(self.stackPointer + 1, 0)
  * 
  *     def push(self, operands):             # <<<<<<<<<<<<<<
@@ -8752,16 +10735,16 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_push(struct __pyx_obj_7Micro80_3CPU_
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_15push(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_17push(PyObject *__pyx_v_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_7Micro80_3CPU_3CPU_14push, "Pushes the given data onto the stack.");
-static PyMethodDef __pyx_mdef_7Micro80_3CPU_3CPU_15push = {"push", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_7Micro80_3CPU_3CPU_15push, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_7Micro80_3CPU_3CPU_14push};
-static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_15push(PyObject *__pyx_v_self, 
+PyDoc_STRVAR(__pyx_doc_7Micro80_3CPU_3CPU_16push, "Pushes the given data onto the stack.");
+static PyMethodDef __pyx_mdef_7Micro80_3CPU_3CPU_17push = {"push", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_7Micro80_3CPU_3CPU_17push, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_7Micro80_3CPU_3CPU_16push};
+static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_17push(PyObject *__pyx_v_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -8805,23 +10788,23 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
           (void)__Pyx_Arg_NewRef_FASTCALL(values[0]);
           kw_args--;
         }
-        else if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 206, __pyx_L3_error)
+        else if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 280, __pyx_L3_error)
         else goto __pyx_L5_argtuple_error;
       }
       if (unlikely(kw_args > 0)) {
         const Py_ssize_t kwd_pos_args = __pyx_nargs;
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values + 0, kwd_pos_args, "push") < 0)) __PYX_ERR(0, 206, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values + 0, kwd_pos_args, "push") < 0)) __PYX_ERR(0, 280, __pyx_L3_error)
       }
     } else if (unlikely(__pyx_nargs != 1)) {
       goto __pyx_L5_argtuple_error;
     } else {
       values[0] = __Pyx_Arg_FASTCALL(__pyx_args, 0);
     }
-    __pyx_v_operands = __Pyx_PyInt_As_int(values[0]); if (unlikely((__pyx_v_operands == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 206, __pyx_L3_error)
+    __pyx_v_operands = __Pyx_PyInt_As_int(values[0]); if (unlikely((__pyx_v_operands == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 280, __pyx_L3_error)
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("push", 1, 1, 1, __pyx_nargs); __PYX_ERR(0, 206, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("push", 1, 1, 1, __pyx_nargs); __PYX_ERR(0, 280, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -8835,7 +10818,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_7Micro80_3CPU_3CPU_14push(((struct __pyx_obj_7Micro80_3CPU_CPU *)__pyx_v_self), __pyx_v_operands);
+  __pyx_r = __pyx_pf_7Micro80_3CPU_3CPU_16push(((struct __pyx_obj_7Micro80_3CPU_CPU *)__pyx_v_self), __pyx_v_operands);
 
   /* function exit code */
   {
@@ -8848,7 +10831,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_14push(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, int __pyx_v_operands) {
+static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_16push(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, int __pyx_v_operands) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -8857,7 +10840,7 @@ static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_14push(struct __pyx_obj_7Micro80_3C
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("push", 1);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_7Micro80_3CPU_3CPU_push(__pyx_v_self, __pyx_v_operands, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 206, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_7Micro80_3CPU_3CPU_push(__pyx_v_self, __pyx_v_operands, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 280, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -8874,7 +10857,7 @@ static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_14push(struct __pyx_obj_7Micro80_3C
   return __pyx_r;
 }
 
-/* "Micro80/CPU.py":211
+/* "Micro80/CPU.py":285
  *         self.stackPointer += 1
  * 
  *     def ret(self):             # <<<<<<<<<<<<<<
@@ -8882,7 +10865,7 @@ static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_14push(struct __pyx_obj_7Micro80_3C
  *         self.stackPointer -= 1
  */
 
-static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_17ret(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_19ret(PyObject *__pyx_v_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -8910,9 +10893,9 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_ret(struct __pyx_obj_7Micro80_3CPU_C
     if (unlikely(!__Pyx_object_dict_version_matches(((PyObject *)__pyx_v_self), __pyx_tp_dict_version, __pyx_obj_dict_version))) {
       PY_UINT64_T __pyx_typedict_guard = __Pyx_get_tp_dict_version(((PyObject *)__pyx_v_self));
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_ret); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 211, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_ret); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 285, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      if (!__Pyx_IsSameCFunction(__pyx_t_1, (void*) __pyx_pw_7Micro80_3CPU_3CPU_17ret)) {
+      if (!__Pyx_IsSameCFunction(__pyx_t_1, (void*) __pyx_pw_7Micro80_3CPU_3CPU_19ret)) {
         __Pyx_XDECREF(__pyx_r);
         __Pyx_INCREF(__pyx_t_1);
         __pyx_t_3 = __pyx_t_1; __pyx_t_4 = NULL;
@@ -8933,7 +10916,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_ret(struct __pyx_obj_7Micro80_3CPU_C
           PyObject *__pyx_callargs[2] = {__pyx_t_4, NULL};
           __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_3, __pyx_callargs+1-__pyx_t_5, 0+__pyx_t_5);
           __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-          if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 211, __pyx_L1_error)
+          if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 285, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_2);
           __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
         }
@@ -8955,7 +10938,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_ret(struct __pyx_obj_7Micro80_3CPU_C
     #endif
   }
 
-  /* "Micro80/CPU.py":213
+  /* "Micro80/CPU.py":287
  *     def ret(self):
  *         "Returns to the address on the top of the stack."
  *         self.stackPointer -= 1             # <<<<<<<<<<<<<<
@@ -8964,16 +10947,16 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_ret(struct __pyx_obj_7Micro80_3CPU_C
  */
   __pyx_v_self->stackPointer = (__pyx_v_self->stackPointer - 1);
 
-  /* "Micro80/CPU.py":214
+  /* "Micro80/CPU.py":288
  *         "Returns to the address on the top of the stack."
  *         self.stackPointer -= 1
  *         self.programCounter = self.memory.readAddress(self.stackPointer)             # <<<<<<<<<<<<<<
  * 
  *     def call(self, operands):
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 214, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 288, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_self->stackPointer); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 214, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_self->stackPointer); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 288, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_t_4 = NULL;
   __pyx_t_5 = 0;
@@ -8994,15 +10977,15 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_ret(struct __pyx_obj_7Micro80_3CPU_C
     __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_2, __pyx_callargs+1-__pyx_t_5, 1+__pyx_t_5);
     __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 214, __pyx_L1_error)
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 288, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   }
-  __pyx_t_5 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_5 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 214, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_5 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 288, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_self->programCounter = __pyx_t_5;
 
-  /* "Micro80/CPU.py":211
+  /* "Micro80/CPU.py":285
  *         self.stackPointer += 1
  * 
  *     def ret(self):             # <<<<<<<<<<<<<<
@@ -9027,16 +11010,16 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_ret(struct __pyx_obj_7Micro80_3CPU_C
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_17ret(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_19ret(PyObject *__pyx_v_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_7Micro80_3CPU_3CPU_16ret, "Returns to the address on the top of the stack.");
-static PyMethodDef __pyx_mdef_7Micro80_3CPU_3CPU_17ret = {"ret", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_7Micro80_3CPU_3CPU_17ret, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_7Micro80_3CPU_3CPU_16ret};
-static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_17ret(PyObject *__pyx_v_self, 
+PyDoc_STRVAR(__pyx_doc_7Micro80_3CPU_3CPU_18ret, "Returns to the address on the top of the stack.");
+static PyMethodDef __pyx_mdef_7Micro80_3CPU_3CPU_19ret = {"ret", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_7Micro80_3CPU_3CPU_19ret, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_7Micro80_3CPU_3CPU_18ret};
+static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_19ret(PyObject *__pyx_v_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -9061,14 +11044,14 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   if (unlikely(__pyx_nargs > 0)) {
     __Pyx_RaiseArgtupleInvalid("ret", 1, 0, 0, __pyx_nargs); return NULL;}
   if (unlikely(__pyx_kwds) && __Pyx_NumKwargs_FASTCALL(__pyx_kwds) && unlikely(!__Pyx_CheckKeywordStrings(__pyx_kwds, "ret", 0))) return NULL;
-  __pyx_r = __pyx_pf_7Micro80_3CPU_3CPU_16ret(((struct __pyx_obj_7Micro80_3CPU_CPU *)__pyx_v_self));
+  __pyx_r = __pyx_pf_7Micro80_3CPU_3CPU_18ret(((struct __pyx_obj_7Micro80_3CPU_CPU *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_16ret(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self) {
+static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_18ret(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -9077,7 +11060,7 @@ static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_16ret(struct __pyx_obj_7Micro80_3CP
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("ret", 1);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_7Micro80_3CPU_3CPU_ret(__pyx_v_self, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 211, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_7Micro80_3CPU_3CPU_ret(__pyx_v_self, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 285, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -9094,7 +11077,7 @@ static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_16ret(struct __pyx_obj_7Micro80_3CP
   return __pyx_r;
 }
 
-/* "Micro80/CPU.py":216
+/* "Micro80/CPU.py":290
  *         self.programCounter = self.memory.readAddress(self.stackPointer)
  * 
  *     def call(self, operands):             # <<<<<<<<<<<<<<
@@ -9102,7 +11085,7 @@ static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_16ret(struct __pyx_obj_7Micro80_3CP
  *         self.memory.writeAddress(self.stackPointer, self.programCounter)
  */
 
-static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_19call(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_21call(PyObject *__pyx_v_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -9131,11 +11114,11 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_call(struct __pyx_obj_7Micro80_3CPU_
     if (unlikely(!__Pyx_object_dict_version_matches(((PyObject *)__pyx_v_self), __pyx_tp_dict_version, __pyx_obj_dict_version))) {
       PY_UINT64_T __pyx_typedict_guard = __Pyx_get_tp_dict_version(((PyObject *)__pyx_v_self));
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_call); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 216, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_call); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 290, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      if (!__Pyx_IsSameCFunction(__pyx_t_1, (void*) __pyx_pw_7Micro80_3CPU_3CPU_19call)) {
+      if (!__Pyx_IsSameCFunction(__pyx_t_1, (void*) __pyx_pw_7Micro80_3CPU_3CPU_21call)) {
         __Pyx_XDECREF(__pyx_r);
-        __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 216, __pyx_L1_error)
+        __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 290, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_3);
         __Pyx_INCREF(__pyx_t_1);
         __pyx_t_4 = __pyx_t_1; __pyx_t_5 = NULL;
@@ -9157,7 +11140,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_call(struct __pyx_obj_7Micro80_3CPU_
           __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_4, __pyx_callargs+1-__pyx_t_6, 1+__pyx_t_6);
           __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
           __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-          if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 216, __pyx_L1_error)
+          if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 290, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_2);
           __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
         }
@@ -9179,18 +11162,18 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_call(struct __pyx_obj_7Micro80_3CPU_
     #endif
   }
 
-  /* "Micro80/CPU.py":218
+  /* "Micro80/CPU.py":292
  *     def call(self, operands):
  *         "Calls the given address."
  *         self.memory.writeAddress(self.stackPointer, self.programCounter)             # <<<<<<<<<<<<<<
  *         self.stackPointer += 1
  *         self.programCounter = operands
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_writeAddress); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 218, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_writeAddress); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 292, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_self->stackPointer); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 218, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_self->stackPointer); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 292, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_self->programCounter); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 218, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_self->programCounter); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 292, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_t_5 = NULL;
   __pyx_t_6 = 0;
@@ -9212,13 +11195,13 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_call(struct __pyx_obj_7Micro80_3CPU_
     __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 218, __pyx_L1_error)
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 292, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   }
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "Micro80/CPU.py":219
+  /* "Micro80/CPU.py":293
  *         "Calls the given address."
  *         self.memory.writeAddress(self.stackPointer, self.programCounter)
  *         self.stackPointer += 1             # <<<<<<<<<<<<<<
@@ -9227,7 +11210,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_call(struct __pyx_obj_7Micro80_3CPU_
  */
   __pyx_v_self->stackPointer = (__pyx_v_self->stackPointer + 1);
 
-  /* "Micro80/CPU.py":220
+  /* "Micro80/CPU.py":294
  *         self.memory.writeAddress(self.stackPointer, self.programCounter)
  *         self.stackPointer += 1
  *         self.programCounter = operands             # <<<<<<<<<<<<<<
@@ -9236,7 +11219,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_call(struct __pyx_obj_7Micro80_3CPU_
  */
   __pyx_v_self->programCounter = __pyx_v_operands;
 
-  /* "Micro80/CPU.py":216
+  /* "Micro80/CPU.py":290
  *         self.programCounter = self.memory.readAddress(self.stackPointer)
  * 
  *     def call(self, operands):             # <<<<<<<<<<<<<<
@@ -9262,16 +11245,16 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_call(struct __pyx_obj_7Micro80_3CPU_
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_19call(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_21call(PyObject *__pyx_v_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_7Micro80_3CPU_3CPU_18call, "Calls the given address.");
-static PyMethodDef __pyx_mdef_7Micro80_3CPU_3CPU_19call = {"call", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_7Micro80_3CPU_3CPU_19call, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_7Micro80_3CPU_3CPU_18call};
-static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_19call(PyObject *__pyx_v_self, 
+PyDoc_STRVAR(__pyx_doc_7Micro80_3CPU_3CPU_20call, "Calls the given address.");
+static PyMethodDef __pyx_mdef_7Micro80_3CPU_3CPU_21call = {"call", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_7Micro80_3CPU_3CPU_21call, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_7Micro80_3CPU_3CPU_20call};
+static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_21call(PyObject *__pyx_v_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -9315,23 +11298,23 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
           (void)__Pyx_Arg_NewRef_FASTCALL(values[0]);
           kw_args--;
         }
-        else if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 216, __pyx_L3_error)
+        else if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 290, __pyx_L3_error)
         else goto __pyx_L5_argtuple_error;
       }
       if (unlikely(kw_args > 0)) {
         const Py_ssize_t kwd_pos_args = __pyx_nargs;
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values + 0, kwd_pos_args, "call") < 0)) __PYX_ERR(0, 216, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values + 0, kwd_pos_args, "call") < 0)) __PYX_ERR(0, 290, __pyx_L3_error)
       }
     } else if (unlikely(__pyx_nargs != 1)) {
       goto __pyx_L5_argtuple_error;
     } else {
       values[0] = __Pyx_Arg_FASTCALL(__pyx_args, 0);
     }
-    __pyx_v_operands = __Pyx_PyInt_As_int(values[0]); if (unlikely((__pyx_v_operands == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 216, __pyx_L3_error)
+    __pyx_v_operands = __Pyx_PyInt_As_int(values[0]); if (unlikely((__pyx_v_operands == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 290, __pyx_L3_error)
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("call", 1, 1, 1, __pyx_nargs); __PYX_ERR(0, 216, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("call", 1, 1, 1, __pyx_nargs); __PYX_ERR(0, 290, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -9345,7 +11328,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_7Micro80_3CPU_3CPU_18call(((struct __pyx_obj_7Micro80_3CPU_CPU *)__pyx_v_self), __pyx_v_operands);
+  __pyx_r = __pyx_pf_7Micro80_3CPU_3CPU_20call(((struct __pyx_obj_7Micro80_3CPU_CPU *)__pyx_v_self), __pyx_v_operands);
 
   /* function exit code */
   {
@@ -9358,7 +11341,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_18call(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, int __pyx_v_operands) {
+static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_20call(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, int __pyx_v_operands) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -9367,7 +11350,7 @@ static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_18call(struct __pyx_obj_7Micro80_3C
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("call", 1);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_7Micro80_3CPU_3CPU_call(__pyx_v_self, __pyx_v_operands, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 216, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_7Micro80_3CPU_3CPU_call(__pyx_v_self, __pyx_v_operands, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 290, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -9384,7 +11367,7 @@ static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_18call(struct __pyx_obj_7Micro80_3C
   return __pyx_r;
 }
 
-/* "Micro80/CPU.py":222
+/* "Micro80/CPU.py":296
  *         self.programCounter = operands
  * 
  *     def increment(self, register):             # <<<<<<<<<<<<<<
@@ -9392,7 +11375,7 @@ static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_18call(struct __pyx_obj_7Micro80_3C
  *         if register == "A":
  */
 
-static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_21increment(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_23increment(PyObject *__pyx_v_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -9421,9 +11404,9 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_increment(struct __pyx_obj_7Micro80_
     if (unlikely(!__Pyx_object_dict_version_matches(((PyObject *)__pyx_v_self), __pyx_tp_dict_version, __pyx_obj_dict_version))) {
       PY_UINT64_T __pyx_typedict_guard = __Pyx_get_tp_dict_version(((PyObject *)__pyx_v_self));
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_increment); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 222, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_increment); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 296, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      if (!__Pyx_IsSameCFunction(__pyx_t_1, (void*) __pyx_pw_7Micro80_3CPU_3CPU_21increment)) {
+      if (!__Pyx_IsSameCFunction(__pyx_t_1, (void*) __pyx_pw_7Micro80_3CPU_3CPU_23increment)) {
         __Pyx_XDECREF(__pyx_r);
         __Pyx_INCREF(__pyx_t_1);
         __pyx_t_3 = __pyx_t_1; __pyx_t_4 = NULL;
@@ -9444,7 +11427,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_increment(struct __pyx_obj_7Micro80_
           PyObject *__pyx_callargs[2] = {__pyx_t_4, __pyx_v_register};
           __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_3, __pyx_callargs+1-__pyx_t_5, 1+__pyx_t_5);
           __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-          if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 222, __pyx_L1_error)
+          if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 296, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_2);
           __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
         }
@@ -9466,17 +11449,17 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_increment(struct __pyx_obj_7Micro80_
     #endif
   }
 
-  /* "Micro80/CPU.py":224
+  /* "Micro80/CPU.py":298
  *     def increment(self, register):
  *         "Increments a given register."
  *         if register == "A":             # <<<<<<<<<<<<<<
  *             self.A += 1
  *         elif register == "B":
  */
-  __pyx_t_6 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_A_2, Py_EQ)); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 224, __pyx_L1_error)
+  __pyx_t_6 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_A, Py_EQ)); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 298, __pyx_L1_error)
   if (__pyx_t_6) {
 
-    /* "Micro80/CPU.py":225
+    /* "Micro80/CPU.py":299
  *         "Increments a given register."
  *         if register == "A":
  *             self.A += 1             # <<<<<<<<<<<<<<
@@ -9485,7 +11468,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_increment(struct __pyx_obj_7Micro80_
  */
     __pyx_v_self->A = (__pyx_v_self->A + 1);
 
-    /* "Micro80/CPU.py":224
+    /* "Micro80/CPU.py":298
  *     def increment(self, register):
  *         "Increments a given register."
  *         if register == "A":             # <<<<<<<<<<<<<<
@@ -9495,17 +11478,17 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_increment(struct __pyx_obj_7Micro80_
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":226
+  /* "Micro80/CPU.py":300
  *         if register == "A":
  *             self.A += 1
  *         elif register == "B":             # <<<<<<<<<<<<<<
  *             self.B += 1
  *         elif register == "C":
  */
-  __pyx_t_6 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_B_2, Py_EQ)); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 226, __pyx_L1_error)
+  __pyx_t_6 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_B_2, Py_EQ)); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 300, __pyx_L1_error)
   if (__pyx_t_6) {
 
-    /* "Micro80/CPU.py":227
+    /* "Micro80/CPU.py":301
  *             self.A += 1
  *         elif register == "B":
  *             self.B += 1             # <<<<<<<<<<<<<<
@@ -9514,7 +11497,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_increment(struct __pyx_obj_7Micro80_
  */
     __pyx_v_self->B = (__pyx_v_self->B + 1);
 
-    /* "Micro80/CPU.py":226
+    /* "Micro80/CPU.py":300
  *         if register == "A":
  *             self.A += 1
  *         elif register == "B":             # <<<<<<<<<<<<<<
@@ -9524,17 +11507,17 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_increment(struct __pyx_obj_7Micro80_
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":228
+  /* "Micro80/CPU.py":302
  *         elif register == "B":
  *             self.B += 1
  *         elif register == "C":             # <<<<<<<<<<<<<<
  *             self.C += 1
  *         elif register == "D":
  */
-  __pyx_t_6 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_C_2, Py_EQ)); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 228, __pyx_L1_error)
+  __pyx_t_6 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_C_2, Py_EQ)); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 302, __pyx_L1_error)
   if (__pyx_t_6) {
 
-    /* "Micro80/CPU.py":229
+    /* "Micro80/CPU.py":303
  *             self.B += 1
  *         elif register == "C":
  *             self.C += 1             # <<<<<<<<<<<<<<
@@ -9543,7 +11526,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_increment(struct __pyx_obj_7Micro80_
  */
     __pyx_v_self->C = (__pyx_v_self->C + 1);
 
-    /* "Micro80/CPU.py":228
+    /* "Micro80/CPU.py":302
  *         elif register == "B":
  *             self.B += 1
  *         elif register == "C":             # <<<<<<<<<<<<<<
@@ -9553,17 +11536,17 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_increment(struct __pyx_obj_7Micro80_
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":230
+  /* "Micro80/CPU.py":304
  *         elif register == "C":
  *             self.C += 1
  *         elif register == "D":             # <<<<<<<<<<<<<<
  *             self.D += 1
  *         elif register == "E":
  */
-  __pyx_t_6 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_D_2, Py_EQ)); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 230, __pyx_L1_error)
+  __pyx_t_6 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_D_2, Py_EQ)); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 304, __pyx_L1_error)
   if (__pyx_t_6) {
 
-    /* "Micro80/CPU.py":231
+    /* "Micro80/CPU.py":305
  *             self.C += 1
  *         elif register == "D":
  *             self.D += 1             # <<<<<<<<<<<<<<
@@ -9572,7 +11555,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_increment(struct __pyx_obj_7Micro80_
  */
     __pyx_v_self->D = (__pyx_v_self->D + 1);
 
-    /* "Micro80/CPU.py":230
+    /* "Micro80/CPU.py":304
  *         elif register == "C":
  *             self.C += 1
  *         elif register == "D":             # <<<<<<<<<<<<<<
@@ -9582,17 +11565,17 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_increment(struct __pyx_obj_7Micro80_
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":232
+  /* "Micro80/CPU.py":306
  *         elif register == "D":
  *             self.D += 1
  *         elif register == "E":             # <<<<<<<<<<<<<<
  *             self.E += 1
  *         elif register == "F":
  */
-  __pyx_t_6 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_E_2, Py_EQ)); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 232, __pyx_L1_error)
+  __pyx_t_6 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_E_2, Py_EQ)); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 306, __pyx_L1_error)
   if (__pyx_t_6) {
 
-    /* "Micro80/CPU.py":233
+    /* "Micro80/CPU.py":307
  *             self.D += 1
  *         elif register == "E":
  *             self.E += 1             # <<<<<<<<<<<<<<
@@ -9601,7 +11584,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_increment(struct __pyx_obj_7Micro80_
  */
     __pyx_v_self->E = (__pyx_v_self->E + 1);
 
-    /* "Micro80/CPU.py":232
+    /* "Micro80/CPU.py":306
  *         elif register == "D":
  *             self.D += 1
  *         elif register == "E":             # <<<<<<<<<<<<<<
@@ -9611,17 +11594,17 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_increment(struct __pyx_obj_7Micro80_
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":234
+  /* "Micro80/CPU.py":308
  *         elif register == "E":
  *             self.E += 1
  *         elif register == "F":             # <<<<<<<<<<<<<<
  *             self.F += 1
  *         elif register == "SP":
  */
-  __pyx_t_6 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_F_2, Py_EQ)); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 234, __pyx_L1_error)
+  __pyx_t_6 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_F_2, Py_EQ)); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 308, __pyx_L1_error)
   if (__pyx_t_6) {
 
-    /* "Micro80/CPU.py":235
+    /* "Micro80/CPU.py":309
  *             self.E += 1
  *         elif register == "F":
  *             self.F += 1             # <<<<<<<<<<<<<<
@@ -9630,7 +11613,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_increment(struct __pyx_obj_7Micro80_
  */
     __pyx_v_self->F = (__pyx_v_self->F + 1);
 
-    /* "Micro80/CPU.py":234
+    /* "Micro80/CPU.py":308
  *         elif register == "E":
  *             self.E += 1
  *         elif register == "F":             # <<<<<<<<<<<<<<
@@ -9640,17 +11623,17 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_increment(struct __pyx_obj_7Micro80_
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":236
+  /* "Micro80/CPU.py":310
  *         elif register == "F":
  *             self.F += 1
  *         elif register == "SP":             # <<<<<<<<<<<<<<
  *             self.stackPointer += 1
  *         elif register == "P":
  */
-  __pyx_t_6 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_SP_2, Py_EQ)); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 236, __pyx_L1_error)
+  __pyx_t_6 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_SP, Py_EQ)); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 310, __pyx_L1_error)
   if (__pyx_t_6) {
 
-    /* "Micro80/CPU.py":237
+    /* "Micro80/CPU.py":311
  *             self.F += 1
  *         elif register == "SP":
  *             self.stackPointer += 1             # <<<<<<<<<<<<<<
@@ -9659,7 +11642,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_increment(struct __pyx_obj_7Micro80_
  */
     __pyx_v_self->stackPointer = (__pyx_v_self->stackPointer + 1);
 
-    /* "Micro80/CPU.py":236
+    /* "Micro80/CPU.py":310
  *         elif register == "F":
  *             self.F += 1
  *         elif register == "SP":             # <<<<<<<<<<<<<<
@@ -9669,17 +11652,17 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_increment(struct __pyx_obj_7Micro80_
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":238
+  /* "Micro80/CPU.py":312
  *         elif register == "SP":
  *             self.stackPointer += 1
  *         elif register == "P":             # <<<<<<<<<<<<<<
  *             self.programCounter += 1
  *         else:
  */
-  __pyx_t_6 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_P, Py_EQ)); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 238, __pyx_L1_error)
+  __pyx_t_6 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_P, Py_EQ)); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 312, __pyx_L1_error)
   if (likely(__pyx_t_6)) {
 
-    /* "Micro80/CPU.py":239
+    /* "Micro80/CPU.py":313
  *             self.stackPointer += 1
  *         elif register == "P":
  *             self.programCounter += 1             # <<<<<<<<<<<<<<
@@ -9688,7 +11671,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_increment(struct __pyx_obj_7Micro80_
  */
     __pyx_v_self->programCounter = (__pyx_v_self->programCounter + 1);
 
-    /* "Micro80/CPU.py":238
+    /* "Micro80/CPU.py":312
  *         elif register == "SP":
  *             self.stackPointer += 1
  *         elif register == "P":             # <<<<<<<<<<<<<<
@@ -9698,7 +11681,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_increment(struct __pyx_obj_7Micro80_
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":241
+  /* "Micro80/CPU.py":315
  *             self.programCounter += 1
  *         else:
  *             raise ValueError("Invalid Register")             # <<<<<<<<<<<<<<
@@ -9706,15 +11689,15 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_increment(struct __pyx_obj_7Micro80_
  *     def decrement(self, register):
  */
   /*else*/ {
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__16, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 241, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__23, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 315, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_Raise(__pyx_t_1, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __PYX_ERR(0, 241, __pyx_L1_error)
+    __PYX_ERR(0, 315, __pyx_L1_error)
   }
   __pyx_L3:;
 
-  /* "Micro80/CPU.py":222
+  /* "Micro80/CPU.py":296
  *         self.programCounter = operands
  * 
  *     def increment(self, register):             # <<<<<<<<<<<<<<
@@ -9739,16 +11722,16 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_increment(struct __pyx_obj_7Micro80_
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_21increment(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_23increment(PyObject *__pyx_v_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_7Micro80_3CPU_3CPU_20increment, "Increments a given register.");
-static PyMethodDef __pyx_mdef_7Micro80_3CPU_3CPU_21increment = {"increment", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_7Micro80_3CPU_3CPU_21increment, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_7Micro80_3CPU_3CPU_20increment};
-static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_21increment(PyObject *__pyx_v_self, 
+PyDoc_STRVAR(__pyx_doc_7Micro80_3CPU_3CPU_22increment, "Increments a given register.");
+static PyMethodDef __pyx_mdef_7Micro80_3CPU_3CPU_23increment = {"increment", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_7Micro80_3CPU_3CPU_23increment, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_7Micro80_3CPU_3CPU_22increment};
+static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_23increment(PyObject *__pyx_v_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -9792,12 +11775,12 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
           (void)__Pyx_Arg_NewRef_FASTCALL(values[0]);
           kw_args--;
         }
-        else if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 222, __pyx_L3_error)
+        else if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 296, __pyx_L3_error)
         else goto __pyx_L5_argtuple_error;
       }
       if (unlikely(kw_args > 0)) {
         const Py_ssize_t kwd_pos_args = __pyx_nargs;
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values + 0, kwd_pos_args, "increment") < 0)) __PYX_ERR(0, 222, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values + 0, kwd_pos_args, "increment") < 0)) __PYX_ERR(0, 296, __pyx_L3_error)
       }
     } else if (unlikely(__pyx_nargs != 1)) {
       goto __pyx_L5_argtuple_error;
@@ -9808,7 +11791,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("increment", 1, 1, 1, __pyx_nargs); __PYX_ERR(0, 222, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("increment", 1, 1, 1, __pyx_nargs); __PYX_ERR(0, 296, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -9822,8 +11805,8 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_register), (&PyString_Type), 1, "register", 1))) __PYX_ERR(0, 222, __pyx_L1_error)
-  __pyx_r = __pyx_pf_7Micro80_3CPU_3CPU_20increment(((struct __pyx_obj_7Micro80_3CPU_CPU *)__pyx_v_self), __pyx_v_register);
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_register), (&PyString_Type), 1, "register", 1))) __PYX_ERR(0, 296, __pyx_L1_error)
+  __pyx_r = __pyx_pf_7Micro80_3CPU_3CPU_22increment(((struct __pyx_obj_7Micro80_3CPU_CPU *)__pyx_v_self), __pyx_v_register);
 
   /* function exit code */
   goto __pyx_L0;
@@ -9840,7 +11823,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_20increment(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, PyObject *__pyx_v_register) {
+static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_22increment(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, PyObject *__pyx_v_register) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -9849,7 +11832,7 @@ static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_20increment(struct __pyx_obj_7Micro
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("increment", 1);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_7Micro80_3CPU_3CPU_increment(__pyx_v_self, __pyx_v_register, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 222, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_7Micro80_3CPU_3CPU_increment(__pyx_v_self, __pyx_v_register, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 296, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -9866,7 +11849,7 @@ static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_20increment(struct __pyx_obj_7Micro
   return __pyx_r;
 }
 
-/* "Micro80/CPU.py":243
+/* "Micro80/CPU.py":317
  *             raise ValueError("Invalid Register")
  * 
  *     def decrement(self, register):             # <<<<<<<<<<<<<<
@@ -9874,7 +11857,7 @@ static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_20increment(struct __pyx_obj_7Micro
  *         if register == "A":
  */
 
-static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_23decrement(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_25decrement(PyObject *__pyx_v_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -9903,9 +11886,9 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_decrement(struct __pyx_obj_7Micro80_
     if (unlikely(!__Pyx_object_dict_version_matches(((PyObject *)__pyx_v_self), __pyx_tp_dict_version, __pyx_obj_dict_version))) {
       PY_UINT64_T __pyx_typedict_guard = __Pyx_get_tp_dict_version(((PyObject *)__pyx_v_self));
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_decrement); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 243, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_decrement); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 317, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      if (!__Pyx_IsSameCFunction(__pyx_t_1, (void*) __pyx_pw_7Micro80_3CPU_3CPU_23decrement)) {
+      if (!__Pyx_IsSameCFunction(__pyx_t_1, (void*) __pyx_pw_7Micro80_3CPU_3CPU_25decrement)) {
         __Pyx_XDECREF(__pyx_r);
         __Pyx_INCREF(__pyx_t_1);
         __pyx_t_3 = __pyx_t_1; __pyx_t_4 = NULL;
@@ -9926,7 +11909,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_decrement(struct __pyx_obj_7Micro80_
           PyObject *__pyx_callargs[2] = {__pyx_t_4, __pyx_v_register};
           __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_3, __pyx_callargs+1-__pyx_t_5, 1+__pyx_t_5);
           __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-          if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 243, __pyx_L1_error)
+          if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 317, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_2);
           __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
         }
@@ -9948,17 +11931,17 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_decrement(struct __pyx_obj_7Micro80_
     #endif
   }
 
-  /* "Micro80/CPU.py":245
+  /* "Micro80/CPU.py":319
  *     def decrement(self, register):
  *         "Decrements a given register."
  *         if register == "A":             # <<<<<<<<<<<<<<
  *             self.A -= 1
  *         elif register == "B":
  */
-  __pyx_t_6 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_A_2, Py_EQ)); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 245, __pyx_L1_error)
+  __pyx_t_6 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_A, Py_EQ)); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 319, __pyx_L1_error)
   if (__pyx_t_6) {
 
-    /* "Micro80/CPU.py":246
+    /* "Micro80/CPU.py":320
  *         "Decrements a given register."
  *         if register == "A":
  *             self.A -= 1             # <<<<<<<<<<<<<<
@@ -9967,7 +11950,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_decrement(struct __pyx_obj_7Micro80_
  */
     __pyx_v_self->A = (__pyx_v_self->A - 1);
 
-    /* "Micro80/CPU.py":245
+    /* "Micro80/CPU.py":319
  *     def decrement(self, register):
  *         "Decrements a given register."
  *         if register == "A":             # <<<<<<<<<<<<<<
@@ -9977,17 +11960,17 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_decrement(struct __pyx_obj_7Micro80_
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":247
+  /* "Micro80/CPU.py":321
  *         if register == "A":
  *             self.A -= 1
  *         elif register == "B":             # <<<<<<<<<<<<<<
  *             self.B -= 1
  *         elif register == "C":
  */
-  __pyx_t_6 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_B_2, Py_EQ)); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 247, __pyx_L1_error)
+  __pyx_t_6 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_B_2, Py_EQ)); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 321, __pyx_L1_error)
   if (__pyx_t_6) {
 
-    /* "Micro80/CPU.py":248
+    /* "Micro80/CPU.py":322
  *             self.A -= 1
  *         elif register == "B":
  *             self.B -= 1             # <<<<<<<<<<<<<<
@@ -9996,7 +11979,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_decrement(struct __pyx_obj_7Micro80_
  */
     __pyx_v_self->B = (__pyx_v_self->B - 1);
 
-    /* "Micro80/CPU.py":247
+    /* "Micro80/CPU.py":321
  *         if register == "A":
  *             self.A -= 1
  *         elif register == "B":             # <<<<<<<<<<<<<<
@@ -10006,17 +11989,17 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_decrement(struct __pyx_obj_7Micro80_
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":249
+  /* "Micro80/CPU.py":323
  *         elif register == "B":
  *             self.B -= 1
  *         elif register == "C":             # <<<<<<<<<<<<<<
  *             self.C -= 1
  *         elif register == "D":
  */
-  __pyx_t_6 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_C_2, Py_EQ)); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 249, __pyx_L1_error)
+  __pyx_t_6 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_C_2, Py_EQ)); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 323, __pyx_L1_error)
   if (__pyx_t_6) {
 
-    /* "Micro80/CPU.py":250
+    /* "Micro80/CPU.py":324
  *             self.B -= 1
  *         elif register == "C":
  *             self.C -= 1             # <<<<<<<<<<<<<<
@@ -10025,7 +12008,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_decrement(struct __pyx_obj_7Micro80_
  */
     __pyx_v_self->C = (__pyx_v_self->C - 1);
 
-    /* "Micro80/CPU.py":249
+    /* "Micro80/CPU.py":323
  *         elif register == "B":
  *             self.B -= 1
  *         elif register == "C":             # <<<<<<<<<<<<<<
@@ -10035,17 +12018,17 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_decrement(struct __pyx_obj_7Micro80_
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":251
+  /* "Micro80/CPU.py":325
  *         elif register == "C":
  *             self.C -= 1
  *         elif register == "D":             # <<<<<<<<<<<<<<
  *             self.D -= 1
  *         elif register == "E":
  */
-  __pyx_t_6 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_D_2, Py_EQ)); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 251, __pyx_L1_error)
+  __pyx_t_6 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_D_2, Py_EQ)); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 325, __pyx_L1_error)
   if (__pyx_t_6) {
 
-    /* "Micro80/CPU.py":252
+    /* "Micro80/CPU.py":326
  *             self.C -= 1
  *         elif register == "D":
  *             self.D -= 1             # <<<<<<<<<<<<<<
@@ -10054,7 +12037,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_decrement(struct __pyx_obj_7Micro80_
  */
     __pyx_v_self->D = (__pyx_v_self->D - 1);
 
-    /* "Micro80/CPU.py":251
+    /* "Micro80/CPU.py":325
  *         elif register == "C":
  *             self.C -= 1
  *         elif register == "D":             # <<<<<<<<<<<<<<
@@ -10064,17 +12047,17 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_decrement(struct __pyx_obj_7Micro80_
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":253
+  /* "Micro80/CPU.py":327
  *         elif register == "D":
  *             self.D -= 1
  *         elif register == "E":             # <<<<<<<<<<<<<<
  *             self.E -= 1
  *         elif register == "F":
  */
-  __pyx_t_6 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_E_2, Py_EQ)); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 253, __pyx_L1_error)
+  __pyx_t_6 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_E_2, Py_EQ)); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 327, __pyx_L1_error)
   if (__pyx_t_6) {
 
-    /* "Micro80/CPU.py":254
+    /* "Micro80/CPU.py":328
  *             self.D -= 1
  *         elif register == "E":
  *             self.E -= 1             # <<<<<<<<<<<<<<
@@ -10083,7 +12066,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_decrement(struct __pyx_obj_7Micro80_
  */
     __pyx_v_self->E = (__pyx_v_self->E - 1);
 
-    /* "Micro80/CPU.py":253
+    /* "Micro80/CPU.py":327
  *         elif register == "D":
  *             self.D -= 1
  *         elif register == "E":             # <<<<<<<<<<<<<<
@@ -10093,17 +12076,17 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_decrement(struct __pyx_obj_7Micro80_
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":255
+  /* "Micro80/CPU.py":329
  *         elif register == "E":
  *             self.E -= 1
  *         elif register == "F":             # <<<<<<<<<<<<<<
  *             self.F -= 1
  *         elif register == "SP":
  */
-  __pyx_t_6 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_F_2, Py_EQ)); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 255, __pyx_L1_error)
+  __pyx_t_6 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_F_2, Py_EQ)); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 329, __pyx_L1_error)
   if (__pyx_t_6) {
 
-    /* "Micro80/CPU.py":256
+    /* "Micro80/CPU.py":330
  *             self.E -= 1
  *         elif register == "F":
  *             self.F -= 1             # <<<<<<<<<<<<<<
@@ -10112,7 +12095,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_decrement(struct __pyx_obj_7Micro80_
  */
     __pyx_v_self->F = (__pyx_v_self->F - 1);
 
-    /* "Micro80/CPU.py":255
+    /* "Micro80/CPU.py":329
  *         elif register == "E":
  *             self.E -= 1
  *         elif register == "F":             # <<<<<<<<<<<<<<
@@ -10122,17 +12105,17 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_decrement(struct __pyx_obj_7Micro80_
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":257
+  /* "Micro80/CPU.py":331
  *         elif register == "F":
  *             self.F -= 1
  *         elif register == "SP":             # <<<<<<<<<<<<<<
  *             self.stackPointer -= 1
  *         elif register == "P":
  */
-  __pyx_t_6 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_SP_2, Py_EQ)); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 257, __pyx_L1_error)
+  __pyx_t_6 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_SP, Py_EQ)); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 331, __pyx_L1_error)
   if (__pyx_t_6) {
 
-    /* "Micro80/CPU.py":258
+    /* "Micro80/CPU.py":332
  *             self.F -= 1
  *         elif register == "SP":
  *             self.stackPointer -= 1             # <<<<<<<<<<<<<<
@@ -10141,7 +12124,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_decrement(struct __pyx_obj_7Micro80_
  */
     __pyx_v_self->stackPointer = (__pyx_v_self->stackPointer - 1);
 
-    /* "Micro80/CPU.py":257
+    /* "Micro80/CPU.py":331
  *         elif register == "F":
  *             self.F -= 1
  *         elif register == "SP":             # <<<<<<<<<<<<<<
@@ -10151,17 +12134,17 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_decrement(struct __pyx_obj_7Micro80_
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":259
+  /* "Micro80/CPU.py":333
  *         elif register == "SP":
  *             self.stackPointer -= 1
  *         elif register == "P":             # <<<<<<<<<<<<<<
  *             self.programCounter -= 1
  *         else:
  */
-  __pyx_t_6 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_P, Py_EQ)); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 259, __pyx_L1_error)
+  __pyx_t_6 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_P, Py_EQ)); if (unlikely((__pyx_t_6 < 0))) __PYX_ERR(0, 333, __pyx_L1_error)
   if (likely(__pyx_t_6)) {
 
-    /* "Micro80/CPU.py":260
+    /* "Micro80/CPU.py":334
  *             self.stackPointer -= 1
  *         elif register == "P":
  *             self.programCounter -= 1             # <<<<<<<<<<<<<<
@@ -10170,7 +12153,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_decrement(struct __pyx_obj_7Micro80_
  */
     __pyx_v_self->programCounter = (__pyx_v_self->programCounter - 1);
 
-    /* "Micro80/CPU.py":259
+    /* "Micro80/CPU.py":333
  *         elif register == "SP":
  *             self.stackPointer -= 1
  *         elif register == "P":             # <<<<<<<<<<<<<<
@@ -10180,7 +12163,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_decrement(struct __pyx_obj_7Micro80_
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":262
+  /* "Micro80/CPU.py":336
  *             self.programCounter -= 1
  *         else:
  *             raise ValueError("Invalid Register")             # <<<<<<<<<<<<<<
@@ -10188,15 +12171,15 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_decrement(struct __pyx_obj_7Micro80_
  *     def load(self, register, operands):
  */
   /*else*/ {
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__16, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 262, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__23, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 336, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_Raise(__pyx_t_1, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __PYX_ERR(0, 262, __pyx_L1_error)
+    __PYX_ERR(0, 336, __pyx_L1_error)
   }
   __pyx_L3:;
 
-  /* "Micro80/CPU.py":243
+  /* "Micro80/CPU.py":317
  *             raise ValueError("Invalid Register")
  * 
  *     def decrement(self, register):             # <<<<<<<<<<<<<<
@@ -10221,16 +12204,16 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_decrement(struct __pyx_obj_7Micro80_
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_23decrement(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_25decrement(PyObject *__pyx_v_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_7Micro80_3CPU_3CPU_22decrement, "Decrements a given register.");
-static PyMethodDef __pyx_mdef_7Micro80_3CPU_3CPU_23decrement = {"decrement", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_7Micro80_3CPU_3CPU_23decrement, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_7Micro80_3CPU_3CPU_22decrement};
-static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_23decrement(PyObject *__pyx_v_self, 
+PyDoc_STRVAR(__pyx_doc_7Micro80_3CPU_3CPU_24decrement, "Decrements a given register.");
+static PyMethodDef __pyx_mdef_7Micro80_3CPU_3CPU_25decrement = {"decrement", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_7Micro80_3CPU_3CPU_25decrement, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_7Micro80_3CPU_3CPU_24decrement};
+static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_25decrement(PyObject *__pyx_v_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -10274,12 +12257,12 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
           (void)__Pyx_Arg_NewRef_FASTCALL(values[0]);
           kw_args--;
         }
-        else if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 243, __pyx_L3_error)
+        else if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 317, __pyx_L3_error)
         else goto __pyx_L5_argtuple_error;
       }
       if (unlikely(kw_args > 0)) {
         const Py_ssize_t kwd_pos_args = __pyx_nargs;
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values + 0, kwd_pos_args, "decrement") < 0)) __PYX_ERR(0, 243, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values + 0, kwd_pos_args, "decrement") < 0)) __PYX_ERR(0, 317, __pyx_L3_error)
       }
     } else if (unlikely(__pyx_nargs != 1)) {
       goto __pyx_L5_argtuple_error;
@@ -10290,7 +12273,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("decrement", 1, 1, 1, __pyx_nargs); __PYX_ERR(0, 243, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("decrement", 1, 1, 1, __pyx_nargs); __PYX_ERR(0, 317, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -10304,8 +12287,8 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_register), (&PyString_Type), 1, "register", 1))) __PYX_ERR(0, 243, __pyx_L1_error)
-  __pyx_r = __pyx_pf_7Micro80_3CPU_3CPU_22decrement(((struct __pyx_obj_7Micro80_3CPU_CPU *)__pyx_v_self), __pyx_v_register);
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_register), (&PyString_Type), 1, "register", 1))) __PYX_ERR(0, 317, __pyx_L1_error)
+  __pyx_r = __pyx_pf_7Micro80_3CPU_3CPU_24decrement(((struct __pyx_obj_7Micro80_3CPU_CPU *)__pyx_v_self), __pyx_v_register);
 
   /* function exit code */
   goto __pyx_L0;
@@ -10322,7 +12305,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_22decrement(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, PyObject *__pyx_v_register) {
+static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_24decrement(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, PyObject *__pyx_v_register) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -10331,7 +12314,7 @@ static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_22decrement(struct __pyx_obj_7Micro
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("decrement", 1);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_7Micro80_3CPU_3CPU_decrement(__pyx_v_self, __pyx_v_register, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 243, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_7Micro80_3CPU_3CPU_decrement(__pyx_v_self, __pyx_v_register, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 317, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -10348,7 +12331,7 @@ static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_22decrement(struct __pyx_obj_7Micro
   return __pyx_r;
 }
 
-/* "Micro80/CPU.py":264
+/* "Micro80/CPU.py":338
  *             raise ValueError("Invalid Register")
  * 
  *     def load(self, register, operands):             # <<<<<<<<<<<<<<
@@ -10356,7 +12339,7 @@ static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_22decrement(struct __pyx_obj_7Micro
  *         if register == "A":
  */
 
-static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_25load(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_27load(PyObject *__pyx_v_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -10386,11 +12369,11 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_load(struct __pyx_obj_7Micro80_3CPU_
     if (unlikely(!__Pyx_object_dict_version_matches(((PyObject *)__pyx_v_self), __pyx_tp_dict_version, __pyx_obj_dict_version))) {
       PY_UINT64_T __pyx_typedict_guard = __Pyx_get_tp_dict_version(((PyObject *)__pyx_v_self));
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_load); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 264, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_load); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 338, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      if (!__Pyx_IsSameCFunction(__pyx_t_1, (void*) __pyx_pw_7Micro80_3CPU_3CPU_25load)) {
+      if (!__Pyx_IsSameCFunction(__pyx_t_1, (void*) __pyx_pw_7Micro80_3CPU_3CPU_27load)) {
         __Pyx_XDECREF(__pyx_r);
-        __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 264, __pyx_L1_error)
+        __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 338, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_3);
         __Pyx_INCREF(__pyx_t_1);
         __pyx_t_4 = __pyx_t_1; __pyx_t_5 = NULL;
@@ -10412,7 +12395,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_load(struct __pyx_obj_7Micro80_3CPU_
           __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_4, __pyx_callargs+1-__pyx_t_6, 2+__pyx_t_6);
           __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
           __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-          if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 264, __pyx_L1_error)
+          if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 338, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_2);
           __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
         }
@@ -10434,26 +12417,26 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_load(struct __pyx_obj_7Micro80_3CPU_
     #endif
   }
 
-  /* "Micro80/CPU.py":266
+  /* "Micro80/CPU.py":340
  *     def load(self, register, operands):
  *         "Loads a value from an address to a register."
  *         if register == "A":             # <<<<<<<<<<<<<<
  *             self.A = self.memory.readAddress(operands)
  *         elif register == "B":
  */
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_A_2, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 266, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_A, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 340, __pyx_L1_error)
   if (__pyx_t_7) {
 
-    /* "Micro80/CPU.py":267
+    /* "Micro80/CPU.py":341
  *         "Loads a value from an address to a register."
  *         if register == "A":
  *             self.A = self.memory.readAddress(operands)             # <<<<<<<<<<<<<<
  *         elif register == "B":
  *             self.B = self.memory.readAddress(operands)
  */
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 267, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 341, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 267, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 341, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __pyx_t_3 = NULL;
     __pyx_t_6 = 0;
@@ -10474,15 +12457,15 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_load(struct __pyx_obj_7Micro80_3CPU_
       __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_2, __pyx_callargs+1-__pyx_t_6, 1+__pyx_t_6);
       __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 267, __pyx_L1_error)
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 341, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     }
-    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 267, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 341, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __pyx_v_self->A = __pyx_t_6;
 
-    /* "Micro80/CPU.py":266
+    /* "Micro80/CPU.py":340
  *     def load(self, register, operands):
  *         "Loads a value from an address to a register."
  *         if register == "A":             # <<<<<<<<<<<<<<
@@ -10492,26 +12475,26 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_load(struct __pyx_obj_7Micro80_3CPU_
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":268
+  /* "Micro80/CPU.py":342
  *         if register == "A":
  *             self.A = self.memory.readAddress(operands)
  *         elif register == "B":             # <<<<<<<<<<<<<<
  *             self.B = self.memory.readAddress(operands)
  *         elif register == "C":
  */
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_B_2, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 268, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_B_2, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 342, __pyx_L1_error)
   if (__pyx_t_7) {
 
-    /* "Micro80/CPU.py":269
+    /* "Micro80/CPU.py":343
  *             self.A = self.memory.readAddress(operands)
  *         elif register == "B":
  *             self.B = self.memory.readAddress(operands)             # <<<<<<<<<<<<<<
  *         elif register == "C":
  *             self.C = self.memory.readAddress(operands)
  */
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 269, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 343, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 269, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 343, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __pyx_t_3 = NULL;
     __pyx_t_6 = 0;
@@ -10532,15 +12515,15 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_load(struct __pyx_obj_7Micro80_3CPU_
       __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_2, __pyx_callargs+1-__pyx_t_6, 1+__pyx_t_6);
       __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 269, __pyx_L1_error)
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 343, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     }
-    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 269, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 343, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __pyx_v_self->B = __pyx_t_6;
 
-    /* "Micro80/CPU.py":268
+    /* "Micro80/CPU.py":342
  *         if register == "A":
  *             self.A = self.memory.readAddress(operands)
  *         elif register == "B":             # <<<<<<<<<<<<<<
@@ -10550,26 +12533,26 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_load(struct __pyx_obj_7Micro80_3CPU_
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":270
+  /* "Micro80/CPU.py":344
  *         elif register == "B":
  *             self.B = self.memory.readAddress(operands)
  *         elif register == "C":             # <<<<<<<<<<<<<<
  *             self.C = self.memory.readAddress(operands)
  *         elif register == "D":
  */
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_C_2, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 270, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_C_2, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 344, __pyx_L1_error)
   if (__pyx_t_7) {
 
-    /* "Micro80/CPU.py":271
+    /* "Micro80/CPU.py":345
  *             self.B = self.memory.readAddress(operands)
  *         elif register == "C":
  *             self.C = self.memory.readAddress(operands)             # <<<<<<<<<<<<<<
  *         elif register == "D":
  *             self.D = self.memory.readAddress(operands)
  */
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 271, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 345, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 271, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 345, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __pyx_t_3 = NULL;
     __pyx_t_6 = 0;
@@ -10590,15 +12573,15 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_load(struct __pyx_obj_7Micro80_3CPU_
       __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_2, __pyx_callargs+1-__pyx_t_6, 1+__pyx_t_6);
       __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 271, __pyx_L1_error)
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 345, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     }
-    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 271, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 345, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __pyx_v_self->C = __pyx_t_6;
 
-    /* "Micro80/CPU.py":270
+    /* "Micro80/CPU.py":344
  *         elif register == "B":
  *             self.B = self.memory.readAddress(operands)
  *         elif register == "C":             # <<<<<<<<<<<<<<
@@ -10608,26 +12591,26 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_load(struct __pyx_obj_7Micro80_3CPU_
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":272
+  /* "Micro80/CPU.py":346
  *         elif register == "C":
  *             self.C = self.memory.readAddress(operands)
  *         elif register == "D":             # <<<<<<<<<<<<<<
  *             self.D = self.memory.readAddress(operands)
  *         elif register == "E":
  */
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_D_2, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 272, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_D_2, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 346, __pyx_L1_error)
   if (__pyx_t_7) {
 
-    /* "Micro80/CPU.py":273
+    /* "Micro80/CPU.py":347
  *             self.C = self.memory.readAddress(operands)
  *         elif register == "D":
  *             self.D = self.memory.readAddress(operands)             # <<<<<<<<<<<<<<
  *         elif register == "E":
  *             self.E = self.memory.readAddress(operands)
  */
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 273, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 347, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 273, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 347, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __pyx_t_3 = NULL;
     __pyx_t_6 = 0;
@@ -10648,15 +12631,15 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_load(struct __pyx_obj_7Micro80_3CPU_
       __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_2, __pyx_callargs+1-__pyx_t_6, 1+__pyx_t_6);
       __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 273, __pyx_L1_error)
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 347, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     }
-    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 273, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 347, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __pyx_v_self->D = __pyx_t_6;
 
-    /* "Micro80/CPU.py":272
+    /* "Micro80/CPU.py":346
  *         elif register == "C":
  *             self.C = self.memory.readAddress(operands)
  *         elif register == "D":             # <<<<<<<<<<<<<<
@@ -10666,26 +12649,26 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_load(struct __pyx_obj_7Micro80_3CPU_
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":274
+  /* "Micro80/CPU.py":348
  *         elif register == "D":
  *             self.D = self.memory.readAddress(operands)
  *         elif register == "E":             # <<<<<<<<<<<<<<
  *             self.E = self.memory.readAddress(operands)
  *         elif register == "F":
  */
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_E_2, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 274, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_E_2, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 348, __pyx_L1_error)
   if (__pyx_t_7) {
 
-    /* "Micro80/CPU.py":275
+    /* "Micro80/CPU.py":349
  *             self.D = self.memory.readAddress(operands)
  *         elif register == "E":
  *             self.E = self.memory.readAddress(operands)             # <<<<<<<<<<<<<<
  *         elif register == "F":
  *             self.H = self.memory.readAddress(operands)
  */
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 275, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 349, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 275, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 349, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __pyx_t_3 = NULL;
     __pyx_t_6 = 0;
@@ -10706,15 +12689,15 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_load(struct __pyx_obj_7Micro80_3CPU_
       __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_2, __pyx_callargs+1-__pyx_t_6, 1+__pyx_t_6);
       __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 275, __pyx_L1_error)
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 349, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     }
-    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 275, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 349, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __pyx_v_self->E = __pyx_t_6;
 
-    /* "Micro80/CPU.py":274
+    /* "Micro80/CPU.py":348
  *         elif register == "D":
  *             self.D = self.memory.readAddress(operands)
  *         elif register == "E":             # <<<<<<<<<<<<<<
@@ -10724,26 +12707,26 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_load(struct __pyx_obj_7Micro80_3CPU_
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":276
+  /* "Micro80/CPU.py":350
  *         elif register == "E":
  *             self.E = self.memory.readAddress(operands)
  *         elif register == "F":             # <<<<<<<<<<<<<<
  *             self.H = self.memory.readAddress(operands)
  *         elif register == "L":
  */
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_F_2, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 276, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_F_2, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 350, __pyx_L1_error)
   if (__pyx_t_7) {
 
-    /* "Micro80/CPU.py":277
+    /* "Micro80/CPU.py":351
  *             self.E = self.memory.readAddress(operands)
  *         elif register == "F":
  *             self.H = self.memory.readAddress(operands)             # <<<<<<<<<<<<<<
  *         elif register == "L":
  *             self.L = self.memory.readAddress(operands)
  */
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 277, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 351, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 277, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 351, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __pyx_t_3 = NULL;
     __pyx_t_6 = 0;
@@ -10764,14 +12747,14 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_load(struct __pyx_obj_7Micro80_3CPU_
       __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_2, __pyx_callargs+1-__pyx_t_6, 1+__pyx_t_6);
       __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 277, __pyx_L1_error)
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 351, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     }
-    if (__Pyx_PyObject_SetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_H, __pyx_t_1) < 0) __PYX_ERR(0, 277, __pyx_L1_error)
+    if (__Pyx_PyObject_SetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_H, __pyx_t_1) < 0) __PYX_ERR(0, 351, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "Micro80/CPU.py":276
+    /* "Micro80/CPU.py":350
  *         elif register == "E":
  *             self.E = self.memory.readAddress(operands)
  *         elif register == "F":             # <<<<<<<<<<<<<<
@@ -10781,26 +12764,26 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_load(struct __pyx_obj_7Micro80_3CPU_
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":278
+  /* "Micro80/CPU.py":352
  *         elif register == "F":
  *             self.H = self.memory.readAddress(operands)
  *         elif register == "L":             # <<<<<<<<<<<<<<
  *             self.L = self.memory.readAddress(operands)
  *         elif register == "Ad":
  */
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_L, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 278, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_L, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 352, __pyx_L1_error)
   if (__pyx_t_7) {
 
-    /* "Micro80/CPU.py":279
+    /* "Micro80/CPU.py":353
  *             self.H = self.memory.readAddress(operands)
  *         elif register == "L":
  *             self.L = self.memory.readAddress(operands)             # <<<<<<<<<<<<<<
  *         elif register == "Ad":
  *             self.adr = self.memory.readAddress(operands)
  */
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 279, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 353, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 279, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 353, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __pyx_t_3 = NULL;
     __pyx_t_6 = 0;
@@ -10821,14 +12804,14 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_load(struct __pyx_obj_7Micro80_3CPU_
       __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_2, __pyx_callargs+1-__pyx_t_6, 1+__pyx_t_6);
       __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 279, __pyx_L1_error)
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 353, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     }
-    if (__Pyx_PyObject_SetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_L, __pyx_t_1) < 0) __PYX_ERR(0, 279, __pyx_L1_error)
+    if (__Pyx_PyObject_SetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_L, __pyx_t_1) < 0) __PYX_ERR(0, 353, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "Micro80/CPU.py":278
+    /* "Micro80/CPU.py":352
  *         elif register == "F":
  *             self.H = self.memory.readAddress(operands)
  *         elif register == "L":             # <<<<<<<<<<<<<<
@@ -10838,26 +12821,26 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_load(struct __pyx_obj_7Micro80_3CPU_
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":280
+  /* "Micro80/CPU.py":354
  *         elif register == "L":
  *             self.L = self.memory.readAddress(operands)
  *         elif register == "Ad":             # <<<<<<<<<<<<<<
  *             self.adr = self.memory.readAddress(operands)
  *         elif register == "SP":
  */
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_Ad_2, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 280, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_Ad, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 354, __pyx_L1_error)
   if (__pyx_t_7) {
 
-    /* "Micro80/CPU.py":281
+    /* "Micro80/CPU.py":355
  *             self.L = self.memory.readAddress(operands)
  *         elif register == "Ad":
  *             self.adr = self.memory.readAddress(operands)             # <<<<<<<<<<<<<<
  *         elif register == "SP":
  *             self.memory.stackPointer = self.memory.readAddress(operands)
  */
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 281, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 355, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 281, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 355, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __pyx_t_3 = NULL;
     __pyx_t_6 = 0;
@@ -10878,15 +12861,15 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_load(struct __pyx_obj_7Micro80_3CPU_
       __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_2, __pyx_callargs+1-__pyx_t_6, 1+__pyx_t_6);
       __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 281, __pyx_L1_error)
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 355, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     }
-    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 281, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 355, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __pyx_v_self->adr = __pyx_t_6;
 
-    /* "Micro80/CPU.py":280
+    /* "Micro80/CPU.py":354
  *         elif register == "L":
  *             self.L = self.memory.readAddress(operands)
  *         elif register == "Ad":             # <<<<<<<<<<<<<<
@@ -10896,26 +12879,26 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_load(struct __pyx_obj_7Micro80_3CPU_
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":282
+  /* "Micro80/CPU.py":356
  *         elif register == "Ad":
  *             self.adr = self.memory.readAddress(operands)
  *         elif register == "SP":             # <<<<<<<<<<<<<<
  *             self.memory.stackPointer = self.memory.readAddress(operands)
  *         elif register == "PC":
  */
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_SP_2, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 282, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_SP, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 356, __pyx_L1_error)
   if (__pyx_t_7) {
 
-    /* "Micro80/CPU.py":283
+    /* "Micro80/CPU.py":357
  *             self.adr = self.memory.readAddress(operands)
  *         elif register == "SP":
  *             self.memory.stackPointer = self.memory.readAddress(operands)             # <<<<<<<<<<<<<<
  *         elif register == "PC":
  *             self.programCounter = self.memory.readAddress(operands)
  */
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 283, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 357, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 283, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 357, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __pyx_t_3 = NULL;
     __pyx_t_6 = 0;
@@ -10936,14 +12919,14 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_load(struct __pyx_obj_7Micro80_3CPU_
       __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_2, __pyx_callargs+1-__pyx_t_6, 1+__pyx_t_6);
       __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 283, __pyx_L1_error)
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 357, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     }
-    if (__Pyx_PyObject_SetAttrStr(__pyx_v_self->memory, __pyx_n_s_stackPointer, __pyx_t_1) < 0) __PYX_ERR(0, 283, __pyx_L1_error)
+    if (__Pyx_PyObject_SetAttrStr(__pyx_v_self->memory, __pyx_n_s_stackPointer, __pyx_t_1) < 0) __PYX_ERR(0, 357, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "Micro80/CPU.py":282
+    /* "Micro80/CPU.py":356
  *         elif register == "Ad":
  *             self.adr = self.memory.readAddress(operands)
  *         elif register == "SP":             # <<<<<<<<<<<<<<
@@ -10953,26 +12936,26 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_load(struct __pyx_obj_7Micro80_3CPU_
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":284
+  /* "Micro80/CPU.py":358
  *         elif register == "SP":
  *             self.memory.stackPointer = self.memory.readAddress(operands)
  *         elif register == "PC":             # <<<<<<<<<<<<<<
  *             self.programCounter = self.memory.readAddress(operands)
  *         elif register == "ST":
  */
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_PC_2, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 284, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_PC, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 358, __pyx_L1_error)
   if (__pyx_t_7) {
 
-    /* "Micro80/CPU.py":285
+    /* "Micro80/CPU.py":359
  *             self.memory.stackPointer = self.memory.readAddress(operands)
  *         elif register == "PC":
  *             self.programCounter = self.memory.readAddress(operands)             # <<<<<<<<<<<<<<
  *         elif register == "ST":
  *             self.stackPointer = self.memory.readAddress(operands)
  */
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 285, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 359, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 285, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 359, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __pyx_t_3 = NULL;
     __pyx_t_6 = 0;
@@ -10993,15 +12976,15 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_load(struct __pyx_obj_7Micro80_3CPU_
       __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_2, __pyx_callargs+1-__pyx_t_6, 1+__pyx_t_6);
       __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 285, __pyx_L1_error)
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 359, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     }
-    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 285, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 359, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __pyx_v_self->programCounter = __pyx_t_6;
 
-    /* "Micro80/CPU.py":284
+    /* "Micro80/CPU.py":358
  *         elif register == "SP":
  *             self.memory.stackPointer = self.memory.readAddress(operands)
  *         elif register == "PC":             # <<<<<<<<<<<<<<
@@ -11011,26 +12994,26 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_load(struct __pyx_obj_7Micro80_3CPU_
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":286
+  /* "Micro80/CPU.py":360
  *         elif register == "PC":
  *             self.programCounter = self.memory.readAddress(operands)
  *         elif register == "ST":             # <<<<<<<<<<<<<<
  *             self.stackPointer = self.memory.readAddress(operands)
  *         else:
  */
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_ST, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 286, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_ST, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 360, __pyx_L1_error)
   if (likely(__pyx_t_7)) {
 
-    /* "Micro80/CPU.py":287
+    /* "Micro80/CPU.py":361
  *             self.programCounter = self.memory.readAddress(operands)
  *         elif register == "ST":
  *             self.stackPointer = self.memory.readAddress(operands)             # <<<<<<<<<<<<<<
  *         else:
  *             raise ValueError("Invalid Register")
  */
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 287, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 361, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 287, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 361, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __pyx_t_3 = NULL;
     __pyx_t_6 = 0;
@@ -11051,15 +13034,15 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_load(struct __pyx_obj_7Micro80_3CPU_
       __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_2, __pyx_callargs+1-__pyx_t_6, 1+__pyx_t_6);
       __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 287, __pyx_L1_error)
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 361, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     }
-    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 287, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 361, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __pyx_v_self->stackPointer = __pyx_t_6;
 
-    /* "Micro80/CPU.py":286
+    /* "Micro80/CPU.py":360
  *         elif register == "PC":
  *             self.programCounter = self.memory.readAddress(operands)
  *         elif register == "ST":             # <<<<<<<<<<<<<<
@@ -11069,7 +13052,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_load(struct __pyx_obj_7Micro80_3CPU_
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":289
+  /* "Micro80/CPU.py":363
  *             self.stackPointer = self.memory.readAddress(operands)
  *         else:
  *             raise ValueError("Invalid Register")             # <<<<<<<<<<<<<<
@@ -11077,15 +13060,15 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_load(struct __pyx_obj_7Micro80_3CPU_
  *     def store(self, register, operands):
  */
   /*else*/ {
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__16, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 289, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__23, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 363, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_Raise(__pyx_t_1, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __PYX_ERR(0, 289, __pyx_L1_error)
+    __PYX_ERR(0, 363, __pyx_L1_error)
   }
   __pyx_L3:;
 
-  /* "Micro80/CPU.py":264
+  /* "Micro80/CPU.py":338
  *             raise ValueError("Invalid Register")
  * 
  *     def load(self, register, operands):             # <<<<<<<<<<<<<<
@@ -11111,16 +13094,16 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_load(struct __pyx_obj_7Micro80_3CPU_
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_25load(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_27load(PyObject *__pyx_v_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_7Micro80_3CPU_3CPU_24load, "Loads a value from an address to a register.");
-static PyMethodDef __pyx_mdef_7Micro80_3CPU_3CPU_25load = {"load", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_7Micro80_3CPU_3CPU_25load, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_7Micro80_3CPU_3CPU_24load};
-static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_25load(PyObject *__pyx_v_self, 
+PyDoc_STRVAR(__pyx_doc_7Micro80_3CPU_3CPU_26load, "Loads a value from an address to a register.");
+static PyMethodDef __pyx_mdef_7Micro80_3CPU_3CPU_27load = {"load", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_7Micro80_3CPU_3CPU_27load, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_7Micro80_3CPU_3CPU_26load};
+static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_27load(PyObject *__pyx_v_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -11167,7 +13150,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
           (void)__Pyx_Arg_NewRef_FASTCALL(values[0]);
           kw_args--;
         }
-        else if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 264, __pyx_L3_error)
+        else if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 338, __pyx_L3_error)
         else goto __pyx_L5_argtuple_error;
         CYTHON_FALLTHROUGH;
         case  1:
@@ -11175,14 +13158,14 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
           (void)__Pyx_Arg_NewRef_FASTCALL(values[1]);
           kw_args--;
         }
-        else if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 264, __pyx_L3_error)
+        else if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 338, __pyx_L3_error)
         else {
-          __Pyx_RaiseArgtupleInvalid("load", 1, 2, 2, 1); __PYX_ERR(0, 264, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("load", 1, 2, 2, 1); __PYX_ERR(0, 338, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
         const Py_ssize_t kwd_pos_args = __pyx_nargs;
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values + 0, kwd_pos_args, "load") < 0)) __PYX_ERR(0, 264, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values + 0, kwd_pos_args, "load") < 0)) __PYX_ERR(0, 338, __pyx_L3_error)
       }
     } else if (unlikely(__pyx_nargs != 2)) {
       goto __pyx_L5_argtuple_error;
@@ -11191,11 +13174,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
       values[1] = __Pyx_Arg_FASTCALL(__pyx_args, 1);
     }
     __pyx_v_register = ((PyObject*)values[0]);
-    __pyx_v_operands = __Pyx_PyInt_As_int(values[1]); if (unlikely((__pyx_v_operands == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 264, __pyx_L3_error)
+    __pyx_v_operands = __Pyx_PyInt_As_int(values[1]); if (unlikely((__pyx_v_operands == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 338, __pyx_L3_error)
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("load", 1, 2, 2, __pyx_nargs); __PYX_ERR(0, 264, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("load", 1, 2, 2, __pyx_nargs); __PYX_ERR(0, 338, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -11209,8 +13192,8 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_register), (&PyString_Type), 1, "register", 1))) __PYX_ERR(0, 264, __pyx_L1_error)
-  __pyx_r = __pyx_pf_7Micro80_3CPU_3CPU_24load(((struct __pyx_obj_7Micro80_3CPU_CPU *)__pyx_v_self), __pyx_v_register, __pyx_v_operands);
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_register), (&PyString_Type), 1, "register", 1))) __PYX_ERR(0, 338, __pyx_L1_error)
+  __pyx_r = __pyx_pf_7Micro80_3CPU_3CPU_26load(((struct __pyx_obj_7Micro80_3CPU_CPU *)__pyx_v_self), __pyx_v_register, __pyx_v_operands);
 
   /* function exit code */
   goto __pyx_L0;
@@ -11227,7 +13210,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_24load(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, PyObject *__pyx_v_register, int __pyx_v_operands) {
+static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_26load(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, PyObject *__pyx_v_register, int __pyx_v_operands) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -11236,7 +13219,7 @@ static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_24load(struct __pyx_obj_7Micro80_3C
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("load", 1);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_7Micro80_3CPU_3CPU_load(__pyx_v_self, __pyx_v_register, __pyx_v_operands, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 264, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_7Micro80_3CPU_3CPU_load(__pyx_v_self, __pyx_v_register, __pyx_v_operands, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 338, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -11253,7 +13236,7 @@ static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_24load(struct __pyx_obj_7Micro80_3C
   return __pyx_r;
 }
 
-/* "Micro80/CPU.py":291
+/* "Micro80/CPU.py":365
  *             raise ValueError("Invalid Register")
  * 
  *     def store(self, register, operands):             # <<<<<<<<<<<<<<
@@ -11261,7 +13244,7 @@ static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_24load(struct __pyx_obj_7Micro80_3C
  *         if operands == None:
  */
 
-static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_27store(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_29store(PyObject *__pyx_v_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -11291,11 +13274,11 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_store(struct __pyx_obj_7Micro80_3CPU
     if (unlikely(!__Pyx_object_dict_version_matches(((PyObject *)__pyx_v_self), __pyx_tp_dict_version, __pyx_obj_dict_version))) {
       PY_UINT64_T __pyx_typedict_guard = __Pyx_get_tp_dict_version(((PyObject *)__pyx_v_self));
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_store); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 291, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_store); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 365, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      if (!__Pyx_IsSameCFunction(__pyx_t_1, (void*) __pyx_pw_7Micro80_3CPU_3CPU_27store)) {
+      if (!__Pyx_IsSameCFunction(__pyx_t_1, (void*) __pyx_pw_7Micro80_3CPU_3CPU_29store)) {
         __Pyx_XDECREF(__pyx_r);
-        __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 291, __pyx_L1_error)
+        __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 365, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_3);
         __Pyx_INCREF(__pyx_t_1);
         __pyx_t_4 = __pyx_t_1; __pyx_t_5 = NULL;
@@ -11317,7 +13300,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_store(struct __pyx_obj_7Micro80_3CPU
           __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_4, __pyx_callargs+1-__pyx_t_6, 2+__pyx_t_6);
           __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
           __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-          if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 291, __pyx_L1_error)
+          if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 365, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_2);
           __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
         }
@@ -11339,22 +13322,22 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_store(struct __pyx_obj_7Micro80_3CPU
     #endif
   }
 
-  /* "Micro80/CPU.py":293
+  /* "Micro80/CPU.py":367
  *     def store(self, register, operands):
  *         "Stores a value from a register to an address."
  *         if operands == None:             # <<<<<<<<<<<<<<
  *             operands = self.adr
  *         if register == "A":
  */
-  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 293, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 367, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PyObject_RichCompare(__pyx_t_1, Py_None, Py_EQ); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 293, __pyx_L1_error)
+  __pyx_t_2 = PyObject_RichCompare(__pyx_t_1, Py_None, Py_EQ); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 367, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_7 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 293, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 367, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   if (__pyx_t_7) {
 
-    /* "Micro80/CPU.py":294
+    /* "Micro80/CPU.py":368
  *         "Stores a value from a register to an address."
  *         if operands == None:
  *             operands = self.adr             # <<<<<<<<<<<<<<
@@ -11364,7 +13347,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_store(struct __pyx_obj_7Micro80_3CPU
     __pyx_t_6 = __pyx_v_self->adr;
     __pyx_v_operands = __pyx_t_6;
 
-    /* "Micro80/CPU.py":293
+    /* "Micro80/CPU.py":367
  *     def store(self, register, operands):
  *         "Stores a value from a register to an address."
  *         if operands == None:             # <<<<<<<<<<<<<<
@@ -11373,28 +13356,28 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_store(struct __pyx_obj_7Micro80_3CPU
  */
   }
 
-  /* "Micro80/CPU.py":295
+  /* "Micro80/CPU.py":369
  *         if operands == None:
  *             operands = self.adr
  *         if register == "A":             # <<<<<<<<<<<<<<
  *             self.memory.writeAddress(operands, self.A)
  *         elif register == "B":
  */
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_A_2, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 295, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_A, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 369, __pyx_L1_error)
   if (__pyx_t_7) {
 
-    /* "Micro80/CPU.py":296
+    /* "Micro80/CPU.py":370
  *             operands = self.adr
  *         if register == "A":
  *             self.memory.writeAddress(operands, self.A)             # <<<<<<<<<<<<<<
  *         elif register == "B":
  *             self.memory.writeAddress(operands, self.B)
  */
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_writeAddress); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 296, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_writeAddress); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 370, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 296, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 370, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_self->A); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 296, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_self->A); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 370, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __pyx_t_5 = NULL;
     __pyx_t_6 = 0;
@@ -11416,13 +13399,13 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_store(struct __pyx_obj_7Micro80_3CPU
       __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 296, __pyx_L1_error)
+      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 370, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     }
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "Micro80/CPU.py":295
+    /* "Micro80/CPU.py":369
  *         if operands == None:
  *             operands = self.adr
  *         if register == "A":             # <<<<<<<<<<<<<<
@@ -11432,28 +13415,28 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_store(struct __pyx_obj_7Micro80_3CPU
     goto __pyx_L4;
   }
 
-  /* "Micro80/CPU.py":297
+  /* "Micro80/CPU.py":371
  *         if register == "A":
  *             self.memory.writeAddress(operands, self.A)
  *         elif register == "B":             # <<<<<<<<<<<<<<
  *             self.memory.writeAddress(operands, self.B)
  *         elif register == "C":
  */
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_B_2, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 297, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_B_2, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 371, __pyx_L1_error)
   if (__pyx_t_7) {
 
-    /* "Micro80/CPU.py":298
+    /* "Micro80/CPU.py":372
  *             self.memory.writeAddress(operands, self.A)
  *         elif register == "B":
  *             self.memory.writeAddress(operands, self.B)             # <<<<<<<<<<<<<<
  *         elif register == "C":
  *             self.memory.writeAddress(operands, self.C)
  */
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_writeAddress); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 298, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_writeAddress); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 372, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 298, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 372, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_self->B); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 298, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_self->B); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 372, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __pyx_t_5 = NULL;
     __pyx_t_6 = 0;
@@ -11475,13 +13458,13 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_store(struct __pyx_obj_7Micro80_3CPU
       __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 298, __pyx_L1_error)
+      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 372, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     }
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "Micro80/CPU.py":297
+    /* "Micro80/CPU.py":371
  *         if register == "A":
  *             self.memory.writeAddress(operands, self.A)
  *         elif register == "B":             # <<<<<<<<<<<<<<
@@ -11491,28 +13474,28 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_store(struct __pyx_obj_7Micro80_3CPU
     goto __pyx_L4;
   }
 
-  /* "Micro80/CPU.py":299
+  /* "Micro80/CPU.py":373
  *         elif register == "B":
  *             self.memory.writeAddress(operands, self.B)
  *         elif register == "C":             # <<<<<<<<<<<<<<
  *             self.memory.writeAddress(operands, self.C)
  *         elif register == "D":
  */
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_C_2, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 299, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_C_2, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 373, __pyx_L1_error)
   if (__pyx_t_7) {
 
-    /* "Micro80/CPU.py":300
+    /* "Micro80/CPU.py":374
  *             self.memory.writeAddress(operands, self.B)
  *         elif register == "C":
  *             self.memory.writeAddress(operands, self.C)             # <<<<<<<<<<<<<<
  *         elif register == "D":
  *             self.memory.writeAddress(operands, self.D)
  */
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_writeAddress); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 300, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_writeAddress); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 374, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 300, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 374, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_self->C); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 300, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_self->C); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 374, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __pyx_t_5 = NULL;
     __pyx_t_6 = 0;
@@ -11534,13 +13517,13 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_store(struct __pyx_obj_7Micro80_3CPU
       __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 300, __pyx_L1_error)
+      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 374, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     }
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "Micro80/CPU.py":299
+    /* "Micro80/CPU.py":373
  *         elif register == "B":
  *             self.memory.writeAddress(operands, self.B)
  *         elif register == "C":             # <<<<<<<<<<<<<<
@@ -11550,28 +13533,28 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_store(struct __pyx_obj_7Micro80_3CPU
     goto __pyx_L4;
   }
 
-  /* "Micro80/CPU.py":301
+  /* "Micro80/CPU.py":375
  *         elif register == "C":
  *             self.memory.writeAddress(operands, self.C)
  *         elif register == "D":             # <<<<<<<<<<<<<<
  *             self.memory.writeAddress(operands, self.D)
  *         elif register == "E":
  */
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_D_2, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 301, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_D_2, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 375, __pyx_L1_error)
   if (__pyx_t_7) {
 
-    /* "Micro80/CPU.py":302
+    /* "Micro80/CPU.py":376
  *             self.memory.writeAddress(operands, self.C)
  *         elif register == "D":
  *             self.memory.writeAddress(operands, self.D)             # <<<<<<<<<<<<<<
  *         elif register == "E":
  *             self.memory.writeAddress(operands, self.E)
  */
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_writeAddress); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 302, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_writeAddress); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 376, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 302, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 376, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_self->D); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 302, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_self->D); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 376, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __pyx_t_5 = NULL;
     __pyx_t_6 = 0;
@@ -11593,13 +13576,13 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_store(struct __pyx_obj_7Micro80_3CPU
       __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 302, __pyx_L1_error)
+      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 376, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     }
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "Micro80/CPU.py":301
+    /* "Micro80/CPU.py":375
  *         elif register == "C":
  *             self.memory.writeAddress(operands, self.C)
  *         elif register == "D":             # <<<<<<<<<<<<<<
@@ -11609,28 +13592,28 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_store(struct __pyx_obj_7Micro80_3CPU
     goto __pyx_L4;
   }
 
-  /* "Micro80/CPU.py":303
+  /* "Micro80/CPU.py":377
  *         elif register == "D":
  *             self.memory.writeAddress(operands, self.D)
  *         elif register == "E":             # <<<<<<<<<<<<<<
  *             self.memory.writeAddress(operands, self.E)
  *         elif register == "F":
  */
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_E_2, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 303, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_E_2, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 377, __pyx_L1_error)
   if (__pyx_t_7) {
 
-    /* "Micro80/CPU.py":304
+    /* "Micro80/CPU.py":378
  *             self.memory.writeAddress(operands, self.D)
  *         elif register == "E":
  *             self.memory.writeAddress(operands, self.E)             # <<<<<<<<<<<<<<
  *         elif register == "F":
  *             self.memory.writeAddress(operands, self.F)
  */
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_writeAddress); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 304, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_writeAddress); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 378, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 304, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 378, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_self->E); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 304, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_self->E); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 378, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __pyx_t_5 = NULL;
     __pyx_t_6 = 0;
@@ -11652,13 +13635,13 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_store(struct __pyx_obj_7Micro80_3CPU
       __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 304, __pyx_L1_error)
+      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 378, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     }
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "Micro80/CPU.py":303
+    /* "Micro80/CPU.py":377
  *         elif register == "D":
  *             self.memory.writeAddress(operands, self.D)
  *         elif register == "E":             # <<<<<<<<<<<<<<
@@ -11668,28 +13651,28 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_store(struct __pyx_obj_7Micro80_3CPU
     goto __pyx_L4;
   }
 
-  /* "Micro80/CPU.py":305
+  /* "Micro80/CPU.py":379
  *         elif register == "E":
  *             self.memory.writeAddress(operands, self.E)
  *         elif register == "F":             # <<<<<<<<<<<<<<
  *             self.memory.writeAddress(operands, self.F)
  *         elif register == "ST":
  */
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_F_2, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 305, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_F_2, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 379, __pyx_L1_error)
   if (__pyx_t_7) {
 
-    /* "Micro80/CPU.py":306
+    /* "Micro80/CPU.py":380
  *             self.memory.writeAddress(operands, self.E)
  *         elif register == "F":
  *             self.memory.writeAddress(operands, self.F)             # <<<<<<<<<<<<<<
  *         elif register == "ST":
  *             self.memory.writeAddress(operands, self.stackPointer)
  */
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_writeAddress); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 306, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_writeAddress); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 380, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 306, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 380, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_self->F); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 306, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_self->F); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 380, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __pyx_t_5 = NULL;
     __pyx_t_6 = 0;
@@ -11711,13 +13694,13 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_store(struct __pyx_obj_7Micro80_3CPU
       __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 306, __pyx_L1_error)
+      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 380, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     }
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "Micro80/CPU.py":305
+    /* "Micro80/CPU.py":379
  *         elif register == "E":
  *             self.memory.writeAddress(operands, self.E)
  *         elif register == "F":             # <<<<<<<<<<<<<<
@@ -11727,28 +13710,28 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_store(struct __pyx_obj_7Micro80_3CPU
     goto __pyx_L4;
   }
 
-  /* "Micro80/CPU.py":307
+  /* "Micro80/CPU.py":381
  *         elif register == "F":
  *             self.memory.writeAddress(operands, self.F)
  *         elif register == "ST":             # <<<<<<<<<<<<<<
  *             self.memory.writeAddress(operands, self.stackPointer)
  *         elif register == "Ad":
  */
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_ST, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 307, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_ST, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 381, __pyx_L1_error)
   if (__pyx_t_7) {
 
-    /* "Micro80/CPU.py":308
+    /* "Micro80/CPU.py":382
  *             self.memory.writeAddress(operands, self.F)
  *         elif register == "ST":
  *             self.memory.writeAddress(operands, self.stackPointer)             # <<<<<<<<<<<<<<
  *         elif register == "Ad":
  *             self.memory.writeAddress(operands, self.adr)
  */
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_writeAddress); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 308, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_writeAddress); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 382, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 308, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 382, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_self->stackPointer); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 308, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_self->stackPointer); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 382, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __pyx_t_5 = NULL;
     __pyx_t_6 = 0;
@@ -11770,13 +13753,13 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_store(struct __pyx_obj_7Micro80_3CPU
       __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 308, __pyx_L1_error)
+      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 382, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     }
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "Micro80/CPU.py":307
+    /* "Micro80/CPU.py":381
  *         elif register == "F":
  *             self.memory.writeAddress(operands, self.F)
  *         elif register == "ST":             # <<<<<<<<<<<<<<
@@ -11786,28 +13769,28 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_store(struct __pyx_obj_7Micro80_3CPU
     goto __pyx_L4;
   }
 
-  /* "Micro80/CPU.py":309
+  /* "Micro80/CPU.py":383
  *         elif register == "ST":
  *             self.memory.writeAddress(operands, self.stackPointer)
  *         elif register == "Ad":             # <<<<<<<<<<<<<<
  *             self.memory.writeAddress(operands, self.adr)
  *         elif register == "PC":
  */
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_Ad_2, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 309, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_Ad, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 383, __pyx_L1_error)
   if (__pyx_t_7) {
 
-    /* "Micro80/CPU.py":310
+    /* "Micro80/CPU.py":384
  *             self.memory.writeAddress(operands, self.stackPointer)
  *         elif register == "Ad":
  *             self.memory.writeAddress(operands, self.adr)             # <<<<<<<<<<<<<<
  *         elif register == "PC":
  *             self.memory.writeAddress(operands, self.programCounter)
  */
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_writeAddress); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 310, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_writeAddress); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 384, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 310, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 384, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_self->adr); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 310, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_self->adr); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 384, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __pyx_t_5 = NULL;
     __pyx_t_6 = 0;
@@ -11829,13 +13812,13 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_store(struct __pyx_obj_7Micro80_3CPU
       __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 310, __pyx_L1_error)
+      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 384, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     }
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "Micro80/CPU.py":309
+    /* "Micro80/CPU.py":383
  *         elif register == "ST":
  *             self.memory.writeAddress(operands, self.stackPointer)
  *         elif register == "Ad":             # <<<<<<<<<<<<<<
@@ -11845,28 +13828,28 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_store(struct __pyx_obj_7Micro80_3CPU
     goto __pyx_L4;
   }
 
-  /* "Micro80/CPU.py":311
+  /* "Micro80/CPU.py":385
  *         elif register == "Ad":
  *             self.memory.writeAddress(operands, self.adr)
  *         elif register == "PC":             # <<<<<<<<<<<<<<
  *             self.memory.writeAddress(operands, self.programCounter)
  *         else:
  */
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_PC_2, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 311, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_register, __pyx_n_s_PC, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 385, __pyx_L1_error)
   if (likely(__pyx_t_7)) {
 
-    /* "Micro80/CPU.py":312
+    /* "Micro80/CPU.py":386
  *             self.memory.writeAddress(operands, self.adr)
  *         elif register == "PC":
  *             self.memory.writeAddress(operands, self.programCounter)             # <<<<<<<<<<<<<<
  *         else:
  *             raise ValueError("Invalid Register")
  */
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_writeAddress); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 312, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_writeAddress); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 386, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 312, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 386, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_self->programCounter); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 312, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_self->programCounter); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 386, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __pyx_t_5 = NULL;
     __pyx_t_6 = 0;
@@ -11888,13 +13871,13 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_store(struct __pyx_obj_7Micro80_3CPU
       __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 312, __pyx_L1_error)
+      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 386, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     }
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "Micro80/CPU.py":311
+    /* "Micro80/CPU.py":385
  *         elif register == "Ad":
  *             self.memory.writeAddress(operands, self.adr)
  *         elif register == "PC":             # <<<<<<<<<<<<<<
@@ -11904,7 +13887,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_store(struct __pyx_obj_7Micro80_3CPU
     goto __pyx_L4;
   }
 
-  /* "Micro80/CPU.py":314
+  /* "Micro80/CPU.py":388
  *             self.memory.writeAddress(operands, self.programCounter)
  *         else:
  *             raise ValueError("Invalid Register")             # <<<<<<<<<<<<<<
@@ -11912,15 +13895,15 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_store(struct __pyx_obj_7Micro80_3CPU
  *     def alu(self, opcode, operands):
  */
   /*else*/ {
-    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__16, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 314, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__23, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 388, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_Raise(__pyx_t_2, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __PYX_ERR(0, 314, __pyx_L1_error)
+    __PYX_ERR(0, 388, __pyx_L1_error)
   }
   __pyx_L4:;
 
-  /* "Micro80/CPU.py":291
+  /* "Micro80/CPU.py":365
  *             raise ValueError("Invalid Register")
  * 
  *     def store(self, register, operands):             # <<<<<<<<<<<<<<
@@ -11946,16 +13929,16 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_store(struct __pyx_obj_7Micro80_3CPU
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_27store(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_29store(PyObject *__pyx_v_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_7Micro80_3CPU_3CPU_26store, "Stores a value from a register to an address.");
-static PyMethodDef __pyx_mdef_7Micro80_3CPU_3CPU_27store = {"store", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_7Micro80_3CPU_3CPU_27store, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_7Micro80_3CPU_3CPU_26store};
-static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_27store(PyObject *__pyx_v_self, 
+PyDoc_STRVAR(__pyx_doc_7Micro80_3CPU_3CPU_28store, "Stores a value from a register to an address.");
+static PyMethodDef __pyx_mdef_7Micro80_3CPU_3CPU_29store = {"store", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_7Micro80_3CPU_3CPU_29store, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_7Micro80_3CPU_3CPU_28store};
+static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_29store(PyObject *__pyx_v_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -12002,7 +13985,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
           (void)__Pyx_Arg_NewRef_FASTCALL(values[0]);
           kw_args--;
         }
-        else if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 291, __pyx_L3_error)
+        else if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 365, __pyx_L3_error)
         else goto __pyx_L5_argtuple_error;
         CYTHON_FALLTHROUGH;
         case  1:
@@ -12010,14 +13993,14 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
           (void)__Pyx_Arg_NewRef_FASTCALL(values[1]);
           kw_args--;
         }
-        else if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 291, __pyx_L3_error)
+        else if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 365, __pyx_L3_error)
         else {
-          __Pyx_RaiseArgtupleInvalid("store", 1, 2, 2, 1); __PYX_ERR(0, 291, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("store", 1, 2, 2, 1); __PYX_ERR(0, 365, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
         const Py_ssize_t kwd_pos_args = __pyx_nargs;
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values + 0, kwd_pos_args, "store") < 0)) __PYX_ERR(0, 291, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values + 0, kwd_pos_args, "store") < 0)) __PYX_ERR(0, 365, __pyx_L3_error)
       }
     } else if (unlikely(__pyx_nargs != 2)) {
       goto __pyx_L5_argtuple_error;
@@ -12026,11 +14009,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
       values[1] = __Pyx_Arg_FASTCALL(__pyx_args, 1);
     }
     __pyx_v_register = ((PyObject*)values[0]);
-    __pyx_v_operands = __Pyx_PyInt_As_int(values[1]); if (unlikely((__pyx_v_operands == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 291, __pyx_L3_error)
+    __pyx_v_operands = __Pyx_PyInt_As_int(values[1]); if (unlikely((__pyx_v_operands == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 365, __pyx_L3_error)
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("store", 1, 2, 2, __pyx_nargs); __PYX_ERR(0, 291, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("store", 1, 2, 2, __pyx_nargs); __PYX_ERR(0, 365, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -12044,8 +14027,8 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_register), (&PyString_Type), 1, "register", 1))) __PYX_ERR(0, 291, __pyx_L1_error)
-  __pyx_r = __pyx_pf_7Micro80_3CPU_3CPU_26store(((struct __pyx_obj_7Micro80_3CPU_CPU *)__pyx_v_self), __pyx_v_register, __pyx_v_operands);
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_register), (&PyString_Type), 1, "register", 1))) __PYX_ERR(0, 365, __pyx_L1_error)
+  __pyx_r = __pyx_pf_7Micro80_3CPU_3CPU_28store(((struct __pyx_obj_7Micro80_3CPU_CPU *)__pyx_v_self), __pyx_v_register, __pyx_v_operands);
 
   /* function exit code */
   goto __pyx_L0;
@@ -12062,7 +14045,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_26store(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, PyObject *__pyx_v_register, int __pyx_v_operands) {
+static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_28store(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, PyObject *__pyx_v_register, int __pyx_v_operands) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -12071,7 +14054,7 @@ static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_26store(struct __pyx_obj_7Micro80_3
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("store", 1);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_7Micro80_3CPU_3CPU_store(__pyx_v_self, __pyx_v_register, __pyx_v_operands, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 291, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_7Micro80_3CPU_3CPU_store(__pyx_v_self, __pyx_v_register, __pyx_v_operands, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 365, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -12088,7 +14071,7 @@ static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_26store(struct __pyx_obj_7Micro80_3
   return __pyx_r;
 }
 
-/* "Micro80/CPU.py":316
+/* "Micro80/CPU.py":390
  *             raise ValueError("Invalid Register")
  * 
  *     def alu(self, opcode, operands):             # <<<<<<<<<<<<<<
@@ -12096,7 +14079,7 @@ static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_26store(struct __pyx_obj_7Micro80_3
  *         if opcode == "ADD":
  */
 
-static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_29alu(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_31alu(PyObject *__pyx_v_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -12126,11 +14109,11 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_alu(struct __pyx_obj_7Micro80_3CPU_C
     if (unlikely(!__Pyx_object_dict_version_matches(((PyObject *)__pyx_v_self), __pyx_tp_dict_version, __pyx_obj_dict_version))) {
       PY_UINT64_T __pyx_typedict_guard = __Pyx_get_tp_dict_version(((PyObject *)__pyx_v_self));
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_alu); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 316, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_alu); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 390, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      if (!__Pyx_IsSameCFunction(__pyx_t_1, (void*) __pyx_pw_7Micro80_3CPU_3CPU_29alu)) {
+      if (!__Pyx_IsSameCFunction(__pyx_t_1, (void*) __pyx_pw_7Micro80_3CPU_3CPU_31alu)) {
         __Pyx_XDECREF(__pyx_r);
-        __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 316, __pyx_L1_error)
+        __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 390, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_3);
         __Pyx_INCREF(__pyx_t_1);
         __pyx_t_4 = __pyx_t_1; __pyx_t_5 = NULL;
@@ -12152,7 +14135,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_alu(struct __pyx_obj_7Micro80_3CPU_C
           __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_4, __pyx_callargs+1-__pyx_t_6, 2+__pyx_t_6);
           __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
           __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-          if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 316, __pyx_L1_error)
+          if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 390, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_2);
           __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
         }
@@ -12174,28 +14157,28 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_alu(struct __pyx_obj_7Micro80_3CPU_C
     #endif
   }
 
-  /* "Micro80/CPU.py":318
+  /* "Micro80/CPU.py":392
  *     def alu(self, opcode, operands):
  *         "Performs an ALU operation."
  *         if opcode == "ADD":             # <<<<<<<<<<<<<<
  *             self.A = self.A + self.memory.readAddress(operands)
  *         elif opcode == "SUB":
  */
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_ADD, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 318, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_ADD, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 392, __pyx_L1_error)
   if (__pyx_t_7) {
 
-    /* "Micro80/CPU.py":319
+    /* "Micro80/CPU.py":393
  *         "Performs an ALU operation."
  *         if opcode == "ADD":
  *             self.A = self.A + self.memory.readAddress(operands)             # <<<<<<<<<<<<<<
  *         elif opcode == "SUB":
  *             self.A -= self.memory.readAddress(operands)
  */
-    __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->A); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 319, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->A); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 393, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 319, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 393, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 319, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 393, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __pyx_t_5 = NULL;
     __pyx_t_6 = 0;
@@ -12216,19 +14199,19 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_alu(struct __pyx_obj_7Micro80_3CPU_C
       __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_4, __pyx_callargs+1-__pyx_t_6, 1+__pyx_t_6);
       __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 319, __pyx_L1_error)
+      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 393, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     }
-    __pyx_t_4 = PyNumber_Add(__pyx_t_1, __pyx_t_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 319, __pyx_L1_error)
+    __pyx_t_4 = PyNumber_Add(__pyx_t_1, __pyx_t_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 393, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_t_4); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 319, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_t_4); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 393, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __pyx_v_self->A = __pyx_t_6;
 
-    /* "Micro80/CPU.py":318
+    /* "Micro80/CPU.py":392
  *     def alu(self, opcode, operands):
  *         "Performs an ALU operation."
  *         if opcode == "ADD":             # <<<<<<<<<<<<<<
@@ -12238,28 +14221,28 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_alu(struct __pyx_obj_7Micro80_3CPU_C
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":320
+  /* "Micro80/CPU.py":394
  *         if opcode == "ADD":
  *             self.A = self.A + self.memory.readAddress(operands)
  *         elif opcode == "SUB":             # <<<<<<<<<<<<<<
  *             self.A -= self.memory.readAddress(operands)
  *         elif opcode == "MUL":
  */
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_SUB, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 320, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_SUB, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 394, __pyx_L1_error)
   if (__pyx_t_7) {
 
-    /* "Micro80/CPU.py":321
+    /* "Micro80/CPU.py":395
  *             self.A = self.A + self.memory.readAddress(operands)
  *         elif opcode == "SUB":
  *             self.A -= self.memory.readAddress(operands)             # <<<<<<<<<<<<<<
  *         elif opcode == "MUL":
  *             self.A *= self.memory.readAddress(operands)
  */
-    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_self->A); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 321, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_self->A); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 395, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 321, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 395, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 321, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 395, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __pyx_t_5 = NULL;
     __pyx_t_6 = 0;
@@ -12280,19 +14263,19 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_alu(struct __pyx_obj_7Micro80_3CPU_C
       __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_1, __pyx_callargs+1-__pyx_t_6, 1+__pyx_t_6);
       __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 321, __pyx_L1_error)
+      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 395, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     }
-    __pyx_t_1 = PyNumber_InPlaceSubtract(__pyx_t_4, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 321, __pyx_L1_error)
+    __pyx_t_1 = PyNumber_InPlaceSubtract(__pyx_t_4, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 395, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 321, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 395, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __pyx_v_self->A = __pyx_t_6;
 
-    /* "Micro80/CPU.py":320
+    /* "Micro80/CPU.py":394
  *         if opcode == "ADD":
  *             self.A = self.A + self.memory.readAddress(operands)
  *         elif opcode == "SUB":             # <<<<<<<<<<<<<<
@@ -12302,28 +14285,28 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_alu(struct __pyx_obj_7Micro80_3CPU_C
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":322
+  /* "Micro80/CPU.py":396
  *         elif opcode == "SUB":
  *             self.A -= self.memory.readAddress(operands)
  *         elif opcode == "MUL":             # <<<<<<<<<<<<<<
  *             self.A *= self.memory.readAddress(operands)
  *         elif opcode == "DIV":
  */
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_MUL, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 322, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_MUL, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 396, __pyx_L1_error)
   if (__pyx_t_7) {
 
-    /* "Micro80/CPU.py":323
+    /* "Micro80/CPU.py":397
  *             self.A -= self.memory.readAddress(operands)
  *         elif opcode == "MUL":
  *             self.A *= self.memory.readAddress(operands)             # <<<<<<<<<<<<<<
  *         elif opcode == "DIV":
  *             self.A /= self.memory.readAddress(operands)
  */
-    __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->A); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 323, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->A); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 397, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 323, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 397, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 323, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 397, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __pyx_t_5 = NULL;
     __pyx_t_6 = 0;
@@ -12344,19 +14327,19 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_alu(struct __pyx_obj_7Micro80_3CPU_C
       __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_4, __pyx_callargs+1-__pyx_t_6, 1+__pyx_t_6);
       __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 323, __pyx_L1_error)
+      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 397, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     }
-    __pyx_t_4 = PyNumber_InPlaceMultiply(__pyx_t_1, __pyx_t_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 323, __pyx_L1_error)
+    __pyx_t_4 = PyNumber_InPlaceMultiply(__pyx_t_1, __pyx_t_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 397, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_t_4); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 323, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_t_4); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 397, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __pyx_v_self->A = __pyx_t_6;
 
-    /* "Micro80/CPU.py":322
+    /* "Micro80/CPU.py":396
  *         elif opcode == "SUB":
  *             self.A -= self.memory.readAddress(operands)
  *         elif opcode == "MUL":             # <<<<<<<<<<<<<<
@@ -12366,28 +14349,28 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_alu(struct __pyx_obj_7Micro80_3CPU_C
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":324
+  /* "Micro80/CPU.py":398
  *         elif opcode == "MUL":
  *             self.A *= self.memory.readAddress(operands)
  *         elif opcode == "DIV":             # <<<<<<<<<<<<<<
  *             self.A /= self.memory.readAddress(operands)
  *         elif opcode == "MOD":
  */
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_DIV, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 324, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_DIV, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 398, __pyx_L1_error)
   if (__pyx_t_7) {
 
-    /* "Micro80/CPU.py":325
+    /* "Micro80/CPU.py":399
  *             self.A *= self.memory.readAddress(operands)
  *         elif opcode == "DIV":
  *             self.A /= self.memory.readAddress(operands)             # <<<<<<<<<<<<<<
  *         elif opcode == "MOD":
  *             self.A %= self.memory.readAddress(operands)
  */
-    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_self->A); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 325, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_self->A); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 399, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 325, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 399, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 325, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 399, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __pyx_t_5 = NULL;
     __pyx_t_6 = 0;
@@ -12408,19 +14391,19 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_alu(struct __pyx_obj_7Micro80_3CPU_C
       __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_1, __pyx_callargs+1-__pyx_t_6, 1+__pyx_t_6);
       __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 325, __pyx_L1_error)
+      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 399, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     }
-    __pyx_t_1 = __Pyx_PyNumber_InPlaceDivide(__pyx_t_4, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 325, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyNumber_InPlaceDivide(__pyx_t_4, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 399, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 325, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 399, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __pyx_v_self->A = __pyx_t_6;
 
-    /* "Micro80/CPU.py":324
+    /* "Micro80/CPU.py":398
  *         elif opcode == "MUL":
  *             self.A *= self.memory.readAddress(operands)
  *         elif opcode == "DIV":             # <<<<<<<<<<<<<<
@@ -12430,28 +14413,28 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_alu(struct __pyx_obj_7Micro80_3CPU_C
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":326
+  /* "Micro80/CPU.py":400
  *         elif opcode == "DIV":
  *             self.A /= self.memory.readAddress(operands)
  *         elif opcode == "MOD":             # <<<<<<<<<<<<<<
  *             self.A %= self.memory.readAddress(operands)
  *         elif opcode == "AND":
  */
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_MOD, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 326, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_MOD, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 400, __pyx_L1_error)
   if (__pyx_t_7) {
 
-    /* "Micro80/CPU.py":327
+    /* "Micro80/CPU.py":401
  *             self.A /= self.memory.readAddress(operands)
  *         elif opcode == "MOD":
  *             self.A %= self.memory.readAddress(operands)             # <<<<<<<<<<<<<<
  *         elif opcode == "AND":
  *             self.A &= self.memory.readAddress(operands)
  */
-    __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->A); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 327, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->A); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 401, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 327, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 401, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 327, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 401, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __pyx_t_5 = NULL;
     __pyx_t_6 = 0;
@@ -12472,19 +14455,19 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_alu(struct __pyx_obj_7Micro80_3CPU_C
       __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_4, __pyx_callargs+1-__pyx_t_6, 1+__pyx_t_6);
       __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 327, __pyx_L1_error)
+      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 401, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     }
-    __pyx_t_4 = PyNumber_InPlaceRemainder(__pyx_t_1, __pyx_t_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 327, __pyx_L1_error)
+    __pyx_t_4 = PyNumber_InPlaceRemainder(__pyx_t_1, __pyx_t_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 401, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_t_4); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 327, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_t_4); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 401, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __pyx_v_self->A = __pyx_t_6;
 
-    /* "Micro80/CPU.py":326
+    /* "Micro80/CPU.py":400
  *         elif opcode == "DIV":
  *             self.A /= self.memory.readAddress(operands)
  *         elif opcode == "MOD":             # <<<<<<<<<<<<<<
@@ -12494,28 +14477,28 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_alu(struct __pyx_obj_7Micro80_3CPU_C
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":328
+  /* "Micro80/CPU.py":402
  *         elif opcode == "MOD":
  *             self.A %= self.memory.readAddress(operands)
  *         elif opcode == "AND":             # <<<<<<<<<<<<<<
  *             self.A &= self.memory.readAddress(operands)
  *         elif opcode == "OR":
  */
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_AND, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 328, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_AND, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 402, __pyx_L1_error)
   if (__pyx_t_7) {
 
-    /* "Micro80/CPU.py":329
+    /* "Micro80/CPU.py":403
  *             self.A %= self.memory.readAddress(operands)
  *         elif opcode == "AND":
  *             self.A &= self.memory.readAddress(operands)             # <<<<<<<<<<<<<<
  *         elif opcode == "OR":
  *             self.A |= self.memory.readAddress(operands)
  */
-    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_self->A); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 329, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_self->A); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 403, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 329, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 403, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 329, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 403, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __pyx_t_5 = NULL;
     __pyx_t_6 = 0;
@@ -12536,19 +14519,19 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_alu(struct __pyx_obj_7Micro80_3CPU_C
       __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_1, __pyx_callargs+1-__pyx_t_6, 1+__pyx_t_6);
       __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 329, __pyx_L1_error)
+      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 403, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     }
-    __pyx_t_1 = PyNumber_InPlaceAnd(__pyx_t_4, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 329, __pyx_L1_error)
+    __pyx_t_1 = PyNumber_InPlaceAnd(__pyx_t_4, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 403, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 329, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 403, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __pyx_v_self->A = __pyx_t_6;
 
-    /* "Micro80/CPU.py":328
+    /* "Micro80/CPU.py":402
  *         elif opcode == "MOD":
  *             self.A %= self.memory.readAddress(operands)
  *         elif opcode == "AND":             # <<<<<<<<<<<<<<
@@ -12558,28 +14541,28 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_alu(struct __pyx_obj_7Micro80_3CPU_C
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":330
+  /* "Micro80/CPU.py":404
  *         elif opcode == "AND":
  *             self.A &= self.memory.readAddress(operands)
  *         elif opcode == "OR":             # <<<<<<<<<<<<<<
  *             self.A |= self.memory.readAddress(operands)
  *         elif opcode == "XOR":
  */
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_OR, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 330, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_OR, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 404, __pyx_L1_error)
   if (__pyx_t_7) {
 
-    /* "Micro80/CPU.py":331
+    /* "Micro80/CPU.py":405
  *             self.A &= self.memory.readAddress(operands)
  *         elif opcode == "OR":
  *             self.A |= self.memory.readAddress(operands)             # <<<<<<<<<<<<<<
  *         elif opcode == "XOR":
  *             self.A ^= self.memory.readAddress(operands)
  */
-    __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->A); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 331, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->A); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 405, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 331, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 405, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 331, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 405, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __pyx_t_5 = NULL;
     __pyx_t_6 = 0;
@@ -12600,19 +14583,19 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_alu(struct __pyx_obj_7Micro80_3CPU_C
       __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_4, __pyx_callargs+1-__pyx_t_6, 1+__pyx_t_6);
       __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 331, __pyx_L1_error)
+      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 405, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     }
-    __pyx_t_4 = PyNumber_InPlaceOr(__pyx_t_1, __pyx_t_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 331, __pyx_L1_error)
+    __pyx_t_4 = PyNumber_InPlaceOr(__pyx_t_1, __pyx_t_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 405, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_t_4); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 331, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_t_4); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 405, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __pyx_v_self->A = __pyx_t_6;
 
-    /* "Micro80/CPU.py":330
+    /* "Micro80/CPU.py":404
  *         elif opcode == "AND":
  *             self.A &= self.memory.readAddress(operands)
  *         elif opcode == "OR":             # <<<<<<<<<<<<<<
@@ -12622,28 +14605,28 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_alu(struct __pyx_obj_7Micro80_3CPU_C
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":332
+  /* "Micro80/CPU.py":406
  *         elif opcode == "OR":
  *             self.A |= self.memory.readAddress(operands)
  *         elif opcode == "XOR":             # <<<<<<<<<<<<<<
  *             self.A ^= self.memory.readAddress(operands)
  *         elif opcode == "NOT":
  */
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_XOR, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 332, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_XOR, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 406, __pyx_L1_error)
   if (__pyx_t_7) {
 
-    /* "Micro80/CPU.py":333
+    /* "Micro80/CPU.py":407
  *             self.A |= self.memory.readAddress(operands)
  *         elif opcode == "XOR":
  *             self.A ^= self.memory.readAddress(operands)             # <<<<<<<<<<<<<<
  *         elif opcode == "NOT":
  *             self.A = ~self.memory.readAddress(operands)
  */
-    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_self->A); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 333, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_self->A); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 407, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 333, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 407, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 333, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 407, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __pyx_t_5 = NULL;
     __pyx_t_6 = 0;
@@ -12664,19 +14647,19 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_alu(struct __pyx_obj_7Micro80_3CPU_C
       __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_1, __pyx_callargs+1-__pyx_t_6, 1+__pyx_t_6);
       __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 333, __pyx_L1_error)
+      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 407, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     }
-    __pyx_t_1 = PyNumber_InPlaceXor(__pyx_t_4, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 333, __pyx_L1_error)
+    __pyx_t_1 = PyNumber_InPlaceXor(__pyx_t_4, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 407, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 333, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_t_1); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 407, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __pyx_v_self->A = __pyx_t_6;
 
-    /* "Micro80/CPU.py":332
+    /* "Micro80/CPU.py":406
  *         elif opcode == "OR":
  *             self.A |= self.memory.readAddress(operands)
  *         elif opcode == "XOR":             # <<<<<<<<<<<<<<
@@ -12686,26 +14669,26 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_alu(struct __pyx_obj_7Micro80_3CPU_C
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":334
+  /* "Micro80/CPU.py":408
  *         elif opcode == "XOR":
  *             self.A ^= self.memory.readAddress(operands)
  *         elif opcode == "NOT":             # <<<<<<<<<<<<<<
  *             self.A = ~self.memory.readAddress(operands)
  *         elif opcode == "SHL":
  */
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_NOT, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 334, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_NOT, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 408, __pyx_L1_error)
   if (__pyx_t_7) {
 
-    /* "Micro80/CPU.py":335
+    /* "Micro80/CPU.py":409
  *             self.A ^= self.memory.readAddress(operands)
  *         elif opcode == "NOT":
  *             self.A = ~self.memory.readAddress(operands)             # <<<<<<<<<<<<<<
  *         elif opcode == "SHL":
  *             self.A <<= self.memory.readAddress(operands)
  */
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 335, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 409, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 335, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 409, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __pyx_t_3 = NULL;
     __pyx_t_6 = 0;
@@ -12726,18 +14709,18 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_alu(struct __pyx_obj_7Micro80_3CPU_C
       __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_2, __pyx_callargs+1-__pyx_t_6, 1+__pyx_t_6);
       __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 335, __pyx_L1_error)
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 409, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     }
-    __pyx_t_2 = PyNumber_Invert(__pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 335, __pyx_L1_error)
+    __pyx_t_2 = PyNumber_Invert(__pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 409, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_t_2); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 335, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_t_2); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 409, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __pyx_v_self->A = __pyx_t_6;
 
-    /* "Micro80/CPU.py":334
+    /* "Micro80/CPU.py":408
  *         elif opcode == "XOR":
  *             self.A ^= self.memory.readAddress(operands)
  *         elif opcode == "NOT":             # <<<<<<<<<<<<<<
@@ -12747,28 +14730,28 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_alu(struct __pyx_obj_7Micro80_3CPU_C
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":336
+  /* "Micro80/CPU.py":410
  *         elif opcode == "NOT":
  *             self.A = ~self.memory.readAddress(operands)
  *         elif opcode == "SHL":             # <<<<<<<<<<<<<<
  *             self.A <<= self.memory.readAddress(operands)
  *         elif opcode == "SHR":
  */
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_SHL, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 336, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_SHL, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 410, __pyx_L1_error)
   if (__pyx_t_7) {
 
-    /* "Micro80/CPU.py":337
+    /* "Micro80/CPU.py":411
  *             self.A = ~self.memory.readAddress(operands)
  *         elif opcode == "SHL":
  *             self.A <<= self.memory.readAddress(operands)             # <<<<<<<<<<<<<<
  *         elif opcode == "SHR":
  *             self.A >>= self.memory.readAddress(operands)
  */
-    __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_self->A); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 337, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_self->A); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 411, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 337, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 411, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 337, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 411, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __pyx_t_5 = NULL;
     __pyx_t_6 = 0;
@@ -12789,19 +14772,19 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_alu(struct __pyx_obj_7Micro80_3CPU_C
       __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_4, __pyx_callargs+1-__pyx_t_6, 1+__pyx_t_6);
       __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 337, __pyx_L1_error)
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 411, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     }
-    __pyx_t_4 = PyNumber_InPlaceLshift(__pyx_t_2, __pyx_t_1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 337, __pyx_L1_error)
+    __pyx_t_4 = PyNumber_InPlaceLshift(__pyx_t_2, __pyx_t_1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 411, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_t_4); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 337, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_t_4); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 411, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __pyx_v_self->A = __pyx_t_6;
 
-    /* "Micro80/CPU.py":336
+    /* "Micro80/CPU.py":410
  *         elif opcode == "NOT":
  *             self.A = ~self.memory.readAddress(operands)
  *         elif opcode == "SHL":             # <<<<<<<<<<<<<<
@@ -12811,28 +14794,28 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_alu(struct __pyx_obj_7Micro80_3CPU_C
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":338
+  /* "Micro80/CPU.py":412
  *         elif opcode == "SHL":
  *             self.A <<= self.memory.readAddress(operands)
  *         elif opcode == "SHR":             # <<<<<<<<<<<<<<
  *             self.A >>= self.memory.readAddress(operands)
  *         elif opcode == "CMP":
  */
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_SHR, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 338, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_SHR, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 412, __pyx_L1_error)
   if (__pyx_t_7) {
 
-    /* "Micro80/CPU.py":339
+    /* "Micro80/CPU.py":413
  *             self.A <<= self.memory.readAddress(operands)
  *         elif opcode == "SHR":
  *             self.A >>= self.memory.readAddress(operands)             # <<<<<<<<<<<<<<
  *         elif opcode == "CMP":
  *             self.A = self.A - self.memory.readAddress(operands)
  */
-    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_self->A); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 339, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_self->A); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 413, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 339, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 413, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 339, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 413, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __pyx_t_5 = NULL;
     __pyx_t_6 = 0;
@@ -12853,19 +14836,19 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_alu(struct __pyx_obj_7Micro80_3CPU_C
       __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_2, __pyx_callargs+1-__pyx_t_6, 1+__pyx_t_6);
       __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 339, __pyx_L1_error)
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 413, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     }
-    __pyx_t_2 = PyNumber_InPlaceRshift(__pyx_t_4, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 339, __pyx_L1_error)
+    __pyx_t_2 = PyNumber_InPlaceRshift(__pyx_t_4, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 413, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_t_2); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 339, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_t_2); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 413, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __pyx_v_self->A = __pyx_t_6;
 
-    /* "Micro80/CPU.py":338
+    /* "Micro80/CPU.py":412
  *         elif opcode == "SHL":
  *             self.A <<= self.memory.readAddress(operands)
  *         elif opcode == "SHR":             # <<<<<<<<<<<<<<
@@ -12875,28 +14858,28 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_alu(struct __pyx_obj_7Micro80_3CPU_C
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":340
+  /* "Micro80/CPU.py":414
  *         elif opcode == "SHR":
  *             self.A >>= self.memory.readAddress(operands)
  *         elif opcode == "CMP":             # <<<<<<<<<<<<<<
  *             self.A = self.A - self.memory.readAddress(operands)
  *         else:
  */
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_CMP, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 340, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_CMP, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 414, __pyx_L1_error)
   if (likely(__pyx_t_7)) {
 
-    /* "Micro80/CPU.py":341
+    /* "Micro80/CPU.py":415
  *             self.A >>= self.memory.readAddress(operands)
  *         elif opcode == "CMP":
  *             self.A = self.A - self.memory.readAddress(operands)             # <<<<<<<<<<<<<<
  *         else:
  *             raise ValueError("Invalid Opcode")
  */
-    __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_self->A); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 341, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_self->A); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 415, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 341, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_readAddress); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 415, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 341, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 415, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __pyx_t_5 = NULL;
     __pyx_t_6 = 0;
@@ -12917,19 +14900,19 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_alu(struct __pyx_obj_7Micro80_3CPU_C
       __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_4, __pyx_callargs+1-__pyx_t_6, 1+__pyx_t_6);
       __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 341, __pyx_L1_error)
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 415, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     }
-    __pyx_t_4 = PyNumber_Subtract(__pyx_t_2, __pyx_t_1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 341, __pyx_L1_error)
+    __pyx_t_4 = PyNumber_Subtract(__pyx_t_2, __pyx_t_1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 415, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_t_4); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 341, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_t_4); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 415, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __pyx_v_self->A = __pyx_t_6;
 
-    /* "Micro80/CPU.py":340
+    /* "Micro80/CPU.py":414
  *         elif opcode == "SHR":
  *             self.A >>= self.memory.readAddress(operands)
  *         elif opcode == "CMP":             # <<<<<<<<<<<<<<
@@ -12939,7 +14922,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_alu(struct __pyx_obj_7Micro80_3CPU_C
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":343
+  /* "Micro80/CPU.py":417
  *             self.A = self.A - self.memory.readAddress(operands)
  *         else:
  *             raise ValueError("Invalid Opcode")             # <<<<<<<<<<<<<<
@@ -12947,15 +14930,15 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_alu(struct __pyx_obj_7Micro80_3CPU_C
  *     def jump(self, opcode, operands):
  */
   /*else*/ {
-    __pyx_t_4 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__15, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 343, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__22, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 417, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_Raise(__pyx_t_4, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-    __PYX_ERR(0, 343, __pyx_L1_error)
+    __PYX_ERR(0, 417, __pyx_L1_error)
   }
   __pyx_L3:;
 
-  /* "Micro80/CPU.py":316
+  /* "Micro80/CPU.py":390
  *             raise ValueError("Invalid Register")
  * 
  *     def alu(self, opcode, operands):             # <<<<<<<<<<<<<<
@@ -12981,16 +14964,16 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_alu(struct __pyx_obj_7Micro80_3CPU_C
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_29alu(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_31alu(PyObject *__pyx_v_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_7Micro80_3CPU_3CPU_28alu, "Performs an ALU operation.");
-static PyMethodDef __pyx_mdef_7Micro80_3CPU_3CPU_29alu = {"alu", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_7Micro80_3CPU_3CPU_29alu, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_7Micro80_3CPU_3CPU_28alu};
-static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_29alu(PyObject *__pyx_v_self, 
+PyDoc_STRVAR(__pyx_doc_7Micro80_3CPU_3CPU_30alu, "Performs an ALU operation.");
+static PyMethodDef __pyx_mdef_7Micro80_3CPU_3CPU_31alu = {"alu", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_7Micro80_3CPU_3CPU_31alu, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_7Micro80_3CPU_3CPU_30alu};
+static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_31alu(PyObject *__pyx_v_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -13037,7 +15020,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
           (void)__Pyx_Arg_NewRef_FASTCALL(values[0]);
           kw_args--;
         }
-        else if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 316, __pyx_L3_error)
+        else if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 390, __pyx_L3_error)
         else goto __pyx_L5_argtuple_error;
         CYTHON_FALLTHROUGH;
         case  1:
@@ -13045,14 +15028,14 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
           (void)__Pyx_Arg_NewRef_FASTCALL(values[1]);
           kw_args--;
         }
-        else if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 316, __pyx_L3_error)
+        else if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 390, __pyx_L3_error)
         else {
-          __Pyx_RaiseArgtupleInvalid("alu", 1, 2, 2, 1); __PYX_ERR(0, 316, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("alu", 1, 2, 2, 1); __PYX_ERR(0, 390, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
         const Py_ssize_t kwd_pos_args = __pyx_nargs;
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values + 0, kwd_pos_args, "alu") < 0)) __PYX_ERR(0, 316, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values + 0, kwd_pos_args, "alu") < 0)) __PYX_ERR(0, 390, __pyx_L3_error)
       }
     } else if (unlikely(__pyx_nargs != 2)) {
       goto __pyx_L5_argtuple_error;
@@ -13061,11 +15044,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
       values[1] = __Pyx_Arg_FASTCALL(__pyx_args, 1);
     }
     __pyx_v_opcode = ((PyObject*)values[0]);
-    __pyx_v_operands = __Pyx_PyInt_As_int(values[1]); if (unlikely((__pyx_v_operands == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 316, __pyx_L3_error)
+    __pyx_v_operands = __Pyx_PyInt_As_int(values[1]); if (unlikely((__pyx_v_operands == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 390, __pyx_L3_error)
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("alu", 1, 2, 2, __pyx_nargs); __PYX_ERR(0, 316, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("alu", 1, 2, 2, __pyx_nargs); __PYX_ERR(0, 390, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -13079,8 +15062,8 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_opcode), (&PyString_Type), 1, "opcode", 1))) __PYX_ERR(0, 316, __pyx_L1_error)
-  __pyx_r = __pyx_pf_7Micro80_3CPU_3CPU_28alu(((struct __pyx_obj_7Micro80_3CPU_CPU *)__pyx_v_self), __pyx_v_opcode, __pyx_v_operands);
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_opcode), (&PyString_Type), 1, "opcode", 1))) __PYX_ERR(0, 390, __pyx_L1_error)
+  __pyx_r = __pyx_pf_7Micro80_3CPU_3CPU_30alu(((struct __pyx_obj_7Micro80_3CPU_CPU *)__pyx_v_self), __pyx_v_opcode, __pyx_v_operands);
 
   /* function exit code */
   goto __pyx_L0;
@@ -13097,7 +15080,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_28alu(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, PyObject *__pyx_v_opcode, int __pyx_v_operands) {
+static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_30alu(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, PyObject *__pyx_v_opcode, int __pyx_v_operands) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -13106,7 +15089,7 @@ static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_28alu(struct __pyx_obj_7Micro80_3CP
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("alu", 1);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_7Micro80_3CPU_3CPU_alu(__pyx_v_self, __pyx_v_opcode, __pyx_v_operands, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 316, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_7Micro80_3CPU_3CPU_alu(__pyx_v_self, __pyx_v_opcode, __pyx_v_operands, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 390, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -13123,7 +15106,7 @@ static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_28alu(struct __pyx_obj_7Micro80_3CP
   return __pyx_r;
 }
 
-/* "Micro80/CPU.py":345
+/* "Micro80/CPU.py":419
  *             raise ValueError("Invalid Opcode")
  * 
  *     def jump(self, opcode, operands):             # <<<<<<<<<<<<<<
@@ -13131,7 +15114,7 @@ static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_28alu(struct __pyx_obj_7Micro80_3CP
  *         self.jumpCount += 1
  */
 
-static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_31jump(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_33jump(PyObject *__pyx_v_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -13161,11 +15144,11 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
     if (unlikely(!__Pyx_object_dict_version_matches(((PyObject *)__pyx_v_self), __pyx_tp_dict_version, __pyx_obj_dict_version))) {
       PY_UINT64_T __pyx_typedict_guard = __Pyx_get_tp_dict_version(((PyObject *)__pyx_v_self));
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_jump); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 345, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_jump); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 419, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      if (!__Pyx_IsSameCFunction(__pyx_t_1, (void*) __pyx_pw_7Micro80_3CPU_3CPU_31jump)) {
+      if (!__Pyx_IsSameCFunction(__pyx_t_1, (void*) __pyx_pw_7Micro80_3CPU_3CPU_33jump)) {
         __Pyx_XDECREF(__pyx_r);
-        __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 345, __pyx_L1_error)
+        __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_operands); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 419, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_3);
         __Pyx_INCREF(__pyx_t_1);
         __pyx_t_4 = __pyx_t_1; __pyx_t_5 = NULL;
@@ -13187,7 +15170,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
           __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_4, __pyx_callargs+1-__pyx_t_6, 2+__pyx_t_6);
           __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
           __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-          if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 345, __pyx_L1_error)
+          if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 419, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_2);
           __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
         }
@@ -13209,7 +15192,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
     #endif
   }
 
-  /* "Micro80/CPU.py":347
+  /* "Micro80/CPU.py":421
  *     def jump(self, opcode, operands):
  *         "Jumps to a given address based on the condition."
  *         self.jumpCount += 1             # <<<<<<<<<<<<<<
@@ -13218,17 +15201,17 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
  */
   __pyx_v_self->jumpCount = (__pyx_v_self->jumpCount + 1);
 
-  /* "Micro80/CPU.py":348
+  /* "Micro80/CPU.py":422
  *         "Jumps to a given address based on the condition."
  *         self.jumpCount += 1
  *         if opcode == "Z":             # <<<<<<<<<<<<<<
  *             if self.A == 0:
  *                 self.programCounter = operands
  */
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_Z, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 348, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_Z, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 422, __pyx_L1_error)
   if (__pyx_t_7) {
 
-    /* "Micro80/CPU.py":349
+    /* "Micro80/CPU.py":423
  *         self.jumpCount += 1
  *         if opcode == "Z":
  *             if self.A == 0:             # <<<<<<<<<<<<<<
@@ -13238,7 +15221,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
     __pyx_t_7 = (__pyx_v_self->A == 0);
     if (__pyx_t_7) {
 
-      /* "Micro80/CPU.py":350
+      /* "Micro80/CPU.py":424
  *         if opcode == "Z":
  *             if self.A == 0:
  *                 self.programCounter = operands             # <<<<<<<<<<<<<<
@@ -13247,7 +15230,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
  */
       __pyx_v_self->programCounter = __pyx_v_operands;
 
-      /* "Micro80/CPU.py":349
+      /* "Micro80/CPU.py":423
  *         self.jumpCount += 1
  *         if opcode == "Z":
  *             if self.A == 0:             # <<<<<<<<<<<<<<
@@ -13256,7 +15239,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
  */
     }
 
-    /* "Micro80/CPU.py":348
+    /* "Micro80/CPU.py":422
  *         "Jumps to a given address based on the condition."
  *         self.jumpCount += 1
  *         if opcode == "Z":             # <<<<<<<<<<<<<<
@@ -13266,17 +15249,17 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":351
+  /* "Micro80/CPU.py":425
  *             if self.A == 0:
  *                 self.programCounter = operands
  *         elif opcode == "NZ":             # <<<<<<<<<<<<<<
  *             if self.A != 0:
  *                 self.programCounter = operands
  */
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_NZ, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 351, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_NZ, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 425, __pyx_L1_error)
   if (__pyx_t_7) {
 
-    /* "Micro80/CPU.py":352
+    /* "Micro80/CPU.py":426
  *                 self.programCounter = operands
  *         elif opcode == "NZ":
  *             if self.A != 0:             # <<<<<<<<<<<<<<
@@ -13286,7 +15269,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
     __pyx_t_7 = (__pyx_v_self->A != 0);
     if (__pyx_t_7) {
 
-      /* "Micro80/CPU.py":353
+      /* "Micro80/CPU.py":427
  *         elif opcode == "NZ":
  *             if self.A != 0:
  *                 self.programCounter = operands             # <<<<<<<<<<<<<<
@@ -13295,7 +15278,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
  */
       __pyx_v_self->programCounter = __pyx_v_operands;
 
-      /* "Micro80/CPU.py":352
+      /* "Micro80/CPU.py":426
  *                 self.programCounter = operands
  *         elif opcode == "NZ":
  *             if self.A != 0:             # <<<<<<<<<<<<<<
@@ -13304,7 +15287,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
  */
     }
 
-    /* "Micro80/CPU.py":351
+    /* "Micro80/CPU.py":425
  *             if self.A == 0:
  *                 self.programCounter = operands
  *         elif opcode == "NZ":             # <<<<<<<<<<<<<<
@@ -13314,17 +15297,17 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":354
+  /* "Micro80/CPU.py":428
  *             if self.A != 0:
  *                 self.programCounter = operands
  *         elif opcode == "GZ":             # <<<<<<<<<<<<<<
  *             if self.A > 0:
  *                 self.programCounter = operands
  */
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_GZ, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 354, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_GZ, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 428, __pyx_L1_error)
   if (__pyx_t_7) {
 
-    /* "Micro80/CPU.py":355
+    /* "Micro80/CPU.py":429
  *                 self.programCounter = operands
  *         elif opcode == "GZ":
  *             if self.A > 0:             # <<<<<<<<<<<<<<
@@ -13334,7 +15317,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
     __pyx_t_7 = (__pyx_v_self->A > 0);
     if (__pyx_t_7) {
 
-      /* "Micro80/CPU.py":356
+      /* "Micro80/CPU.py":430
  *         elif opcode == "GZ":
  *             if self.A > 0:
  *                 self.programCounter = operands             # <<<<<<<<<<<<<<
@@ -13343,7 +15326,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
  */
       __pyx_v_self->programCounter = __pyx_v_operands;
 
-      /* "Micro80/CPU.py":355
+      /* "Micro80/CPU.py":429
  *                 self.programCounter = operands
  *         elif opcode == "GZ":
  *             if self.A > 0:             # <<<<<<<<<<<<<<
@@ -13352,7 +15335,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
  */
     }
 
-    /* "Micro80/CPU.py":354
+    /* "Micro80/CPU.py":428
  *             if self.A != 0:
  *                 self.programCounter = operands
  *         elif opcode == "GZ":             # <<<<<<<<<<<<<<
@@ -13362,17 +15345,17 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":357
+  /* "Micro80/CPU.py":431
  *             if self.A > 0:
  *                 self.programCounter = operands
  *         elif opcode == "LEZ":             # <<<<<<<<<<<<<<
  *             if self.A <= 0:
  *                 self.programCounter = operands
  */
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_LEZ, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 357, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_LEZ, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 431, __pyx_L1_error)
   if (__pyx_t_7) {
 
-    /* "Micro80/CPU.py":358
+    /* "Micro80/CPU.py":432
  *                 self.programCounter = operands
  *         elif opcode == "LEZ":
  *             if self.A <= 0:             # <<<<<<<<<<<<<<
@@ -13382,7 +15365,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
     __pyx_t_7 = (__pyx_v_self->A <= 0);
     if (__pyx_t_7) {
 
-      /* "Micro80/CPU.py":359
+      /* "Micro80/CPU.py":433
  *         elif opcode == "LEZ":
  *             if self.A <= 0:
  *                 self.programCounter = operands             # <<<<<<<<<<<<<<
@@ -13391,7 +15374,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
  */
       __pyx_v_self->programCounter = __pyx_v_operands;
 
-      /* "Micro80/CPU.py":358
+      /* "Micro80/CPU.py":432
  *                 self.programCounter = operands
  *         elif opcode == "LEZ":
  *             if self.A <= 0:             # <<<<<<<<<<<<<<
@@ -13400,7 +15383,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
  */
     }
 
-    /* "Micro80/CPU.py":357
+    /* "Micro80/CPU.py":431
  *             if self.A > 0:
  *                 self.programCounter = operands
  *         elif opcode == "LEZ":             # <<<<<<<<<<<<<<
@@ -13410,17 +15393,17 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":360
+  /* "Micro80/CPU.py":434
  *             if self.A <= 0:
  *                 self.programCounter = operands
  *         elif opcode == "GEZ":             # <<<<<<<<<<<<<<
  *             if self.A >= 0:
  *                 self.programCounter = operands
  */
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_GEZ, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 360, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_GEZ, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 434, __pyx_L1_error)
   if (__pyx_t_7) {
 
-    /* "Micro80/CPU.py":361
+    /* "Micro80/CPU.py":435
  *                 self.programCounter = operands
  *         elif opcode == "GEZ":
  *             if self.A >= 0:             # <<<<<<<<<<<<<<
@@ -13430,7 +15413,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
     __pyx_t_7 = (__pyx_v_self->A >= 0);
     if (__pyx_t_7) {
 
-      /* "Micro80/CPU.py":362
+      /* "Micro80/CPU.py":436
  *         elif opcode == "GEZ":
  *             if self.A >= 0:
  *                 self.programCounter = operands             # <<<<<<<<<<<<<<
@@ -13439,7 +15422,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
  */
       __pyx_v_self->programCounter = __pyx_v_operands;
 
-      /* "Micro80/CPU.py":361
+      /* "Micro80/CPU.py":435
  *                 self.programCounter = operands
  *         elif opcode == "GEZ":
  *             if self.A >= 0:             # <<<<<<<<<<<<<<
@@ -13448,7 +15431,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
  */
     }
 
-    /* "Micro80/CPU.py":360
+    /* "Micro80/CPU.py":434
  *             if self.A <= 0:
  *                 self.programCounter = operands
  *         elif opcode == "GEZ":             # <<<<<<<<<<<<<<
@@ -13458,17 +15441,17 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":363
+  /* "Micro80/CPU.py":437
  *             if self.A >= 0:
  *                 self.programCounter = operands
  *         elif opcode == "LZ":             # <<<<<<<<<<<<<<
  *             if self.A < 0:
  *                 self.programCounter = operands
  */
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_LZ, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 363, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_LZ, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 437, __pyx_L1_error)
   if (__pyx_t_7) {
 
-    /* "Micro80/CPU.py":364
+    /* "Micro80/CPU.py":438
  *                 self.programCounter = operands
  *         elif opcode == "LZ":
  *             if self.A < 0:             # <<<<<<<<<<<<<<
@@ -13478,7 +15461,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
     __pyx_t_7 = (__pyx_v_self->A < 0);
     if (__pyx_t_7) {
 
-      /* "Micro80/CPU.py":365
+      /* "Micro80/CPU.py":439
  *         elif opcode == "LZ":
  *             if self.A < 0:
  *                 self.programCounter = operands             # <<<<<<<<<<<<<<
@@ -13487,7 +15470,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
  */
       __pyx_v_self->programCounter = __pyx_v_operands;
 
-      /* "Micro80/CPU.py":364
+      /* "Micro80/CPU.py":438
  *                 self.programCounter = operands
  *         elif opcode == "LZ":
  *             if self.A < 0:             # <<<<<<<<<<<<<<
@@ -13496,7 +15479,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
  */
     }
 
-    /* "Micro80/CPU.py":363
+    /* "Micro80/CPU.py":437
  *             if self.A >= 0:
  *                 self.programCounter = operands
  *         elif opcode == "LZ":             # <<<<<<<<<<<<<<
@@ -13506,17 +15489,17 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":366
+  /* "Micro80/CPU.py":440
  *             if self.A < 0:
  *                 self.programCounter = operands
  *         elif opcode == "MP":             # <<<<<<<<<<<<<<
  *             self.programCounter = operands
  *         elif opcode == "GT":
  */
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_MP, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 366, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_MP, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 440, __pyx_L1_error)
   if (__pyx_t_7) {
 
-    /* "Micro80/CPU.py":367
+    /* "Micro80/CPU.py":441
  *                 self.programCounter = operands
  *         elif opcode == "MP":
  *             self.programCounter = operands             # <<<<<<<<<<<<<<
@@ -13525,7 +15508,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
  */
     __pyx_v_self->programCounter = __pyx_v_operands;
 
-    /* "Micro80/CPU.py":366
+    /* "Micro80/CPU.py":440
  *             if self.A < 0:
  *                 self.programCounter = operands
  *         elif opcode == "MP":             # <<<<<<<<<<<<<<
@@ -13535,35 +15518,35 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":368
+  /* "Micro80/CPU.py":442
  *         elif opcode == "MP":
  *             self.programCounter = operands
  *         elif opcode == "GT":             # <<<<<<<<<<<<<<
  *             if self.A > self.memory.curData:
  *                 self.programCounter = operands
  */
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_GT, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 368, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_GT, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 442, __pyx_L1_error)
   if (__pyx_t_7) {
 
-    /* "Micro80/CPU.py":369
+    /* "Micro80/CPU.py":443
  *             self.programCounter = operands
  *         elif opcode == "GT":
  *             if self.A > self.memory.curData:             # <<<<<<<<<<<<<<
  *                 self.programCounter = operands
  *         elif opcode == "LT":
  */
-    __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->A); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 369, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->A); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 443, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_curData); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 369, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_curData); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 443, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_4 = PyObject_RichCompare(__pyx_t_1, __pyx_t_2, Py_GT); __Pyx_XGOTREF(__pyx_t_4); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 369, __pyx_L1_error)
+    __pyx_t_4 = PyObject_RichCompare(__pyx_t_1, __pyx_t_2, Py_GT); __Pyx_XGOTREF(__pyx_t_4); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 443, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_7 = __Pyx_PyObject_IsTrue(__pyx_t_4); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 369, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyObject_IsTrue(__pyx_t_4); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 443, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     if (__pyx_t_7) {
 
-      /* "Micro80/CPU.py":370
+      /* "Micro80/CPU.py":444
  *         elif opcode == "GT":
  *             if self.A > self.memory.curData:
  *                 self.programCounter = operands             # <<<<<<<<<<<<<<
@@ -13572,7 +15555,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
  */
       __pyx_v_self->programCounter = __pyx_v_operands;
 
-      /* "Micro80/CPU.py":369
+      /* "Micro80/CPU.py":443
  *             self.programCounter = operands
  *         elif opcode == "GT":
  *             if self.A > self.memory.curData:             # <<<<<<<<<<<<<<
@@ -13581,7 +15564,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
  */
     }
 
-    /* "Micro80/CPU.py":368
+    /* "Micro80/CPU.py":442
  *         elif opcode == "MP":
  *             self.programCounter = operands
  *         elif opcode == "GT":             # <<<<<<<<<<<<<<
@@ -13591,35 +15574,35 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":371
+  /* "Micro80/CPU.py":445
  *             if self.A > self.memory.curData:
  *                 self.programCounter = operands
  *         elif opcode == "LT":             # <<<<<<<<<<<<<<
  *             if self.A < self.memory.curData:
  *                 self.programCounter = operands
  */
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_LT, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 371, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_LT, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 445, __pyx_L1_error)
   if (__pyx_t_7) {
 
-    /* "Micro80/CPU.py":372
+    /* "Micro80/CPU.py":446
  *                 self.programCounter = operands
  *         elif opcode == "LT":
  *             if self.A < self.memory.curData:             # <<<<<<<<<<<<<<
  *                 self.programCounter = operands
  *         elif opcode == "GE":
  */
-    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_self->A); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 372, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_self->A); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 446, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_curData); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 372, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_curData); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 446, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_1 = PyObject_RichCompare(__pyx_t_4, __pyx_t_2, Py_LT); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 372, __pyx_L1_error)
+    __pyx_t_1 = PyObject_RichCompare(__pyx_t_4, __pyx_t_2, Py_LT); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 446, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_7 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 372, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 446, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     if (__pyx_t_7) {
 
-      /* "Micro80/CPU.py":373
+      /* "Micro80/CPU.py":447
  *         elif opcode == "LT":
  *             if self.A < self.memory.curData:
  *                 self.programCounter = operands             # <<<<<<<<<<<<<<
@@ -13628,7 +15611,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
  */
       __pyx_v_self->programCounter = __pyx_v_operands;
 
-      /* "Micro80/CPU.py":372
+      /* "Micro80/CPU.py":446
  *                 self.programCounter = operands
  *         elif opcode == "LT":
  *             if self.A < self.memory.curData:             # <<<<<<<<<<<<<<
@@ -13637,7 +15620,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
  */
     }
 
-    /* "Micro80/CPU.py":371
+    /* "Micro80/CPU.py":445
  *             if self.A > self.memory.curData:
  *                 self.programCounter = operands
  *         elif opcode == "LT":             # <<<<<<<<<<<<<<
@@ -13647,35 +15630,35 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":374
+  /* "Micro80/CPU.py":448
  *             if self.A < self.memory.curData:
  *                 self.programCounter = operands
  *         elif opcode == "GE":             # <<<<<<<<<<<<<<
  *             if self.A >= self.memory.curData:
  *                 self.programCounter = operands
  */
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_GE, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 374, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_GE, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 448, __pyx_L1_error)
   if (__pyx_t_7) {
 
-    /* "Micro80/CPU.py":375
+    /* "Micro80/CPU.py":449
  *                 self.programCounter = operands
  *         elif opcode == "GE":
  *             if self.A >= self.memory.curData:             # <<<<<<<<<<<<<<
  *                 self.programCounter = operands
  *         elif opcode == "LE":
  */
-    __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->A); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 375, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->A); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 449, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_curData); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 375, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_curData); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 449, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_4 = PyObject_RichCompare(__pyx_t_1, __pyx_t_2, Py_GE); __Pyx_XGOTREF(__pyx_t_4); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 375, __pyx_L1_error)
+    __pyx_t_4 = PyObject_RichCompare(__pyx_t_1, __pyx_t_2, Py_GE); __Pyx_XGOTREF(__pyx_t_4); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 449, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_7 = __Pyx_PyObject_IsTrue(__pyx_t_4); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 375, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyObject_IsTrue(__pyx_t_4); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 449, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     if (__pyx_t_7) {
 
-      /* "Micro80/CPU.py":376
+      /* "Micro80/CPU.py":450
  *         elif opcode == "GE":
  *             if self.A >= self.memory.curData:
  *                 self.programCounter = operands             # <<<<<<<<<<<<<<
@@ -13684,7 +15667,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
  */
       __pyx_v_self->programCounter = __pyx_v_operands;
 
-      /* "Micro80/CPU.py":375
+      /* "Micro80/CPU.py":449
  *                 self.programCounter = operands
  *         elif opcode == "GE":
  *             if self.A >= self.memory.curData:             # <<<<<<<<<<<<<<
@@ -13693,7 +15676,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
  */
     }
 
-    /* "Micro80/CPU.py":374
+    /* "Micro80/CPU.py":448
  *             if self.A < self.memory.curData:
  *                 self.programCounter = operands
  *         elif opcode == "GE":             # <<<<<<<<<<<<<<
@@ -13703,35 +15686,35 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":377
+  /* "Micro80/CPU.py":451
  *             if self.A >= self.memory.curData:
  *                 self.programCounter = operands
  *         elif opcode == "LE":             # <<<<<<<<<<<<<<
  *             if self.A <= self.memory.curData:
  *                 self.programCounter = operands
  */
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_LE, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 377, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_LE, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 451, __pyx_L1_error)
   if (__pyx_t_7) {
 
-    /* "Micro80/CPU.py":378
+    /* "Micro80/CPU.py":452
  *                 self.programCounter = operands
  *         elif opcode == "LE":
  *             if self.A <= self.memory.curData:             # <<<<<<<<<<<<<<
  *                 self.programCounter = operands
  *         elif opcode == "EQ":
  */
-    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_self->A); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 378, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_self->A); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 452, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_curData); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 378, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_curData); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 452, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_1 = PyObject_RichCompare(__pyx_t_4, __pyx_t_2, Py_LE); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 378, __pyx_L1_error)
+    __pyx_t_1 = PyObject_RichCompare(__pyx_t_4, __pyx_t_2, Py_LE); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 452, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_7 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 378, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 452, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     if (__pyx_t_7) {
 
-      /* "Micro80/CPU.py":379
+      /* "Micro80/CPU.py":453
  *         elif opcode == "LE":
  *             if self.A <= self.memory.curData:
  *                 self.programCounter = operands             # <<<<<<<<<<<<<<
@@ -13740,7 +15723,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
  */
       __pyx_v_self->programCounter = __pyx_v_operands;
 
-      /* "Micro80/CPU.py":378
+      /* "Micro80/CPU.py":452
  *                 self.programCounter = operands
  *         elif opcode == "LE":
  *             if self.A <= self.memory.curData:             # <<<<<<<<<<<<<<
@@ -13749,7 +15732,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
  */
     }
 
-    /* "Micro80/CPU.py":377
+    /* "Micro80/CPU.py":451
  *             if self.A >= self.memory.curData:
  *                 self.programCounter = operands
  *         elif opcode == "LE":             # <<<<<<<<<<<<<<
@@ -13759,35 +15742,35 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":380
+  /* "Micro80/CPU.py":454
  *             if self.A <= self.memory.curData:
  *                 self.programCounter = operands
  *         elif opcode == "EQ":             # <<<<<<<<<<<<<<
  *             if self.A == self.memory.curData:
  *                 self.programCounter = operands
  */
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_EQ, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 380, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_EQ, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 454, __pyx_L1_error)
   if (__pyx_t_7) {
 
-    /* "Micro80/CPU.py":381
+    /* "Micro80/CPU.py":455
  *                 self.programCounter = operands
  *         elif opcode == "EQ":
  *             if self.A == self.memory.curData:             # <<<<<<<<<<<<<<
  *                 self.programCounter = operands
  *         elif opcode == "NE":
  */
-    __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->A); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 381, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_self->A); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 455, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_curData); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 381, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_curData); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 455, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_4 = PyObject_RichCompare(__pyx_t_1, __pyx_t_2, Py_EQ); __Pyx_XGOTREF(__pyx_t_4); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 381, __pyx_L1_error)
+    __pyx_t_4 = PyObject_RichCompare(__pyx_t_1, __pyx_t_2, Py_EQ); __Pyx_XGOTREF(__pyx_t_4); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 455, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_7 = __Pyx_PyObject_IsTrue(__pyx_t_4); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 381, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyObject_IsTrue(__pyx_t_4); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 455, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     if (__pyx_t_7) {
 
-      /* "Micro80/CPU.py":382
+      /* "Micro80/CPU.py":456
  *         elif opcode == "EQ":
  *             if self.A == self.memory.curData:
  *                 self.programCounter = operands             # <<<<<<<<<<<<<<
@@ -13796,7 +15779,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
  */
       __pyx_v_self->programCounter = __pyx_v_operands;
 
-      /* "Micro80/CPU.py":381
+      /* "Micro80/CPU.py":455
  *                 self.programCounter = operands
  *         elif opcode == "EQ":
  *             if self.A == self.memory.curData:             # <<<<<<<<<<<<<<
@@ -13805,7 +15788,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
  */
     }
 
-    /* "Micro80/CPU.py":380
+    /* "Micro80/CPU.py":454
  *             if self.A <= self.memory.curData:
  *                 self.programCounter = operands
  *         elif opcode == "EQ":             # <<<<<<<<<<<<<<
@@ -13815,35 +15798,35 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":383
+  /* "Micro80/CPU.py":457
  *             if self.A == self.memory.curData:
  *                 self.programCounter = operands
  *         elif opcode == "NE":             # <<<<<<<<<<<<<<
  *             if self.A != self.memory.curData:
  *                 self.programCounter = operands
  */
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_NE, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 383, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_NE, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 457, __pyx_L1_error)
   if (__pyx_t_7) {
 
-    /* "Micro80/CPU.py":384
+    /* "Micro80/CPU.py":458
  *                 self.programCounter = operands
  *         elif opcode == "NE":
  *             if self.A != self.memory.curData:             # <<<<<<<<<<<<<<
  *                 self.programCounter = operands
  *         elif opcode == "MP":
  */
-    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_self->A); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 384, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_self->A); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 458, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_curData); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 384, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_curData); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 458, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_1 = PyObject_RichCompare(__pyx_t_4, __pyx_t_2, Py_NE); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 384, __pyx_L1_error)
+    __pyx_t_1 = PyObject_RichCompare(__pyx_t_4, __pyx_t_2, Py_NE); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 458, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_7 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 384, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 458, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     if (__pyx_t_7) {
 
-      /* "Micro80/CPU.py":385
+      /* "Micro80/CPU.py":459
  *         elif opcode == "NE":
  *             if self.A != self.memory.curData:
  *                 self.programCounter = operands             # <<<<<<<<<<<<<<
@@ -13852,7 +15835,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
  */
       __pyx_v_self->programCounter = __pyx_v_operands;
 
-      /* "Micro80/CPU.py":384
+      /* "Micro80/CPU.py":458
  *                 self.programCounter = operands
  *         elif opcode == "NE":
  *             if self.A != self.memory.curData:             # <<<<<<<<<<<<<<
@@ -13861,7 +15844,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
  */
     }
 
-    /* "Micro80/CPU.py":383
+    /* "Micro80/CPU.py":457
  *             if self.A == self.memory.curData:
  *                 self.programCounter = operands
  *         elif opcode == "NE":             # <<<<<<<<<<<<<<
@@ -13871,17 +15854,17 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":386
+  /* "Micro80/CPU.py":460
  *             if self.A != self.memory.curData:
  *                 self.programCounter = operands
  *         elif opcode == "MP":             # <<<<<<<<<<<<<<
  *             self.programCounter = operands
  *         else:
  */
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_MP, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 386, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_opcode, __pyx_n_s_MP, Py_EQ)); if (unlikely((__pyx_t_7 < 0))) __PYX_ERR(0, 460, __pyx_L1_error)
   if (likely(__pyx_t_7)) {
 
-    /* "Micro80/CPU.py":387
+    /* "Micro80/CPU.py":461
  *                 self.programCounter = operands
  *         elif opcode == "MP":
  *             self.programCounter = operands             # <<<<<<<<<<<<<<
@@ -13890,7 +15873,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
  */
     __pyx_v_self->programCounter = __pyx_v_operands;
 
-    /* "Micro80/CPU.py":386
+    /* "Micro80/CPU.py":460
  *             if self.A != self.memory.curData:
  *                 self.programCounter = operands
  *         elif opcode == "MP":             # <<<<<<<<<<<<<<
@@ -13900,7 +15883,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
     goto __pyx_L3;
   }
 
-  /* "Micro80/CPU.py":389
+  /* "Micro80/CPU.py":463
  *             self.programCounter = operands
  *         else:
  *             self.jumpCount -= 1             # <<<<<<<<<<<<<<
@@ -13910,22 +15893,22 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
   /*else*/ {
     __pyx_v_self->jumpCount = (__pyx_v_self->jumpCount - 1);
 
-    /* "Micro80/CPU.py":390
+    /* "Micro80/CPU.py":464
  *         else:
  *             self.jumpCount -= 1
  *             raise ValueError("Invalid Opcode")             # <<<<<<<<<<<<<<
  * 
  *     def Loader(self, ROMFile, location=0x0000):
  */
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__15, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 390, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__22, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 464, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_Raise(__pyx_t_1, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __PYX_ERR(0, 390, __pyx_L1_error)
+    __PYX_ERR(0, 464, __pyx_L1_error)
   }
   __pyx_L3:;
 
-  /* "Micro80/CPU.py":345
+  /* "Micro80/CPU.py":419
  *             raise ValueError("Invalid Opcode")
  * 
  *     def jump(self, opcode, operands):             # <<<<<<<<<<<<<<
@@ -13951,16 +15934,16 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_jump(struct __pyx_obj_7Micro80_3CPU_
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_31jump(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_33jump(PyObject *__pyx_v_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_7Micro80_3CPU_3CPU_30jump, "Jumps to a given address based on the condition.");
-static PyMethodDef __pyx_mdef_7Micro80_3CPU_3CPU_31jump = {"jump", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_7Micro80_3CPU_3CPU_31jump, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_7Micro80_3CPU_3CPU_30jump};
-static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_31jump(PyObject *__pyx_v_self, 
+PyDoc_STRVAR(__pyx_doc_7Micro80_3CPU_3CPU_32jump, "Jumps to a given address based on the condition.");
+static PyMethodDef __pyx_mdef_7Micro80_3CPU_3CPU_33jump = {"jump", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_7Micro80_3CPU_3CPU_33jump, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_7Micro80_3CPU_3CPU_32jump};
+static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_33jump(PyObject *__pyx_v_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -14007,7 +15990,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
           (void)__Pyx_Arg_NewRef_FASTCALL(values[0]);
           kw_args--;
         }
-        else if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 345, __pyx_L3_error)
+        else if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 419, __pyx_L3_error)
         else goto __pyx_L5_argtuple_error;
         CYTHON_FALLTHROUGH;
         case  1:
@@ -14015,14 +15998,14 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
           (void)__Pyx_Arg_NewRef_FASTCALL(values[1]);
           kw_args--;
         }
-        else if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 345, __pyx_L3_error)
+        else if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 419, __pyx_L3_error)
         else {
-          __Pyx_RaiseArgtupleInvalid("jump", 1, 2, 2, 1); __PYX_ERR(0, 345, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("jump", 1, 2, 2, 1); __PYX_ERR(0, 419, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
         const Py_ssize_t kwd_pos_args = __pyx_nargs;
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values + 0, kwd_pos_args, "jump") < 0)) __PYX_ERR(0, 345, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values + 0, kwd_pos_args, "jump") < 0)) __PYX_ERR(0, 419, __pyx_L3_error)
       }
     } else if (unlikely(__pyx_nargs != 2)) {
       goto __pyx_L5_argtuple_error;
@@ -14031,11 +16014,11 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
       values[1] = __Pyx_Arg_FASTCALL(__pyx_args, 1);
     }
     __pyx_v_opcode = ((PyObject*)values[0]);
-    __pyx_v_operands = __Pyx_PyInt_As_int(values[1]); if (unlikely((__pyx_v_operands == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 345, __pyx_L3_error)
+    __pyx_v_operands = __Pyx_PyInt_As_int(values[1]); if (unlikely((__pyx_v_operands == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 419, __pyx_L3_error)
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("jump", 1, 2, 2, __pyx_nargs); __PYX_ERR(0, 345, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("jump", 1, 2, 2, __pyx_nargs); __PYX_ERR(0, 419, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -14049,8 +16032,8 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_opcode), (&PyString_Type), 1, "opcode", 1))) __PYX_ERR(0, 345, __pyx_L1_error)
-  __pyx_r = __pyx_pf_7Micro80_3CPU_3CPU_30jump(((struct __pyx_obj_7Micro80_3CPU_CPU *)__pyx_v_self), __pyx_v_opcode, __pyx_v_operands);
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_opcode), (&PyString_Type), 1, "opcode", 1))) __PYX_ERR(0, 419, __pyx_L1_error)
+  __pyx_r = __pyx_pf_7Micro80_3CPU_3CPU_32jump(((struct __pyx_obj_7Micro80_3CPU_CPU *)__pyx_v_self), __pyx_v_opcode, __pyx_v_operands);
 
   /* function exit code */
   goto __pyx_L0;
@@ -14067,7 +16050,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_30jump(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, PyObject *__pyx_v_opcode, int __pyx_v_operands) {
+static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_32jump(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, PyObject *__pyx_v_opcode, int __pyx_v_operands) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -14076,7 +16059,7 @@ static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_30jump(struct __pyx_obj_7Micro80_3C
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("jump", 1);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_f_7Micro80_3CPU_3CPU_jump(__pyx_v_self, __pyx_v_opcode, __pyx_v_operands, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 345, __pyx_L1_error)
+  __pyx_t_1 = __pyx_f_7Micro80_3CPU_3CPU_jump(__pyx_v_self, __pyx_v_opcode, __pyx_v_operands, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 419, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -14093,7 +16076,7 @@ static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_30jump(struct __pyx_obj_7Micro80_3C
   return __pyx_r;
 }
 
-/* "Micro80/CPU.py":392
+/* "Micro80/CPU.py":466
  *             raise ValueError("Invalid Opcode")
  * 
  *     def Loader(self, ROMFile, location=0x0000):             # <<<<<<<<<<<<<<
@@ -14101,7 +16084,7 @@ static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_30jump(struct __pyx_obj_7Micro80_3C
  *         file = open(ROMFile, "r")
  */
 
-static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_33Loader(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_35Loader(PyObject *__pyx_v_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -14112,6 +16095,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_Loader(struct __pyx_obj_7Micro80_3CP
   int __pyx_v_location = ((int)0x0000);
   PyObject *__pyx_v_file = NULL;
   PyObject *__pyx_v_ROM = NULL;
+  PyObject *__pyx_v_programCode = NULL;
   PyObject *__pyx_v_i = NULL;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
@@ -14124,6 +16108,8 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_Loader(struct __pyx_obj_7Micro80_3CP
   Py_ssize_t __pyx_t_7;
   PyObject *(*__pyx_t_8)(PyObject *);
   PyObject *__pyx_t_9 = NULL;
+  int __pyx_t_10;
+  Py_UCS4 __pyx_t_11;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -14142,11 +16128,11 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_Loader(struct __pyx_obj_7Micro80_3CP
     if (unlikely(!__Pyx_object_dict_version_matches(((PyObject *)__pyx_v_self), __pyx_tp_dict_version, __pyx_obj_dict_version))) {
       PY_UINT64_T __pyx_typedict_guard = __Pyx_get_tp_dict_version(((PyObject *)__pyx_v_self));
       #endif
-      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_Loader); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 392, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_Loader); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 466, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      if (!__Pyx_IsSameCFunction(__pyx_t_1, (void*) __pyx_pw_7Micro80_3CPU_3CPU_33Loader)) {
+      if (!__Pyx_IsSameCFunction(__pyx_t_1, (void*) __pyx_pw_7Micro80_3CPU_3CPU_35Loader)) {
         __Pyx_XDECREF(__pyx_r);
-        __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_location); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 392, __pyx_L1_error)
+        __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_location); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 466, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_3);
         __Pyx_INCREF(__pyx_t_1);
         __pyx_t_4 = __pyx_t_1; __pyx_t_5 = NULL;
@@ -14168,7 +16154,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_Loader(struct __pyx_obj_7Micro80_3CP
           __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_4, __pyx_callargs+1-__pyx_t_6, 2+__pyx_t_6);
           __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
           __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-          if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 392, __pyx_L1_error)
+          if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 466, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_2);
           __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
         }
@@ -14190,35 +16176,35 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_Loader(struct __pyx_obj_7Micro80_3CP
     #endif
   }
 
-  /* "Micro80/CPU.py":394
+  /* "Micro80/CPU.py":468
  *     def Loader(self, ROMFile, location=0x0000):
  *         "Loads the ROM file into memory."
  *         file = open(ROMFile, "r")             # <<<<<<<<<<<<<<
  *         ROM = file.read()
  *         file.close()
  */
-  __pyx_t_1 = PyTuple_New(2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 394, __pyx_L1_error)
+  __pyx_t_1 = PyTuple_New(2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 468, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_INCREF(__pyx_v_ROMFile);
   __Pyx_GIVEREF(__pyx_v_ROMFile);
-  if (__Pyx_PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_v_ROMFile)) __PYX_ERR(0, 394, __pyx_L1_error);
+  if (__Pyx_PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_v_ROMFile)) __PYX_ERR(0, 468, __pyx_L1_error);
   __Pyx_INCREF(__pyx_n_s_r);
   __Pyx_GIVEREF(__pyx_n_s_r);
-  if (__Pyx_PyTuple_SET_ITEM(__pyx_t_1, 1, __pyx_n_s_r)) __PYX_ERR(0, 394, __pyx_L1_error);
-  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_open, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 394, __pyx_L1_error)
+  if (__Pyx_PyTuple_SET_ITEM(__pyx_t_1, 1, __pyx_n_s_r)) __PYX_ERR(0, 468, __pyx_L1_error);
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_open, __pyx_t_1, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 468, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_v_file = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "Micro80/CPU.py":395
+  /* "Micro80/CPU.py":469
  *         "Loads the ROM file into memory."
  *         file = open(ROMFile, "r")
  *         ROM = file.read()             # <<<<<<<<<<<<<<
  *         file.close()
- *         ROM = ROM.split("/")[1:]
+ *         programCode = ROM.split("\n")[0]
  */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_file, __pyx_n_s_read); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 395, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_file, __pyx_n_s_read); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 469, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_t_4 = NULL;
   __pyx_t_6 = 0;
@@ -14238,21 +16224,21 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_Loader(struct __pyx_obj_7Micro80_3CP
     PyObject *__pyx_callargs[2] = {__pyx_t_4, NULL};
     __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_1, __pyx_callargs+1-__pyx_t_6, 0+__pyx_t_6);
     __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-    if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 395, __pyx_L1_error)
+    if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 469, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   }
   __pyx_v_ROM = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "Micro80/CPU.py":396
+  /* "Micro80/CPU.py":470
  *         file = open(ROMFile, "r")
  *         ROM = file.read()
  *         file.close()             # <<<<<<<<<<<<<<
- *         ROM = ROM.split("/")[1:]
- *         for i in ROM:
+ *         programCode = ROM.split("\n")[0]
+ *         programCode = programCode.split("/")[1:]
  */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_file, __pyx_n_s_close); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 396, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_file, __pyx_n_s_close); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 470, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_t_4 = NULL;
   __pyx_t_6 = 0;
@@ -14272,20 +16258,20 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_Loader(struct __pyx_obj_7Micro80_3CP
     PyObject *__pyx_callargs[2] = {__pyx_t_4, NULL};
     __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_1, __pyx_callargs+1-__pyx_t_6, 0+__pyx_t_6);
     __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-    if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 396, __pyx_L1_error)
+    if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 470, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   }
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "Micro80/CPU.py":397
+  /* "Micro80/CPU.py":471
  *         ROM = file.read()
  *         file.close()
- *         ROM = ROM.split("/")[1:]             # <<<<<<<<<<<<<<
- *         for i in ROM:
- *             self.memory.writeAddress(location, int(i))
+ *         programCode = ROM.split("\n")[0]             # <<<<<<<<<<<<<<
+ *         programCode = programCode.split("/")[1:]
+ *         for i in programCode:
  */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_ROM, __pyx_n_s_split); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 397, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_ROM, __pyx_n_s_split); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 471, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_t_4 = NULL;
   __pyx_t_6 = 0;
@@ -14302,92 +16288,130 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_Loader(struct __pyx_obj_7Micro80_3CP
   }
   #endif
   {
-    PyObject *__pyx_callargs[2] = {__pyx_t_4, __pyx_kp_s__17};
+    PyObject *__pyx_callargs[2] = {__pyx_t_4, __pyx_kp_s_};
     __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_1, __pyx_callargs+1-__pyx_t_6, 1+__pyx_t_6);
     __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-    if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 397, __pyx_L1_error)
+    if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 471, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   }
-  __pyx_t_1 = __Pyx_PyObject_GetSlice(__pyx_t_2, 1, 0, NULL, NULL, &__pyx_slice__12, 1, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 397, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_GetItemInt(__pyx_t_2, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 471, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __Pyx_DECREF_SET(__pyx_v_ROM, __pyx_t_1);
+  __pyx_v_programCode = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "Micro80/CPU.py":398
+  /* "Micro80/CPU.py":472
  *         file.close()
- *         ROM = ROM.split("/")[1:]
- *         for i in ROM:             # <<<<<<<<<<<<<<
+ *         programCode = ROM.split("\n")[0]
+ *         programCode = programCode.split("/")[1:]             # <<<<<<<<<<<<<<
+ *         for i in programCode:
+ *             self.memory.writeAddress(location, int(i))
+ */
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_programCode, __pyx_n_s_split); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 472, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_t_4 = NULL;
+  __pyx_t_6 = 0;
+  #if CYTHON_UNPACK_METHODS
+  if (likely(PyMethod_Check(__pyx_t_2))) {
+    __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_2);
+    if (likely(__pyx_t_4)) {
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
+      __Pyx_INCREF(__pyx_t_4);
+      __Pyx_INCREF(function);
+      __Pyx_DECREF_SET(__pyx_t_2, function);
+      __pyx_t_6 = 1;
+    }
+  }
+  #endif
+  {
+    PyObject *__pyx_callargs[2] = {__pyx_t_4, __pyx_kp_s__24};
+    __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_2, __pyx_callargs+1-__pyx_t_6, 1+__pyx_t_6);
+    __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 472, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+  }
+  __pyx_t_2 = __Pyx_PyObject_GetSlice(__pyx_t_1, 1, 0, NULL, NULL, &__pyx_slice__19, 1, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 472, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __Pyx_DECREF_SET(__pyx_v_programCode, __pyx_t_2);
+  __pyx_t_2 = 0;
+
+  /* "Micro80/CPU.py":473
+ *         programCode = ROM.split("\n")[0]
+ *         programCode = programCode.split("/")[1:]
+ *         for i in programCode:             # <<<<<<<<<<<<<<
  *             self.memory.writeAddress(location, int(i))
  *             location += 1
  */
-  if (likely(PyList_CheckExact(__pyx_v_ROM)) || PyTuple_CheckExact(__pyx_v_ROM)) {
-    __pyx_t_1 = __pyx_v_ROM; __Pyx_INCREF(__pyx_t_1);
+  if (likely(PyList_CheckExact(__pyx_v_programCode)) || PyTuple_CheckExact(__pyx_v_programCode)) {
+    __pyx_t_2 = __pyx_v_programCode; __Pyx_INCREF(__pyx_t_2);
     __pyx_t_7 = 0;
     __pyx_t_8 = NULL;
   } else {
-    __pyx_t_7 = -1; __pyx_t_1 = PyObject_GetIter(__pyx_v_ROM); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 398, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_8 = __Pyx_PyObject_GetIterNextFunc(__pyx_t_1); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 398, __pyx_L1_error)
+    __pyx_t_7 = -1; __pyx_t_2 = PyObject_GetIter(__pyx_v_programCode); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 473, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_8 = __Pyx_PyObject_GetIterNextFunc(__pyx_t_2); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 473, __pyx_L1_error)
   }
   for (;;) {
     if (likely(!__pyx_t_8)) {
-      if (likely(PyList_CheckExact(__pyx_t_1))) {
+      if (likely(PyList_CheckExact(__pyx_t_2))) {
         {
-          Py_ssize_t __pyx_temp = __Pyx_PyList_GET_SIZE(__pyx_t_1);
+          Py_ssize_t __pyx_temp = __Pyx_PyList_GET_SIZE(__pyx_t_2);
           #if !CYTHON_ASSUME_SAFE_MACROS
-          if (unlikely((__pyx_temp < 0))) __PYX_ERR(0, 398, __pyx_L1_error)
+          if (unlikely((__pyx_temp < 0))) __PYX_ERR(0, 473, __pyx_L1_error)
           #endif
           if (__pyx_t_7 >= __pyx_temp) break;
         }
         #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_2 = PyList_GET_ITEM(__pyx_t_1, __pyx_t_7); __Pyx_INCREF(__pyx_t_2); __pyx_t_7++; if (unlikely((0 < 0))) __PYX_ERR(0, 398, __pyx_L1_error)
+        __pyx_t_1 = PyList_GET_ITEM(__pyx_t_2, __pyx_t_7); __Pyx_INCREF(__pyx_t_1); __pyx_t_7++; if (unlikely((0 < 0))) __PYX_ERR(0, 473, __pyx_L1_error)
         #else
-        __pyx_t_2 = __Pyx_PySequence_ITEM(__pyx_t_1, __pyx_t_7); __pyx_t_7++; if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 398, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_2);
+        __pyx_t_1 = __Pyx_PySequence_ITEM(__pyx_t_2, __pyx_t_7); __pyx_t_7++; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 473, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_1);
         #endif
       } else {
         {
-          Py_ssize_t __pyx_temp = __Pyx_PyTuple_GET_SIZE(__pyx_t_1);
+          Py_ssize_t __pyx_temp = __Pyx_PyTuple_GET_SIZE(__pyx_t_2);
           #if !CYTHON_ASSUME_SAFE_MACROS
-          if (unlikely((__pyx_temp < 0))) __PYX_ERR(0, 398, __pyx_L1_error)
+          if (unlikely((__pyx_temp < 0))) __PYX_ERR(0, 473, __pyx_L1_error)
           #endif
           if (__pyx_t_7 >= __pyx_temp) break;
         }
         #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_2 = PyTuple_GET_ITEM(__pyx_t_1, __pyx_t_7); __Pyx_INCREF(__pyx_t_2); __pyx_t_7++; if (unlikely((0 < 0))) __PYX_ERR(0, 398, __pyx_L1_error)
+        __pyx_t_1 = PyTuple_GET_ITEM(__pyx_t_2, __pyx_t_7); __Pyx_INCREF(__pyx_t_1); __pyx_t_7++; if (unlikely((0 < 0))) __PYX_ERR(0, 473, __pyx_L1_error)
         #else
-        __pyx_t_2 = __Pyx_PySequence_ITEM(__pyx_t_1, __pyx_t_7); __pyx_t_7++; if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 398, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_2);
+        __pyx_t_1 = __Pyx_PySequence_ITEM(__pyx_t_2, __pyx_t_7); __pyx_t_7++; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 473, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_1);
         #endif
       }
     } else {
-      __pyx_t_2 = __pyx_t_8(__pyx_t_1);
-      if (unlikely(!__pyx_t_2)) {
+      __pyx_t_1 = __pyx_t_8(__pyx_t_2);
+      if (unlikely(!__pyx_t_1)) {
         PyObject* exc_type = PyErr_Occurred();
         if (exc_type) {
           if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-          else __PYX_ERR(0, 398, __pyx_L1_error)
+          else __PYX_ERR(0, 473, __pyx_L1_error)
         }
         break;
       }
-      __Pyx_GOTREF(__pyx_t_2);
+      __Pyx_GOTREF(__pyx_t_1);
     }
-    __Pyx_XDECREF_SET(__pyx_v_i, __pyx_t_2);
-    __pyx_t_2 = 0;
+    __Pyx_XDECREF_SET(__pyx_v_i, __pyx_t_1);
+    __pyx_t_1 = 0;
 
-    /* "Micro80/CPU.py":399
- *         ROM = ROM.split("/")[1:]
- *         for i in ROM:
+    /* "Micro80/CPU.py":474
+ *         programCode = programCode.split("/")[1:]
+ *         for i in programCode:
  *             self.memory.writeAddress(location, int(i))             # <<<<<<<<<<<<<<
  *             location += 1
+ *         if self.debug:
  */
-    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_writeAddress); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 399, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_v_self->memory, __pyx_n_s_writeAddress); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 474, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_location); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 399, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_location); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 474, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_5 = __Pyx_PyNumber_Int(__pyx_v_i); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 399, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyNumber_Int(__pyx_v_i); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 474, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __pyx_t_9 = NULL;
     __pyx_t_6 = 0;
@@ -14405,34 +16429,85 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_Loader(struct __pyx_obj_7Micro80_3CP
     #endif
     {
       PyObject *__pyx_callargs[3] = {__pyx_t_9, __pyx_t_3, __pyx_t_5};
-      __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_t_4, __pyx_callargs+1-__pyx_t_6, 2+__pyx_t_6);
+      __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_t_4, __pyx_callargs+1-__pyx_t_6, 2+__pyx_t_6);
       __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 399, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_2);
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 474, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     }
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "Micro80/CPU.py":400
- *         for i in ROM:
+    /* "Micro80/CPU.py":475
+ *         for i in programCode:
  *             self.memory.writeAddress(location, int(i))
  *             location += 1             # <<<<<<<<<<<<<<
+ *         if self.debug:
+ *             print(f"Loaded {ROMFile} into memory...")
  */
     __pyx_v_location = (__pyx_v_location + 1);
 
-    /* "Micro80/CPU.py":398
- *         file.close()
- *         ROM = ROM.split("/")[1:]
- *         for i in ROM:             # <<<<<<<<<<<<<<
+    /* "Micro80/CPU.py":473
+ *         programCode = ROM.split("\n")[0]
+ *         programCode = programCode.split("/")[1:]
+ *         for i in programCode:             # <<<<<<<<<<<<<<
  *             self.memory.writeAddress(location, int(i))
  *             location += 1
  */
   }
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "Micro80/CPU.py":392
+  /* "Micro80/CPU.py":476
+ *             self.memory.writeAddress(location, int(i))
+ *             location += 1
+ *         if self.debug:             # <<<<<<<<<<<<<<
+ *             print(f"Loaded {ROMFile} into memory...")
+ */
+  __pyx_t_10 = __Pyx_PyObject_IsTrue(__pyx_v_self->debug); if (unlikely((__pyx_t_10 < 0))) __PYX_ERR(0, 476, __pyx_L1_error)
+  if (__pyx_t_10) {
+
+    /* "Micro80/CPU.py":477
+ *             location += 1
+ *         if self.debug:
+ *             print(f"Loaded {ROMFile} into memory...")             # <<<<<<<<<<<<<<
+ */
+    __pyx_t_2 = PyTuple_New(3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 477, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_7 = 0;
+    __pyx_t_11 = 127;
+    __Pyx_INCREF(__pyx_kp_u_Loaded);
+    __pyx_t_7 += 7;
+    __Pyx_GIVEREF(__pyx_kp_u_Loaded);
+    PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_kp_u_Loaded);
+    __pyx_t_1 = __Pyx_PyObject_FormatSimple(__pyx_v_ROMFile, __pyx_empty_unicode); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 477, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_11 = (__Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_1) > __pyx_t_11) ? __Pyx_PyUnicode_MAX_CHAR_VALUE(__pyx_t_1) : __pyx_t_11;
+    __pyx_t_7 += __Pyx_PyUnicode_GET_LENGTH(__pyx_t_1);
+    __Pyx_GIVEREF(__pyx_t_1);
+    PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_t_1);
+    __pyx_t_1 = 0;
+    __Pyx_INCREF(__pyx_kp_u_into_memory);
+    __pyx_t_7 += 15;
+    __Pyx_GIVEREF(__pyx_kp_u_into_memory);
+    PyTuple_SET_ITEM(__pyx_t_2, 2, __pyx_kp_u_into_memory);
+    __pyx_t_1 = __Pyx_PyUnicode_Join(__pyx_t_2, 3, __pyx_t_7, __pyx_t_11); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 477, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_builtin_print, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 477, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+    /* "Micro80/CPU.py":476
+ *             self.memory.writeAddress(location, int(i))
+ *             location += 1
+ *         if self.debug:             # <<<<<<<<<<<<<<
+ *             print(f"Loaded {ROMFile} into memory...")
+ */
+  }
+
+  /* "Micro80/CPU.py":466
  *             raise ValueError("Invalid Opcode")
  * 
  *     def Loader(self, ROMFile, location=0x0000):             # <<<<<<<<<<<<<<
@@ -14455,6 +16530,7 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_Loader(struct __pyx_obj_7Micro80_3CP
   __pyx_L0:;
   __Pyx_XDECREF(__pyx_v_file);
   __Pyx_XDECREF(__pyx_v_ROM);
+  __Pyx_XDECREF(__pyx_v_programCode);
   __Pyx_XDECREF(__pyx_v_i);
   __Pyx_XGIVEREF(__pyx_r);
   __Pyx_RefNannyFinishContext();
@@ -14462,16 +16538,16 @@ static PyObject *__pyx_f_7Micro80_3CPU_3CPU_Loader(struct __pyx_obj_7Micro80_3CP
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_33Loader(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_35Loader(PyObject *__pyx_v_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_7Micro80_3CPU_3CPU_32Loader, "Loads the ROM file into memory.");
-static PyMethodDef __pyx_mdef_7Micro80_3CPU_3CPU_33Loader = {"Loader", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_7Micro80_3CPU_3CPU_33Loader, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_7Micro80_3CPU_3CPU_32Loader};
-static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_33Loader(PyObject *__pyx_v_self, 
+PyDoc_STRVAR(__pyx_doc_7Micro80_3CPU_3CPU_34Loader, "Loads the ROM file into memory.");
+static PyMethodDef __pyx_mdef_7Micro80_3CPU_3CPU_35Loader = {"Loader", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_7Micro80_3CPU_3CPU_35Loader, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_7Micro80_3CPU_3CPU_34Loader};
+static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_35Loader(PyObject *__pyx_v_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -14518,19 +16594,19 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
           (void)__Pyx_Arg_NewRef_FASTCALL(values[0]);
           kw_args--;
         }
-        else if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 392, __pyx_L3_error)
+        else if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 466, __pyx_L3_error)
         else goto __pyx_L5_argtuple_error;
         CYTHON_FALLTHROUGH;
         case  1:
         if (kw_args > 0) {
           PyObject* value = __Pyx_GetKwValue_FASTCALL(__pyx_kwds, __pyx_kwvalues, __pyx_n_s_location);
           if (value) { values[1] = __Pyx_Arg_NewRef_FASTCALL(value); kw_args--; }
-          else if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 392, __pyx_L3_error)
+          else if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 466, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
         const Py_ssize_t kwd_pos_args = __pyx_nargs;
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values + 0, kwd_pos_args, "Loader") < 0)) __PYX_ERR(0, 392, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_kwvalues, __pyx_pyargnames, 0, values + 0, kwd_pos_args, "Loader") < 0)) __PYX_ERR(0, 466, __pyx_L3_error)
       }
     } else {
       switch (__pyx_nargs) {
@@ -14543,14 +16619,14 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
     }
     __pyx_v_ROMFile = values[0];
     if (values[1]) {
-      __pyx_v_location = __Pyx_PyInt_As_int(values[1]); if (unlikely((__pyx_v_location == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 392, __pyx_L3_error)
+      __pyx_v_location = __Pyx_PyInt_As_int(values[1]); if (unlikely((__pyx_v_location == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 466, __pyx_L3_error)
     } else {
       __pyx_v_location = ((int)0x0000);
     }
   }
   goto __pyx_L6_skip;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("Loader", 0, 1, 2, __pyx_nargs); __PYX_ERR(0, 392, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("Loader", 0, 1, 2, __pyx_nargs); __PYX_ERR(0, 466, __pyx_L3_error)
   __pyx_L6_skip:;
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L3_error:;
@@ -14564,7 +16640,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_7Micro80_3CPU_3CPU_32Loader(((struct __pyx_obj_7Micro80_3CPU_CPU *)__pyx_v_self), __pyx_v_ROMFile, __pyx_v_location);
+  __pyx_r = __pyx_pf_7Micro80_3CPU_3CPU_34Loader(((struct __pyx_obj_7Micro80_3CPU_CPU *)__pyx_v_self), __pyx_v_ROMFile, __pyx_v_location);
 
   /* function exit code */
   {
@@ -14577,7 +16653,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_32Loader(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, PyObject *__pyx_v_ROMFile, int __pyx_v_location) {
+static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_34Loader(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, PyObject *__pyx_v_ROMFile, int __pyx_v_location) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -14589,7 +16665,7 @@ static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_32Loader(struct __pyx_obj_7Micro80_
   __Pyx_XDECREF(__pyx_r);
   __pyx_t_2.__pyx_n = 1;
   __pyx_t_2.location = __pyx_v_location;
-  __pyx_t_1 = __pyx_vtabptr_7Micro80_3CPU_CPU->Loader(__pyx_v_self, __pyx_v_ROMFile, 1, &__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 392, __pyx_L1_error)
+  __pyx_t_1 = __pyx_vtabptr_7Micro80_3CPU_CPU->Loader(__pyx_v_self, __pyx_v_ROMFile, 1, &__pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 466, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
@@ -16557,15 +18633,15 @@ static int __pyx_pf_7Micro80_3CPU_3CPU_6render_4__del__(struct __pyx_obj_7Micro8
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_35__reduce_cython__(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_37__reduce_cython__(PyObject *__pyx_v_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_7Micro80_3CPU_3CPU_35__reduce_cython__ = {"__reduce_cython__", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_7Micro80_3CPU_3CPU_35__reduce_cython__, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_35__reduce_cython__(PyObject *__pyx_v_self, 
+static PyMethodDef __pyx_mdef_7Micro80_3CPU_3CPU_37__reduce_cython__ = {"__reduce_cython__", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_7Micro80_3CPU_3CPU_37__reduce_cython__, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_37__reduce_cython__(PyObject *__pyx_v_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -16590,14 +18666,14 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   if (unlikely(__pyx_nargs > 0)) {
     __Pyx_RaiseArgtupleInvalid("__reduce_cython__", 1, 0, 0, __pyx_nargs); return NULL;}
   if (unlikely(__pyx_kwds) && __Pyx_NumKwargs_FASTCALL(__pyx_kwds) && unlikely(!__Pyx_CheckKeywordStrings(__pyx_kwds, "__reduce_cython__", 0))) return NULL;
-  __pyx_r = __pyx_pf_7Micro80_3CPU_3CPU_34__reduce_cython__(((struct __pyx_obj_7Micro80_3CPU_CPU *)__pyx_v_self));
+  __pyx_r = __pyx_pf_7Micro80_3CPU_3CPU_36__reduce_cython__(((struct __pyx_obj_7Micro80_3CPU_CPU *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_34__reduce_cython__(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self) {
+static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_36__reduce_cython__(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self) {
   PyObject *__pyx_v_state = 0;
   PyObject *__pyx_v__dict = 0;
   int __pyx_v_use_setstate;
@@ -16981,15 +19057,15 @@ static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_34__reduce_cython__(struct __pyx_ob
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_37__setstate_cython__(PyObject *__pyx_v_self, 
+static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_39__setstate_cython__(PyObject *__pyx_v_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-static PyMethodDef __pyx_mdef_7Micro80_3CPU_3CPU_37__setstate_cython__ = {"__setstate_cython__", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_7Micro80_3CPU_3CPU_37__setstate_cython__, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
-static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_37__setstate_cython__(PyObject *__pyx_v_self, 
+static PyMethodDef __pyx_mdef_7Micro80_3CPU_3CPU_39__setstate_cython__ = {"__setstate_cython__", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_7Micro80_3CPU_3CPU_39__setstate_cython__, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0};
+static PyObject *__pyx_pw_7Micro80_3CPU_3CPU_39__setstate_cython__(PyObject *__pyx_v_self, 
 #if CYTHON_METH_FASTCALL
 PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 #else
@@ -17063,7 +19139,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_7Micro80_3CPU_3CPU_36__setstate_cython__(((struct __pyx_obj_7Micro80_3CPU_CPU *)__pyx_v_self), __pyx_v___pyx_state);
+  __pyx_r = __pyx_pf_7Micro80_3CPU_3CPU_38__setstate_cython__(((struct __pyx_obj_7Micro80_3CPU_CPU *)__pyx_v_self), __pyx_v___pyx_state);
 
   /* function exit code */
   {
@@ -17076,7 +19152,7 @@ PyObject *__pyx_args, PyObject *__pyx_kwds
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_36__setstate_cython__(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, PyObject *__pyx_v___pyx_state) {
+static PyObject *__pyx_pf_7Micro80_3CPU_3CPU_38__setstate_cython__(struct __pyx_obj_7Micro80_3CPU_CPU *__pyx_v_self, PyObject *__pyx_v___pyx_state) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -17271,7 +19347,7 @@ static PyObject *__pyx_pf_7Micro80_3CPU___pyx_unpickle_CPU(CYTHON_UNUSED PyObjec
  */
   __pyx_t_1 = __Pyx_PyInt_From_long(__pyx_v___pyx_checksum); if (unlikely(!__pyx_t_1)) __PYX_ERR(2, 4, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = (__Pyx_PySequence_ContainsTF(__pyx_t_1, __pyx_tuple__18, Py_NE)); if (unlikely((__pyx_t_2 < 0))) __PYX_ERR(2, 4, __pyx_L1_error)
+  __pyx_t_2 = (__Pyx_PySequence_ContainsTF(__pyx_t_1, __pyx_tuple__25, Py_NE)); if (unlikely((__pyx_t_2 < 0))) __PYX_ERR(2, 4, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   if (__pyx_t_2) {
 
@@ -18198,8 +20274,8 @@ static int __pyx_setprop_7Micro80_3CPU_3CPU_render(PyObject *o, PyObject *v, CYT
 }
 
 static PyMethodDef __pyx_methods_7Micro80_3CPU_CPU[] = {
-  {"__reduce_cython__", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_7Micro80_3CPU_3CPU_35__reduce_cython__, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0},
-  {"__setstate_cython__", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_7Micro80_3CPU_3CPU_37__setstate_cython__, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0},
+  {"__reduce_cython__", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_7Micro80_3CPU_3CPU_37__reduce_cython__, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0},
+  {"__setstate_cython__", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_7Micro80_3CPU_3CPU_39__setstate_cython__, __Pyx_METH_FASTCALL|METH_KEYWORDS, 0},
   {0, 0, 0, 0}
 };
 
@@ -18348,21 +20424,24 @@ static PyMethodDef __pyx_methods[] = {
 static int __Pyx_CreateStringTabAndInitStrings(void) {
   __Pyx_StringTabEntry __pyx_string_tab[] = {
     {&__pyx_kp_s_, __pyx_k_, sizeof(__pyx_k_), 0, 0, 1, 0},
-    {&__pyx_kp_u_A, __pyx_k_A, sizeof(__pyx_k_A), 0, 1, 0, 0},
+    {&__pyx_n_s_A, __pyx_k_A, sizeof(__pyx_k_A), 0, 0, 1, 1},
     {&__pyx_n_s_ADD, __pyx_k_ADD, sizeof(__pyx_k_ADD), 0, 0, 1, 1},
     {&__pyx_n_s_AND, __pyx_k_AND, sizeof(__pyx_k_AND), 0, 0, 1, 1},
-    {&__pyx_n_s_A_2, __pyx_k_A_2, sizeof(__pyx_k_A_2), 0, 0, 1, 1},
-    {&__pyx_kp_u_Ad, __pyx_k_Ad, sizeof(__pyx_k_Ad), 0, 1, 0, 0},
-    {&__pyx_n_s_Ad_2, __pyx_k_Ad_2, sizeof(__pyx_k_Ad_2), 0, 0, 1, 1},
+    {&__pyx_kp_u_Accumulator, __pyx_k_Accumulator, sizeof(__pyx_k_Accumulator), 0, 1, 0, 0},
+    {&__pyx_n_s_Ad, __pyx_k_Ad, sizeof(__pyx_k_Ad), 0, 0, 1, 1},
+    {&__pyx_kp_u_Address, __pyx_k_Address, sizeof(__pyx_k_Address), 0, 1, 0, 0},
     {&__pyx_kp_u_B, __pyx_k_B, sizeof(__pyx_k_B), 0, 1, 0, 0},
     {&__pyx_n_s_B_2, __pyx_k_B_2, sizeof(__pyx_k_B_2), 0, 0, 1, 1},
     {&__pyx_kp_u_C, __pyx_k_C, sizeof(__pyx_k_C), 0, 1, 0, 0},
     {&__pyx_n_s_CALL, __pyx_k_CALL, sizeof(__pyx_k_CALL), 0, 0, 1, 1},
+    {&__pyx_n_s_CLS, __pyx_k_CLS, sizeof(__pyx_k_CLS), 0, 0, 1, 1},
     {&__pyx_n_s_CMP, __pyx_k_CMP, sizeof(__pyx_k_CMP), 0, 0, 1, 1},
     {&__pyx_n_s_CPU, __pyx_k_CPU, sizeof(__pyx_k_CPU), 0, 0, 1, 1},
+    {&__pyx_kp_s_CPU_Initialized, __pyx_k_CPU_Initialized, sizeof(__pyx_k_CPU_Initialized), 0, 0, 1, 0},
     {&__pyx_n_s_CPU_Loader, __pyx_k_CPU_Loader, sizeof(__pyx_k_CPU_Loader), 0, 0, 1, 1},
     {&__pyx_n_s_CPU___reduce_cython, __pyx_k_CPU___reduce_cython, sizeof(__pyx_k_CPU___reduce_cython), 0, 0, 1, 1},
     {&__pyx_n_s_CPU___setstate_cython, __pyx_k_CPU___setstate_cython, sizeof(__pyx_k_CPU___setstate_cython), 0, 0, 1, 1},
+    {&__pyx_n_s_CPU__handleEvents, __pyx_k_CPU__handleEvents, sizeof(__pyx_k_CPU__handleEvents), 0, 0, 1, 1},
     {&__pyx_n_s_CPU_alu, __pyx_k_CPU_alu, sizeof(__pyx_k_CPU_alu), 0, 0, 1, 1},
     {&__pyx_n_s_CPU_call, __pyx_k_CPU_call, sizeof(__pyx_k_CPU_call), 0, 0, 1, 1},
     {&__pyx_n_s_CPU_decrement, __pyx_k_CPU_decrement, sizeof(__pyx_k_CPU_decrement), 0, 0, 1, 1},
@@ -18379,13 +20458,14 @@ static int __Pyx_CreateStringTabAndInitStrings(void) {
     {&__pyx_n_s_CPU_runProgram, __pyx_k_CPU_runProgram, sizeof(__pyx_k_CPU_runProgram), 0, 0, 1, 1},
     {&__pyx_n_s_CPU_store, __pyx_k_CPU_store, sizeof(__pyx_k_CPU_store), 0, 0, 1, 1},
     {&__pyx_n_s_C_2, __pyx_k_C_2, sizeof(__pyx_k_C_2), 0, 0, 1, 1},
-    {&__pyx_kp_u_Current_Opcode, __pyx_k_Current_Opcode, sizeof(__pyx_k_Current_Opcode), 0, 1, 0, 0},
-    {&__pyx_kp_u_Current_Operand, __pyx_k_Current_Operand, sizeof(__pyx_k_Current_Operand), 0, 1, 0, 0},
+    {&__pyx_kp_u_Current_Address, __pyx_k_Current_Address, sizeof(__pyx_k_Current_Address), 0, 1, 0, 0},
+    {&__pyx_kp_u_Current_Data, __pyx_k_Current_Data, sizeof(__pyx_k_Current_Data), 0, 1, 0, 0},
     {&__pyx_kp_u_D, __pyx_k_D, sizeof(__pyx_k_D), 0, 1, 0, 0},
     {&__pyx_n_s_DC, __pyx_k_DC, sizeof(__pyx_k_DC), 0, 0, 1, 1},
     {&__pyx_n_s_DEC, __pyx_k_DEC, sizeof(__pyx_k_DEC), 0, 0, 1, 1},
     {&__pyx_n_s_DIV, __pyx_k_DIV, sizeof(__pyx_k_DIV), 0, 0, 1, 1},
     {&__pyx_n_s_D_2, __pyx_k_D_2, sizeof(__pyx_k_D_2), 0, 0, 1, 1},
+    {&__pyx_kp_s_Debug_Mode_Enabled, __pyx_k_Debug_Mode_Enabled, sizeof(__pyx_k_Debug_Mode_Enabled), 0, 0, 1, 0},
     {&__pyx_n_s_Display, __pyx_k_Display, sizeof(__pyx_k_Display), 0, 0, 1, 1},
     {&__pyx_kp_u_Display_2, __pyx_k_Display_2, sizeof(__pyx_k_Display_2), 0, 1, 0, 0},
     {&__pyx_kp_u_E, __pyx_k_E, sizeof(__pyx_k_E), 0, 1, 0, 0},
@@ -18402,6 +20482,7 @@ static int __Pyx_CreateStringTabAndInitStrings(void) {
     {&__pyx_n_s_IC, __pyx_k_IC, sizeof(__pyx_k_IC), 0, 0, 1, 1},
     {&__pyx_n_s_INC, __pyx_k_INC, sizeof(__pyx_k_INC), 0, 0, 1, 1},
     {&__pyx_kp_s_Incompatible_checksums_0x_x_vs_0, __pyx_k_Incompatible_checksums_0x_x_vs_0, sizeof(__pyx_k_Incompatible_checksums_0x_x_vs_0), 0, 0, 1, 0},
+    {&__pyx_kp_u_Input, __pyx_k_Input, sizeof(__pyx_k_Input), 0, 1, 0, 0},
     {&__pyx_kp_u_Invalid_Opcode, __pyx_k_Invalid_Opcode, sizeof(__pyx_k_Invalid_Opcode), 0, 1, 0, 0},
     {&__pyx_kp_s_Invalid_Opcode_2, __pyx_k_Invalid_Opcode_2, sizeof(__pyx_k_Invalid_Opcode_2), 0, 0, 1, 0},
     {&__pyx_kp_s_Invalid_Register, __pyx_k_Invalid_Register, sizeof(__pyx_k_Invalid_Register), 0, 0, 1, 0},
@@ -18413,6 +20494,7 @@ static int __Pyx_CreateStringTabAndInitStrings(void) {
     {&__pyx_n_s_LEZ, __pyx_k_LEZ, sizeof(__pyx_k_LEZ), 0, 0, 1, 1},
     {&__pyx_n_s_LT, __pyx_k_LT, sizeof(__pyx_k_LT), 0, 0, 1, 1},
     {&__pyx_n_s_LZ, __pyx_k_LZ, sizeof(__pyx_k_LZ), 0, 0, 1, 1},
+    {&__pyx_kp_u_Loaded, __pyx_k_Loaded, sizeof(__pyx_k_Loaded), 0, 1, 0, 0},
     {&__pyx_n_s_Loader, __pyx_k_Loader, sizeof(__pyx_k_Loader), 0, 0, 1, 1},
     {&__pyx_n_s_MOD, __pyx_k_MOD, sizeof(__pyx_k_MOD), 0, 0, 1, 1},
     {&__pyx_n_s_MOV, __pyx_k_MOV, sizeof(__pyx_k_MOV), 0, 0, 1, 1},
@@ -18431,43 +20513,66 @@ static int __Pyx_CreateStringTabAndInitStrings(void) {
     {&__pyx_n_s_NZ, __pyx_k_NZ, sizeof(__pyx_k_NZ), 0, 0, 1, 1},
     {&__pyx_n_s_OR, __pyx_k_OR, sizeof(__pyx_k_OR), 0, 0, 1, 1},
     {&__pyx_n_s_P, __pyx_k_P, sizeof(__pyx_k_P), 0, 0, 1, 1},
-    {&__pyx_kp_u_PC, __pyx_k_PC, sizeof(__pyx_k_PC), 0, 1, 0, 0},
-    {&__pyx_n_s_PC_2, __pyx_k_PC_2, sizeof(__pyx_k_PC_2), 0, 0, 1, 1},
+    {&__pyx_n_s_PC, __pyx_k_PC, sizeof(__pyx_k_PC), 0, 0, 1, 1},
     {&__pyx_n_s_POP, __pyx_k_POP, sizeof(__pyx_k_POP), 0, 0, 1, 1},
     {&__pyx_n_s_POPA, __pyx_k_POPA, sizeof(__pyx_k_POPA), 0, 0, 1, 1},
     {&__pyx_n_s_PUSH, __pyx_k_PUSH, sizeof(__pyx_k_PUSH), 0, 0, 1, 1},
     {&__pyx_n_s_PUSHA, __pyx_k_PUSHA, sizeof(__pyx_k_PUSHA), 0, 0, 1, 1},
     {&__pyx_n_s_Path, __pyx_k_Path, sizeof(__pyx_k_Path), 0, 0, 1, 1},
     {&__pyx_n_s_PickleError, __pyx_k_PickleError, sizeof(__pyx_k_PickleError), 0, 0, 1, 1},
+    {&__pyx_kp_u_Program_Counter, __pyx_k_Program_Counter, sizeof(__pyx_k_Program_Counter), 0, 1, 0, 0},
+    {&__pyx_kp_u_Program_End, __pyx_k_Program_End, sizeof(__pyx_k_Program_End), 0, 1, 0, 0},
+    {&__pyx_kp_s_Program_Running, __pyx_k_Program_Running, sizeof(__pyx_k_Program_Running), 0, 0, 1, 0},
     {&__pyx_n_s_RDir, __pyx_k_RDir, sizeof(__pyx_k_RDir), 0, 0, 1, 1},
     {&__pyx_n_s_RET, __pyx_k_RET, sizeof(__pyx_k_RET), 0, 0, 1, 1},
     {&__pyx_n_s_ROMFile, __pyx_k_ROMFile, sizeof(__pyx_k_ROMFile), 0, 0, 1, 1},
-    {&__pyx_kp_u_Rendered, __pyx_k_Rendered, sizeof(__pyx_k_Rendered), 0, 1, 0, 0},
+    {&__pyx_kp_u_Render_Count, __pyx_k_Render_Count, sizeof(__pyx_k_Render_Count), 0, 1, 0, 0},
     {&__pyx_n_s_Renderer, __pyx_k_Renderer, sizeof(__pyx_k_Renderer), 0, 0, 1, 1},
+    {&__pyx_n_s_SDLK_BACKSPACE, __pyx_k_SDLK_BACKSPACE, sizeof(__pyx_k_SDLK_BACKSPACE), 0, 0, 1, 1},
+    {&__pyx_n_s_SDLK_DOWN, __pyx_k_SDLK_DOWN, sizeof(__pyx_k_SDLK_DOWN), 0, 0, 1, 1},
+    {&__pyx_n_s_SDLK_ESCAPE, __pyx_k_SDLK_ESCAPE, sizeof(__pyx_k_SDLK_ESCAPE), 0, 0, 1, 1},
+    {&__pyx_n_s_SDLK_LEFT, __pyx_k_SDLK_LEFT, sizeof(__pyx_k_SDLK_LEFT), 0, 0, 1, 1},
+    {&__pyx_n_s_SDLK_RETURN, __pyx_k_SDLK_RETURN, sizeof(__pyx_k_SDLK_RETURN), 0, 0, 1, 1},
+    {&__pyx_n_s_SDLK_RIGHT, __pyx_k_SDLK_RIGHT, sizeof(__pyx_k_SDLK_RIGHT), 0, 0, 1, 1},
+    {&__pyx_n_s_SDLK_UP, __pyx_k_SDLK_UP, sizeof(__pyx_k_SDLK_UP), 0, 0, 1, 1},
+    {&__pyx_n_s_SDLK_a, __pyx_k_SDLK_a, sizeof(__pyx_k_SDLK_a), 0, 0, 1, 1},
+    {&__pyx_n_s_SDLK_d, __pyx_k_SDLK_d, sizeof(__pyx_k_SDLK_d), 0, 0, 1, 1},
+    {&__pyx_n_s_SDLK_j, __pyx_k_SDLK_j, sizeof(__pyx_k_SDLK_j), 0, 0, 1, 1},
+    {&__pyx_n_s_SDLK_k, __pyx_k_SDLK_k, sizeof(__pyx_k_SDLK_k), 0, 0, 1, 1},
+    {&__pyx_n_s_SDLK_s, __pyx_k_SDLK_s, sizeof(__pyx_k_SDLK_s), 0, 0, 1, 1},
+    {&__pyx_n_s_SDLK_w, __pyx_k_SDLK_w, sizeof(__pyx_k_SDLK_w), 0, 0, 1, 1},
+    {&__pyx_n_s_SDLK_x, __pyx_k_SDLK_x, sizeof(__pyx_k_SDLK_x), 0, 0, 1, 1},
+    {&__pyx_n_s_SDLK_z, __pyx_k_SDLK_z, sizeof(__pyx_k_SDLK_z), 0, 0, 1, 1},
+    {&__pyx_n_s_SDL_KEYDOWN, __pyx_k_SDL_KEYDOWN, sizeof(__pyx_k_SDL_KEYDOWN), 0, 0, 1, 1},
+    {&__pyx_n_s_SDL_KEYUP, __pyx_k_SDL_KEYUP, sizeof(__pyx_k_SDL_KEYUP), 0, 0, 1, 1},
+    {&__pyx_n_s_SDL_QUIT, __pyx_k_SDL_QUIT, sizeof(__pyx_k_SDL_QUIT), 0, 0, 1, 1},
     {&__pyx_n_s_SHL, __pyx_k_SHL, sizeof(__pyx_k_SHL), 0, 0, 1, 1},
     {&__pyx_n_s_SHR, __pyx_k_SHR, sizeof(__pyx_k_SHR), 0, 0, 1, 1},
     {&__pyx_n_s_SLP, __pyx_k_SLP, sizeof(__pyx_k_SLP), 0, 0, 1, 1},
-    {&__pyx_kp_u_SP, __pyx_k_SP, sizeof(__pyx_k_SP), 0, 1, 0, 0},
-    {&__pyx_n_s_SP_2, __pyx_k_SP_2, sizeof(__pyx_k_SP_2), 0, 0, 1, 1},
+    {&__pyx_n_s_SP, __pyx_k_SP, sizeof(__pyx_k_SP), 0, 0, 1, 1},
     {&__pyx_n_s_ST, __pyx_k_ST, sizeof(__pyx_k_ST), 0, 0, 1, 1},
     {&__pyx_n_s_SUB, __pyx_k_SUB, sizeof(__pyx_k_SUB), 0, 0, 1, 1},
-    {&__pyx_kp_u_Stack, __pyx_k_Stack, sizeof(__pyx_k_Stack), 0, 1, 0, 0},
+    {&__pyx_kp_u_Stack_Pointer, __pyx_k_Stack_Pointer, sizeof(__pyx_k_Stack_Pointer), 0, 1, 0, 0},
+    {&__pyx_kp_u_Ticks, __pyx_k_Ticks, sizeof(__pyx_k_Ticks), 0, 1, 0, 0},
     {&__pyx_n_s_ValueError, __pyx_k_ValueError, sizeof(__pyx_k_ValueError), 0, 0, 1, 1},
+    {&__pyx_kp_u_Variables, __pyx_k_Variables, sizeof(__pyx_k_Variables), 0, 1, 0, 0},
     {&__pyx_n_s_WAdr, __pyx_k_WAdr, sizeof(__pyx_k_WAdr), 0, 0, 1, 1},
     {&__pyx_n_s_WDir, __pyx_k_WDir, sizeof(__pyx_k_WDir), 0, 0, 1, 1},
     {&__pyx_n_s_Window, __pyx_k_Window, sizeof(__pyx_k_Window), 0, 0, 1, 1},
     {&__pyx_n_s_XOR, __pyx_k_XOR, sizeof(__pyx_k_XOR), 0, 0, 1, 1},
     {&__pyx_n_s_Z, __pyx_k_Z, sizeof(__pyx_k_Z), 0, 0, 1, 1},
-    {&__pyx_kp_s__17, __pyx_k__17, sizeof(__pyx_k__17), 0, 0, 1, 0},
-    {&__pyx_kp_u__19, __pyx_k__19, sizeof(__pyx_k__19), 0, 1, 0, 0},
     {&__pyx_kp_s__2, __pyx_k__2, sizeof(__pyx_k__2), 0, 0, 1, 0},
-    {&__pyx_n_s__20, __pyx_k__20, sizeof(__pyx_k__20), 0, 0, 1, 1},
-    {&__pyx_n_s__51, __pyx_k__51, sizeof(__pyx_k__51), 0, 0, 1, 1},
+    {&__pyx_kp_s__24, __pyx_k__24, sizeof(__pyx_k__24), 0, 0, 1, 0},
+    {&__pyx_kp_u__26, __pyx_k__26, sizeof(__pyx_k__26), 0, 1, 0, 0},
+    {&__pyx_n_s__27, __pyx_k__27, sizeof(__pyx_k__27), 0, 0, 1, 1},
+    {&__pyx_n_s__59, __pyx_k__59, sizeof(__pyx_k__59), 0, 0, 1, 1},
+    {&__pyx_kp_u__9, __pyx_k__9, sizeof(__pyx_k__9), 0, 1, 0, 0},
     {&__pyx_n_s_alu, __pyx_k_alu, sizeof(__pyx_k_alu), 0, 0, 1, 1},
     {&__pyx_n_s_append, __pyx_k_append, sizeof(__pyx_k_append), 0, 0, 1, 1},
     {&__pyx_n_s_asyncio_coroutines, __pyx_k_asyncio_coroutines, sizeof(__pyx_k_asyncio_coroutines), 0, 0, 1, 1},
     {&__pyx_n_s_base, __pyx_k_base, sizeof(__pyx_k_base), 0, 0, 1, 1},
     {&__pyx_n_s_call, __pyx_k_call, sizeof(__pyx_k_call), 0, 0, 1, 1},
+    {&__pyx_n_s_clear, __pyx_k_clear, sizeof(__pyx_k_clear), 0, 0, 1, 1},
     {&__pyx_n_s_cline_in_traceback, __pyx_k_cline_in_traceback, sizeof(__pyx_k_cline_in_traceback), 0, 0, 1, 1},
     {&__pyx_n_s_close, __pyx_k_close, sizeof(__pyx_k_close), 0, 0, 1, 1},
     {&__pyx_n_s_curData, __pyx_k_curData, sizeof(__pyx_k_curData), 0, 0, 1, 1},
@@ -18482,15 +20587,20 @@ static int __Pyx_CreateStringTabAndInitStrings(void) {
     {&__pyx_n_s_fetch, __pyx_k_fetch, sizeof(__pyx_k_fetch), 0, 0, 1, 1},
     {&__pyx_n_s_file, __pyx_k_file, sizeof(__pyx_k_file), 0, 0, 1, 1},
     {&__pyx_kp_u_gc, __pyx_k_gc, sizeof(__pyx_k_gc), 0, 1, 0, 0},
+    {&__pyx_n_s_get_events, __pyx_k_get_events, sizeof(__pyx_k_get_events), 0, 0, 1, 1},
     {&__pyx_n_s_getstate, __pyx_k_getstate, sizeof(__pyx_k_getstate), 0, 0, 1, 1},
+    {&__pyx_n_s_handleEvents, __pyx_k_handleEvents, sizeof(__pyx_k_handleEvents), 0, 0, 1, 1},
     {&__pyx_n_s_import, __pyx_k_import, sizeof(__pyx_k_import), 0, 0, 1, 1},
     {&__pyx_n_s_increment, __pyx_k_increment, sizeof(__pyx_k_increment), 0, 0, 1, 1},
     {&__pyx_n_s_init, __pyx_k_init, sizeof(__pyx_k_init), 0, 0, 1, 1},
     {&__pyx_n_s_initializing, __pyx_k_initializing, sizeof(__pyx_k_initializing), 0, 0, 1, 1},
     {&__pyx_kp_s_instructions_txt, __pyx_k_instructions_txt, sizeof(__pyx_k_instructions_txt), 0, 0, 1, 0},
+    {&__pyx_kp_u_into_memory, __pyx_k_into_memory, sizeof(__pyx_k_into_memory), 0, 1, 0, 0},
     {&__pyx_n_s_is_coroutine, __pyx_k_is_coroutine, sizeof(__pyx_k_is_coroutine), 0, 0, 1, 1},
     {&__pyx_kp_u_isenabled, __pyx_k_isenabled, sizeof(__pyx_k_isenabled), 0, 1, 0, 0},
     {&__pyx_n_s_jump, __pyx_k_jump, sizeof(__pyx_k_jump), 0, 0, 1, 1},
+    {&__pyx_n_s_key, __pyx_k_key, sizeof(__pyx_k_key), 0, 0, 1, 1},
+    {&__pyx_n_s_keysym, __pyx_k_keysym, sizeof(__pyx_k_keysym), 0, 0, 1, 1},
     {&__pyx_n_s_load, __pyx_k_load, sizeof(__pyx_k_load), 0, 0, 1, 1},
     {&__pyx_n_s_location, __pyx_k_location, sizeof(__pyx_k_location), 0, 0, 1, 1},
     {&__pyx_n_s_main, __pyx_k_main, sizeof(__pyx_k_main), 0, 0, 1, 1},
@@ -18534,6 +20644,7 @@ static int __Pyx_CreateStringTabAndInitStrings(void) {
     {&__pyx_n_s_setstate, __pyx_k_setstate, sizeof(__pyx_k_setstate), 0, 0, 1, 1},
     {&__pyx_n_s_setstate_cython, __pyx_k_setstate_cython, sizeof(__pyx_k_setstate_cython), 0, 0, 1, 1},
     {&__pyx_n_s_show, __pyx_k_show, sizeof(__pyx_k_show), 0, 0, 1, 1},
+    {&__pyx_n_s_sleep, __pyx_k_sleep, sizeof(__pyx_k_sleep), 0, 0, 1, 1},
     {&__pyx_n_s_spec, __pyx_k_spec, sizeof(__pyx_k_spec), 0, 0, 1, 1},
     {&__pyx_n_s_split, __pyx_k_split, sizeof(__pyx_k_split), 0, 0, 1, 1},
     {&__pyx_n_s_stackPointer, __pyx_k_stackPointer, sizeof(__pyx_k_stackPointer), 0, 0, 1, 1},
@@ -18541,12 +20652,12 @@ static int __Pyx_CreateStringTabAndInitStrings(void) {
     {&__pyx_n_s_store, __pyx_k_store, sizeof(__pyx_k_store), 0, 0, 1, 1},
     {&__pyx_kp_s_stringsource, __pyx_k_stringsource, sizeof(__pyx_k_stringsource), 0, 0, 1, 0},
     {&__pyx_n_s_strip, __pyx_k_strip, sizeof(__pyx_k_strip), 0, 0, 1, 1},
+    {&__pyx_n_s_sym, __pyx_k_sym, sizeof(__pyx_k_sym), 0, 0, 1, 1},
     {&__pyx_n_s_test, __pyx_k_test, sizeof(__pyx_k_test), 0, 0, 1, 1},
     {&__pyx_n_s_time, __pyx_k_time, sizeof(__pyx_k_time), 0, 0, 1, 1},
-    {&__pyx_kp_u_times_in, __pyx_k_times_in, sizeof(__pyx_k_times_in), 0, 1, 0, 0},
+    {&__pyx_n_s_type, __pyx_k_type, sizeof(__pyx_k_type), 0, 0, 1, 1},
     {&__pyx_n_s_update, __pyx_k_update, sizeof(__pyx_k_update), 0, 0, 1, 1},
     {&__pyx_n_s_use_setstate, __pyx_k_use_setstate, sizeof(__pyx_k_use_setstate), 0, 0, 1, 1},
-    {&__pyx_kp_u_variable, __pyx_k_variable, sizeof(__pyx_k_variable), 0, 1, 0, 0},
     {&__pyx_n_s_writeAddress, __pyx_k_writeAddress, sizeof(__pyx_k_writeAddress), 0, 0, 1, 1},
     {0, 0, 0, 0, 0, 0, 0}
   };
@@ -18555,9 +20666,9 @@ static int __Pyx_CreateStringTabAndInitStrings(void) {
 /* #### Code section: cached_builtins ### */
 static CYTHON_SMALL_CODE int __Pyx_InitCachedBuiltins(void) {
   __pyx_builtin_open = __Pyx_GetBuiltinName(__pyx_n_s_open); if (!__pyx_builtin_open) __PYX_ERR(0, 28, __pyx_L1_error)
-  __pyx_builtin_print = __Pyx_GetBuiltinName(__pyx_n_s_print); if (!__pyx_builtin_print) __PYX_ERR(0, 70, __pyx_L1_error)
-  __pyx_builtin_ValueError = __Pyx_GetBuiltinName(__pyx_n_s_ValueError); if (!__pyx_builtin_ValueError) __PYX_ERR(0, 89, __pyx_L1_error)
-  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(0, 90, __pyx_L1_error)
+  __pyx_builtin_print = __Pyx_GetBuiltinName(__pyx_n_s_print); if (!__pyx_builtin_print) __PYX_ERR(0, 49, __pyx_L1_error)
+  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(0, 61, __pyx_L1_error)
+  __pyx_builtin_ValueError = __Pyx_GetBuiltinName(__pyx_n_s_ValueError); if (!__pyx_builtin_ValueError) __PYX_ERR(0, 107, __pyx_L1_error)
   return 0;
   __pyx_L1_error:;
   return -1;
@@ -18582,137 +20693,203 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_GOTREF(__pyx_tuple__4);
   __Pyx_GIVEREF(__pyx_tuple__4);
 
-  /* "Micro80/CPU.py":66
+  /* "Micro80/CPU.py":49
+ *         self.display = Display(self.memory, 0xC000, 0xFFFF, self.render, self.window)
+ *         self.window.show()
+ *         print("CPU Initialized...")             # <<<<<<<<<<<<<<
+ *         if self.debug:
+ *             print("Debug Mode Enabled...")
+ */
+  __pyx_tuple__5 = PyTuple_Pack(1, __pyx_kp_s_CPU_Initialized); if (unlikely(!__pyx_tuple__5)) __PYX_ERR(0, 49, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__5);
+  __Pyx_GIVEREF(__pyx_tuple__5);
+
+  /* "Micro80/CPU.py":51
+ *         print("CPU Initialized...")
+ *         if self.debug:
+ *             print("Debug Mode Enabled...")             # <<<<<<<<<<<<<<
+ * 
+ *     def runProgram(self):
+ */
+  __pyx_tuple__6 = PyTuple_Pack(1, __pyx_kp_s_Debug_Mode_Enabled); if (unlikely(!__pyx_tuple__6)) __PYX_ERR(0, 51, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__6);
+  __Pyx_GIVEREF(__pyx_tuple__6);
+
+  /* "Micro80/CPU.py":67
+ *                     else print(x, self.memory.readAddress(x))
+ *                 )
+ *         print("Program Running....")             # <<<<<<<<<<<<<<
+ *         while self.memory.readAddress(self.RunStatus) == 0x0000:
+ *             if self.sleepTimer != 0:
+ */
+  __pyx_tuple__7 = PyTuple_Pack(1, __pyx_kp_s_Program_Running); if (unlikely(!__pyx_tuple__7)) __PYX_ERR(0, 67, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__7);
+  __Pyx_GIVEREF(__pyx_tuple__7);
+
+  /* "Micro80/CPU.py":79
  *                 self.render.present()
  *                 self.window.refresh()
  *                 self.memory.writeAddress(0x400A, 0)             # <<<<<<<<<<<<<<
  *                 renderLocations.append(self.programCounter)
  *                 renderAmount += 1
  */
-  __pyx_tuple__5 = PyTuple_Pack(2, __pyx_int_16394, __pyx_int_0); if (unlikely(!__pyx_tuple__5)) __PYX_ERR(0, 66, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__5);
-  __Pyx_GIVEREF(__pyx_tuple__5);
+  __pyx_tuple__8 = PyTuple_Pack(2, __pyx_int_16394, __pyx_int_0); if (unlikely(!__pyx_tuple__8)) __PYX_ERR(0, 79, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__8);
+  __Pyx_GIVEREF(__pyx_tuple__8);
 
-  /* "Micro80/CPU.py":76
- *                     f"PC: {self.programCounter}, SP: {self.stackPointer}, A: {self.A}, B: {self.B}, C: {self.C}, D: {self.D}, E: {self.E}, F: {self.F}, Ad: {self.adr}"
- *                 )
- *                 print(f"variable:\n{self.memory.memory[0x4400:0x4406]}")             # <<<<<<<<<<<<<<
- *                 print(f"Stack: {self.memory.memory[0x5400:0x5406]}")
- *                 print(f"Display: {self.memory.memory[0xC000:0xC006]}")
+  /* "Micro80/CPU.py":96
+ *                 f"Input: {self.memory.readAddress(0x400B)}, {self.memory.readAddress(0x400C)}, {self.memory.readAddress(0x400D)}"
+ *             )
+ *             print(f"Variables: {self.memory.memory[0x4400:0x440F]}")             # <<<<<<<<<<<<<<
+ *             print(f"Display: {self.memory.memory[0xC000:0xC00F]}")
+ *             print(f"Current Address: {self.adr}, Current Data: {self.memory.curData}")
  */
-  __pyx_slice__6 = PySlice_New(__pyx_int_17408, __pyx_int_17414, Py_None); if (unlikely(!__pyx_slice__6)) __PYX_ERR(0, 76, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_slice__6);
-  __Pyx_GIVEREF(__pyx_slice__6);
+  __pyx_slice__10 = PySlice_New(__pyx_int_17408, __pyx_int_17423, Py_None); if (unlikely(!__pyx_slice__10)) __PYX_ERR(0, 96, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_slice__10);
+  __Pyx_GIVEREF(__pyx_slice__10);
 
-  /* "Micro80/CPU.py":77
- *                 )
- *                 print(f"variable:\n{self.memory.memory[0x4400:0x4406]}")
- *                 print(f"Stack: {self.memory.memory[0x5400:0x5406]}")             # <<<<<<<<<<<<<<
- *                 print(f"Display: {self.memory.memory[0xC000:0xC006]}")
- *                 print(f"Jump Count: {self.jumpCount}")
+  /* "Micro80/CPU.py":97
+ *             )
+ *             print(f"Variables: {self.memory.memory[0x4400:0x440F]}")
+ *             print(f"Display: {self.memory.memory[0xC000:0xC00F]}")             # <<<<<<<<<<<<<<
+ *             print(f"Current Address: {self.adr}, Current Data: {self.memory.curData}")
+ *             print(f"Program End.")
  */
-  __pyx_slice__7 = PySlice_New(__pyx_int_21504, __pyx_int_21510, Py_None); if (unlikely(!__pyx_slice__7)) __PYX_ERR(0, 77, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_slice__7);
-  __Pyx_GIVEREF(__pyx_slice__7);
+  __pyx_slice__11 = PySlice_New(__pyx_int_49152, __pyx_int_49167, Py_None); if (unlikely(!__pyx_slice__11)) __PYX_ERR(0, 97, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_slice__11);
+  __Pyx_GIVEREF(__pyx_slice__11);
 
-  /* "Micro80/CPU.py":78
- *                 print(f"variable:\n{self.memory.memory[0x4400:0x4406]}")
- *                 print(f"Stack: {self.memory.memory[0x5400:0x5406]}")
- *                 print(f"Display: {self.memory.memory[0xC000:0xC006]}")             # <<<<<<<<<<<<<<
- *                 print(f"Jump Count: {self.jumpCount}")
- *         if debug:
+  /* "Micro80/CPU.py":99
+ *             print(f"Display: {self.memory.memory[0xC000:0xC00F]}")
+ *             print(f"Current Address: {self.adr}, Current Data: {self.memory.curData}")
+ *             print(f"Program End.")             # <<<<<<<<<<<<<<
+ * 
+ *     def fetch(self):
  */
-  __pyx_slice__8 = PySlice_New(__pyx_int_49152, __pyx_int_49158, Py_None); if (unlikely(!__pyx_slice__8)) __PYX_ERR(0, 78, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_slice__8);
-  __Pyx_GIVEREF(__pyx_slice__8);
+  __pyx_tuple__12 = PyTuple_Pack(1, __pyx_kp_u_Program_End); if (unlikely(!__pyx_tuple__12)) __PYX_ERR(0, 99, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__12);
+  __Pyx_GIVEREF(__pyx_tuple__12);
 
-  /* "Micro80/CPU.py":89
+  /* "Micro80/CPU.py":107
  *             self.programCounter += 1
  *         else:
  *             raise ValueError("Memory Overflow")             # <<<<<<<<<<<<<<
- *         singleOpcode = [0x0000, 0x002D] + [x for x in range(0x0035, 0x0046)] + [0x0049]
- *         if self.curOpcode not in singleOpcode:
+ *         singleOpcode = (
+ *             [0x0000, 0x002D] + [x for x in range(0x0035, 0x0046)] + [0x0049, 0x004A]
  */
-  __pyx_tuple__9 = PyTuple_Pack(1, __pyx_kp_s_Memory_Overflow); if (unlikely(!__pyx_tuple__9)) __PYX_ERR(0, 89, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__9);
-  __Pyx_GIVEREF(__pyx_tuple__9);
+  __pyx_tuple__13 = PyTuple_Pack(1, __pyx_kp_s_Memory_Overflow); if (unlikely(!__pyx_tuple__13)) __PYX_ERR(0, 107, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__13);
+  __Pyx_GIVEREF(__pyx_tuple__13);
 
-  /* "Micro80/CPU.py":110
+  /* "Micro80/CPU.py":163
+ *                         == DPadKeys[event.key.keysym.sym]
+ *                     ):
+ *                         self.memory.writeAddress(0x400B, 0x0000)             # <<<<<<<<<<<<<<
+ *                     else:
+ *                         self.memory.writeAddress(0x400C, 0x0000)
+ */
+  __pyx_tuple__14 = PyTuple_Pack(2, __pyx_int_16395, __pyx_int_0); if (unlikely(!__pyx_tuple__14)) __PYX_ERR(0, 163, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__14);
+  __Pyx_GIVEREF(__pyx_tuple__14);
+
+  /* "Micro80/CPU.py":165
+ *                         self.memory.writeAddress(0x400B, 0x0000)
+ *                     else:
+ *                         self.memory.writeAddress(0x400C, 0x0000)             # <<<<<<<<<<<<<<
+ *                 if event.key.keysym.sym in ActionKeys:
+ *                     self.memory.writeAddress(0x400D, 0x0000)
+ */
+  __pyx_tuple__15 = PyTuple_Pack(2, __pyx_int_16396, __pyx_int_0); if (unlikely(!__pyx_tuple__15)) __PYX_ERR(0, 165, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__15);
+  __Pyx_GIVEREF(__pyx_tuple__15);
+
+  /* "Micro80/CPU.py":167
+ *                         self.memory.writeAddress(0x400C, 0x0000)
+ *                 if event.key.keysym.sym in ActionKeys:
+ *                     self.memory.writeAddress(0x400D, 0x0000)             # <<<<<<<<<<<<<<
+ * 
+ *     def execute(self, opcode, operands):
+ */
+  __pyx_tuple__16 = PyTuple_Pack(2, __pyx_int_16397, __pyx_int_0); if (unlikely(!__pyx_tuple__16)) __PYX_ERR(0, 167, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__16);
+  __Pyx_GIVEREF(__pyx_tuple__16);
+
+  /* "Micro80/CPU.py":180
  *         elif instructions[opcode] == "HLT":
  *             self.memory.writeAddress(self.RunStatus, 0x0001)
  *         elif instructions[opcode][0:2] == "LD":             # <<<<<<<<<<<<<<
  *             self.load(instructions[opcode][2:], operands)
  *         elif instructions[opcode][0:2] == "ST":
  */
-  __pyx_slice__10 = PySlice_New(__pyx_int_0, __pyx_int_2, Py_None); if (unlikely(!__pyx_slice__10)) __PYX_ERR(0, 110, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_slice__10);
-  __Pyx_GIVEREF(__pyx_slice__10);
+  __pyx_slice__17 = PySlice_New(__pyx_int_0, __pyx_int_2, Py_None); if (unlikely(!__pyx_slice__17)) __PYX_ERR(0, 180, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_slice__17);
+  __Pyx_GIVEREF(__pyx_slice__17);
 
-  /* "Micro80/CPU.py":111
+  /* "Micro80/CPU.py":181
  *             self.memory.writeAddress(self.RunStatus, 0x0001)
  *         elif instructions[opcode][0:2] == "LD":
  *             self.load(instructions[opcode][2:], operands)             # <<<<<<<<<<<<<<
  *         elif instructions[opcode][0:2] == "ST":
  *             self.store(instructions[opcode][2:], operands)
  */
-  __pyx_slice__11 = PySlice_New(__pyx_int_2, Py_None, Py_None); if (unlikely(!__pyx_slice__11)) __PYX_ERR(0, 111, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_slice__11);
-  __Pyx_GIVEREF(__pyx_slice__11);
+  __pyx_slice__18 = PySlice_New(__pyx_int_2, Py_None, Py_None); if (unlikely(!__pyx_slice__18)) __PYX_ERR(0, 181, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_slice__18);
+  __Pyx_GIVEREF(__pyx_slice__18);
 
-  /* "Micro80/CPU.py":130
+  /* "Micro80/CPU.py":200
  *             self.alu(instructions[opcode], operands)
  *         elif instructions[opcode][0] == "J":
  *             self.jump(instructions[opcode][1:], operands)             # <<<<<<<<<<<<<<
  *         elif instructions[opcode] == "CALL":
  *             self.call(operands)
  */
-  __pyx_slice__12 = PySlice_New(__pyx_int_1, Py_None, Py_None); if (unlikely(!__pyx_slice__12)) __PYX_ERR(0, 130, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_slice__12);
-  __Pyx_GIVEREF(__pyx_slice__12);
+  __pyx_slice__19 = PySlice_New(__pyx_int_1, Py_None, Py_None); if (unlikely(!__pyx_slice__19)) __PYX_ERR(0, 200, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_slice__19);
+  __Pyx_GIVEREF(__pyx_slice__19);
 
-  /* "Micro80/CPU.py":155
+  /* "Micro80/CPU.py":225
  *             location = self.memory.readAddress(operands[1])
  *             self.memory.writeAddress(location, data)
  *         elif instructions[opcode][0:3] == "INC" or instructions[opcode][0:2] == "IC":             # <<<<<<<<<<<<<<
  *             if instructions[opcode][0:3] == "INC":
  *                 self.increment(instructions[opcode][3:])
  */
-  __pyx_slice__13 = PySlice_New(__pyx_int_0, __pyx_int_3, Py_None); if (unlikely(!__pyx_slice__13)) __PYX_ERR(0, 155, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_slice__13);
-  __Pyx_GIVEREF(__pyx_slice__13);
+  __pyx_slice__20 = PySlice_New(__pyx_int_0, __pyx_int_3, Py_None); if (unlikely(!__pyx_slice__20)) __PYX_ERR(0, 225, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_slice__20);
+  __Pyx_GIVEREF(__pyx_slice__20);
 
-  /* "Micro80/CPU.py":157
+  /* "Micro80/CPU.py":227
  *         elif instructions[opcode][0:3] == "INC" or instructions[opcode][0:2] == "IC":
  *             if instructions[opcode][0:3] == "INC":
  *                 self.increment(instructions[opcode][3:])             # <<<<<<<<<<<<<<
  *             else:
  *                 if instructions[opcode][2:] == "Ad":
  */
-  __pyx_slice__14 = PySlice_New(__pyx_int_3, Py_None, Py_None); if (unlikely(!__pyx_slice__14)) __PYX_ERR(0, 157, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_slice__14);
-  __Pyx_GIVEREF(__pyx_slice__14);
+  __pyx_slice__21 = PySlice_New(__pyx_int_3, Py_None, Py_None); if (unlikely(!__pyx_slice__21)) __PYX_ERR(0, 227, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_slice__21);
+  __Pyx_GIVEREF(__pyx_slice__21);
 
-  /* "Micro80/CPU.py":162
+  /* "Micro80/CPU.py":232
  *                     self.adr += 1
  *                 else:
  *                     raise ValueError("Invalid Opcode")             # <<<<<<<<<<<<<<
  *         elif instructions[opcode][0:3] == "DEC" or instructions[opcode][0:2] == "DC":
  *             if instructions[opcode][0:3] == "DEC":
  */
-  __pyx_tuple__15 = PyTuple_Pack(1, __pyx_kp_s_Invalid_Opcode_2); if (unlikely(!__pyx_tuple__15)) __PYX_ERR(0, 162, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__15);
-  __Pyx_GIVEREF(__pyx_tuple__15);
+  __pyx_tuple__22 = PyTuple_Pack(1, __pyx_kp_s_Invalid_Opcode_2); if (unlikely(!__pyx_tuple__22)) __PYX_ERR(0, 232, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__22);
+  __Pyx_GIVEREF(__pyx_tuple__22);
 
-  /* "Micro80/CPU.py":241
+  /* "Micro80/CPU.py":315
  *             self.programCounter += 1
  *         else:
  *             raise ValueError("Invalid Register")             # <<<<<<<<<<<<<<
  * 
  *     def decrement(self, register):
  */
-  __pyx_tuple__16 = PyTuple_Pack(1, __pyx_kp_s_Invalid_Register); if (unlikely(!__pyx_tuple__16)) __PYX_ERR(0, 241, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__16);
-  __Pyx_GIVEREF(__pyx_tuple__16);
+  __pyx_tuple__23 = PyTuple_Pack(1, __pyx_kp_s_Invalid_Register); if (unlikely(!__pyx_tuple__23)) __PYX_ERR(0, 315, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__23);
+  __Pyx_GIVEREF(__pyx_tuple__23);
 
   /* "(tree fragment)":4
  *     cdef object __pyx_PickleError
@@ -18721,9 +20898,9 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  *         from pickle import PickleError as __pyx_PickleError
  *         raise __pyx_PickleError, "Incompatible checksums (0x%x vs (0x0169c27, 0xe1076b7, 0xc525858) = (A, B, C, D, E, F, List, RunStatus, adr, curOpcode, curOperand, debug, display, instructionTable, instructions, jumpCount, memory, programCounter, render, sleepTimer, stackPointer, window))" % __pyx_checksum
  */
-  __pyx_tuple__18 = PyTuple_Pack(3, __pyx_int_1481767, __pyx_int_235959991, __pyx_int_206723160); if (unlikely(!__pyx_tuple__18)) __PYX_ERR(2, 4, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__18);
-  __Pyx_GIVEREF(__pyx_tuple__18);
+  __pyx_tuple__25 = PyTuple_Pack(3, __pyx_int_1481767, __pyx_int_235959991, __pyx_int_206723160); if (unlikely(!__pyx_tuple__25)) __PYX_ERR(2, 4, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__25);
+  __Pyx_GIVEREF(__pyx_tuple__25);
 
   /* "Micro80/CPU.py":14
  * 
@@ -18732,184 +20909,193 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * import time
  * 
  */
-  __pyx_tuple__21 = PyTuple_Pack(2, __pyx_n_s_sdl2, __pyx_n_s_ext); if (unlikely(!__pyx_tuple__21)) __PYX_ERR(0, 14, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__21);
-  __Pyx_GIVEREF(__pyx_tuple__21);
+  __pyx_tuple__28 = PyTuple_Pack(2, __pyx_n_s_sdl2, __pyx_n_s_ext); if (unlikely(!__pyx_tuple__28)) __PYX_ERR(0, 14, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__28);
+  __Pyx_GIVEREF(__pyx_tuple__28);
 
-  /* "Micro80/CPU.py":50
- *         self.window.show()
+  /* "Micro80/CPU.py":53
+ *             print("Debug Mode Enabled...")
  * 
  *     def runProgram(self):             # <<<<<<<<<<<<<<
  *         "Runs the program stores in memory"
  *         debug = self.debug
  */
-  __pyx_tuple__22 = PyTuple_Pack(1, __pyx_n_s_self); if (unlikely(!__pyx_tuple__22)) __PYX_ERR(0, 50, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__22);
-  __Pyx_GIVEREF(__pyx_tuple__22);
-  __pyx_codeobj__23 = (PyObject*)__Pyx_PyCode_New(1, 0, 0, 1, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__22, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Micro80_CPU_py, __pyx_n_s_runProgram, 50, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__23)) __PYX_ERR(0, 50, __pyx_L1_error)
+  __pyx_tuple__29 = PyTuple_Pack(1, __pyx_n_s_self); if (unlikely(!__pyx_tuple__29)) __PYX_ERR(0, 53, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__29);
+  __Pyx_GIVEREF(__pyx_tuple__29);
+  __pyx_codeobj__30 = (PyObject*)__Pyx_PyCode_New(1, 0, 0, 1, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__29, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Micro80_CPU_py, __pyx_n_s_runProgram, 53, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__30)) __PYX_ERR(0, 53, __pyx_L1_error)
 
-  /* "Micro80/CPU.py":83
- *             print(f"Rendered {renderAmount} times in {renderLocations}")
+  /* "Micro80/CPU.py":101
+ *             print(f"Program End.")
  * 
  *     def fetch(self):             # <<<<<<<<<<<<<<
  *         "Fetches the current opcode and operand from memory."
  *         self.curOpcode = self.memory.readAddress(self.programCounter)
  */
-  __pyx_codeobj__24 = (PyObject*)__Pyx_PyCode_New(1, 0, 0, 1, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__22, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Micro80_CPU_py, __pyx_n_s_fetch, 83, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__24)) __PYX_ERR(0, 83, __pyx_L1_error)
+  __pyx_codeobj__31 = (PyObject*)__Pyx_PyCode_New(1, 0, 0, 1, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__29, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Micro80_CPU_py, __pyx_n_s_fetch, 101, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__31)) __PYX_ERR(0, 101, __pyx_L1_error)
 
-  /* "Micro80/CPU.py":101
+  /* "Micro80/CPU.py":121
  *             self.curOperand = None
+ * 
+ *     def _handleEvents(self):             # <<<<<<<<<<<<<<
+ *         "Handles the SDL2 events"
+ *         events = sdl2.ext.get_events()
+ */
+  __pyx_codeobj__32 = (PyObject*)__Pyx_PyCode_New(1, 0, 0, 1, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__29, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Micro80_CPU_py, __pyx_n_s_handleEvents, 121, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__32)) __PYX_ERR(0, 121, __pyx_L1_error)
+
+  /* "Micro80/CPU.py":169
+ *                     self.memory.writeAddress(0x400D, 0x0000)
  * 
  *     def execute(self, opcode, operands):             # <<<<<<<<<<<<<<
  *         "Executes the code"
  *         instructions = self.instructions
  */
-  __pyx_tuple__25 = PyTuple_Pack(3, __pyx_n_s_self, __pyx_n_s_opcode, __pyx_n_s_operands); if (unlikely(!__pyx_tuple__25)) __PYX_ERR(0, 101, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__25);
-  __Pyx_GIVEREF(__pyx_tuple__25);
-  __pyx_codeobj__26 = (PyObject*)__Pyx_PyCode_New(3, 0, 0, 3, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__25, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Micro80_CPU_py, __pyx_n_s_execute, 101, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__26)) __PYX_ERR(0, 101, __pyx_L1_error)
+  __pyx_tuple__33 = PyTuple_Pack(3, __pyx_n_s_self, __pyx_n_s_opcode, __pyx_n_s_operands); if (unlikely(!__pyx_tuple__33)) __PYX_ERR(0, 169, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__33);
+  __Pyx_GIVEREF(__pyx_tuple__33);
+  __pyx_codeobj__34 = (PyObject*)__Pyx_PyCode_New(3, 0, 0, 3, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__33, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Micro80_CPU_py, __pyx_n_s_execute, 169, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__34)) __PYX_ERR(0, 169, __pyx_L1_error)
 
-  /* "Micro80/CPU.py":174
+  /* "Micro80/CPU.py":248
  *             raise ValueError(f"Invalid Opcode, {opcode}")
  * 
  *     def popAll(self):             # <<<<<<<<<<<<<<
  *         "Pops off all of the registers from the stack."
  *         self.pop(self.stackPointer)
  */
-  __pyx_codeobj__27 = (PyObject*)__Pyx_PyCode_New(1, 0, 0, 1, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__22, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Micro80_CPU_py, __pyx_n_s_popAll, 174, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__27)) __PYX_ERR(0, 174, __pyx_L1_error)
+  __pyx_codeobj__35 = (PyObject*)__Pyx_PyCode_New(1, 0, 0, 1, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__29, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Micro80_CPU_py, __pyx_n_s_popAll, 248, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__35)) __PYX_ERR(0, 248, __pyx_L1_error)
 
-  /* "Micro80/CPU.py":185
+  /* "Micro80/CPU.py":259
  *         self.pop(self.A)
  * 
  *     def pushAll(self):             # <<<<<<<<<<<<<<
  *         "Pushes all of the registers onto the stack."
  *         self.push(self.A)
  */
-  __pyx_codeobj__28 = (PyObject*)__Pyx_PyCode_New(1, 0, 0, 1, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__22, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Micro80_CPU_py, __pyx_n_s_pushAll, 185, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__28)) __PYX_ERR(0, 185, __pyx_L1_error)
+  __pyx_codeobj__36 = (PyObject*)__Pyx_PyCode_New(1, 0, 0, 1, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__29, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Micro80_CPU_py, __pyx_n_s_pushAll, 259, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__36)) __PYX_ERR(0, 259, __pyx_L1_error)
 
-  /* "Micro80/CPU.py":196
+  /* "Micro80/CPU.py":270
  *         self.push(self.stackPointer)
  * 
  *     def pop(self, operands):             # <<<<<<<<<<<<<<
  *         "Pops off the top of the stack and stores it in the given address."
  *         self.stackPointer -= 1
  */
-  __pyx_tuple__29 = PyTuple_Pack(2, __pyx_n_s_self, __pyx_n_s_operands); if (unlikely(!__pyx_tuple__29)) __PYX_ERR(0, 196, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__29);
-  __Pyx_GIVEREF(__pyx_tuple__29);
-  __pyx_codeobj__30 = (PyObject*)__Pyx_PyCode_New(2, 0, 0, 2, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__29, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Micro80_CPU_py, __pyx_n_s_pop, 196, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__30)) __PYX_ERR(0, 196, __pyx_L1_error)
+  __pyx_tuple__37 = PyTuple_Pack(2, __pyx_n_s_self, __pyx_n_s_operands); if (unlikely(!__pyx_tuple__37)) __PYX_ERR(0, 270, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__37);
+  __Pyx_GIVEREF(__pyx_tuple__37);
+  __pyx_codeobj__38 = (PyObject*)__Pyx_PyCode_New(2, 0, 0, 2, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__37, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Micro80_CPU_py, __pyx_n_s_pop, 270, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__38)) __PYX_ERR(0, 270, __pyx_L1_error)
 
-  /* "Micro80/CPU.py":206
+  /* "Micro80/CPU.py":280
  *             self.memory.writeAddress(self.stackPointer + 1, 0)
  * 
  *     def push(self, operands):             # <<<<<<<<<<<<<<
  *         "Pushes the given data onto the stack."
  *         self.memory.writeAddress(self.stackPointer, operands)
  */
-  __pyx_codeobj__31 = (PyObject*)__Pyx_PyCode_New(2, 0, 0, 2, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__29, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Micro80_CPU_py, __pyx_n_s_push, 206, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__31)) __PYX_ERR(0, 206, __pyx_L1_error)
+  __pyx_codeobj__39 = (PyObject*)__Pyx_PyCode_New(2, 0, 0, 2, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__37, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Micro80_CPU_py, __pyx_n_s_push, 280, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__39)) __PYX_ERR(0, 280, __pyx_L1_error)
 
-  /* "Micro80/CPU.py":211
+  /* "Micro80/CPU.py":285
  *         self.stackPointer += 1
  * 
  *     def ret(self):             # <<<<<<<<<<<<<<
  *         "Returns to the address on the top of the stack."
  *         self.stackPointer -= 1
  */
-  __pyx_codeobj__32 = (PyObject*)__Pyx_PyCode_New(1, 0, 0, 1, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__22, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Micro80_CPU_py, __pyx_n_s_ret, 211, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__32)) __PYX_ERR(0, 211, __pyx_L1_error)
+  __pyx_codeobj__40 = (PyObject*)__Pyx_PyCode_New(1, 0, 0, 1, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__29, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Micro80_CPU_py, __pyx_n_s_ret, 285, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__40)) __PYX_ERR(0, 285, __pyx_L1_error)
 
-  /* "Micro80/CPU.py":216
+  /* "Micro80/CPU.py":290
  *         self.programCounter = self.memory.readAddress(self.stackPointer)
  * 
  *     def call(self, operands):             # <<<<<<<<<<<<<<
  *         "Calls the given address."
  *         self.memory.writeAddress(self.stackPointer, self.programCounter)
  */
-  __pyx_codeobj__33 = (PyObject*)__Pyx_PyCode_New(2, 0, 0, 2, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__29, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Micro80_CPU_py, __pyx_n_s_call, 216, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__33)) __PYX_ERR(0, 216, __pyx_L1_error)
+  __pyx_codeobj__41 = (PyObject*)__Pyx_PyCode_New(2, 0, 0, 2, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__37, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Micro80_CPU_py, __pyx_n_s_call, 290, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__41)) __PYX_ERR(0, 290, __pyx_L1_error)
 
-  /* "Micro80/CPU.py":222
+  /* "Micro80/CPU.py":296
  *         self.programCounter = operands
  * 
  *     def increment(self, register):             # <<<<<<<<<<<<<<
  *         "Increments a given register."
  *         if register == "A":
  */
-  __pyx_tuple__34 = PyTuple_Pack(2, __pyx_n_s_self, __pyx_n_s_register); if (unlikely(!__pyx_tuple__34)) __PYX_ERR(0, 222, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__34);
-  __Pyx_GIVEREF(__pyx_tuple__34);
-  __pyx_codeobj__35 = (PyObject*)__Pyx_PyCode_New(2, 0, 0, 2, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__34, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Micro80_CPU_py, __pyx_n_s_increment, 222, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__35)) __PYX_ERR(0, 222, __pyx_L1_error)
+  __pyx_tuple__42 = PyTuple_Pack(2, __pyx_n_s_self, __pyx_n_s_register); if (unlikely(!__pyx_tuple__42)) __PYX_ERR(0, 296, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__42);
+  __Pyx_GIVEREF(__pyx_tuple__42);
+  __pyx_codeobj__43 = (PyObject*)__Pyx_PyCode_New(2, 0, 0, 2, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__42, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Micro80_CPU_py, __pyx_n_s_increment, 296, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__43)) __PYX_ERR(0, 296, __pyx_L1_error)
 
-  /* "Micro80/CPU.py":243
+  /* "Micro80/CPU.py":317
  *             raise ValueError("Invalid Register")
  * 
  *     def decrement(self, register):             # <<<<<<<<<<<<<<
  *         "Decrements a given register."
  *         if register == "A":
  */
-  __pyx_codeobj__36 = (PyObject*)__Pyx_PyCode_New(2, 0, 0, 2, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__34, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Micro80_CPU_py, __pyx_n_s_decrement, 243, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__36)) __PYX_ERR(0, 243, __pyx_L1_error)
+  __pyx_codeobj__44 = (PyObject*)__Pyx_PyCode_New(2, 0, 0, 2, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__42, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Micro80_CPU_py, __pyx_n_s_decrement, 317, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__44)) __PYX_ERR(0, 317, __pyx_L1_error)
 
-  /* "Micro80/CPU.py":264
+  /* "Micro80/CPU.py":338
  *             raise ValueError("Invalid Register")
  * 
  *     def load(self, register, operands):             # <<<<<<<<<<<<<<
  *         "Loads a value from an address to a register."
  *         if register == "A":
  */
-  __pyx_tuple__37 = PyTuple_Pack(3, __pyx_n_s_self, __pyx_n_s_register, __pyx_n_s_operands); if (unlikely(!__pyx_tuple__37)) __PYX_ERR(0, 264, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__37);
-  __Pyx_GIVEREF(__pyx_tuple__37);
-  __pyx_codeobj__38 = (PyObject*)__Pyx_PyCode_New(3, 0, 0, 3, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__37, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Micro80_CPU_py, __pyx_n_s_load, 264, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__38)) __PYX_ERR(0, 264, __pyx_L1_error)
+  __pyx_tuple__45 = PyTuple_Pack(3, __pyx_n_s_self, __pyx_n_s_register, __pyx_n_s_operands); if (unlikely(!__pyx_tuple__45)) __PYX_ERR(0, 338, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__45);
+  __Pyx_GIVEREF(__pyx_tuple__45);
+  __pyx_codeobj__46 = (PyObject*)__Pyx_PyCode_New(3, 0, 0, 3, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__45, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Micro80_CPU_py, __pyx_n_s_load, 338, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__46)) __PYX_ERR(0, 338, __pyx_L1_error)
 
-  /* "Micro80/CPU.py":291
+  /* "Micro80/CPU.py":365
  *             raise ValueError("Invalid Register")
  * 
  *     def store(self, register, operands):             # <<<<<<<<<<<<<<
  *         "Stores a value from a register to an address."
  *         if operands == None:
  */
-  __pyx_codeobj__39 = (PyObject*)__Pyx_PyCode_New(3, 0, 0, 3, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__37, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Micro80_CPU_py, __pyx_n_s_store, 291, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__39)) __PYX_ERR(0, 291, __pyx_L1_error)
+  __pyx_codeobj__47 = (PyObject*)__Pyx_PyCode_New(3, 0, 0, 3, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__45, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Micro80_CPU_py, __pyx_n_s_store, 365, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__47)) __PYX_ERR(0, 365, __pyx_L1_error)
 
-  /* "Micro80/CPU.py":316
+  /* "Micro80/CPU.py":390
  *             raise ValueError("Invalid Register")
  * 
  *     def alu(self, opcode, operands):             # <<<<<<<<<<<<<<
  *         "Performs an ALU operation."
  *         if opcode == "ADD":
  */
-  __pyx_codeobj__40 = (PyObject*)__Pyx_PyCode_New(3, 0, 0, 3, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__25, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Micro80_CPU_py, __pyx_n_s_alu, 316, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__40)) __PYX_ERR(0, 316, __pyx_L1_error)
+  __pyx_codeobj__48 = (PyObject*)__Pyx_PyCode_New(3, 0, 0, 3, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__33, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Micro80_CPU_py, __pyx_n_s_alu, 390, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__48)) __PYX_ERR(0, 390, __pyx_L1_error)
 
-  /* "Micro80/CPU.py":345
+  /* "Micro80/CPU.py":419
  *             raise ValueError("Invalid Opcode")
  * 
  *     def jump(self, opcode, operands):             # <<<<<<<<<<<<<<
  *         "Jumps to a given address based on the condition."
  *         self.jumpCount += 1
  */
-  __pyx_codeobj__41 = (PyObject*)__Pyx_PyCode_New(3, 0, 0, 3, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__25, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Micro80_CPU_py, __pyx_n_s_jump, 345, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__41)) __PYX_ERR(0, 345, __pyx_L1_error)
+  __pyx_codeobj__49 = (PyObject*)__Pyx_PyCode_New(3, 0, 0, 3, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__33, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Micro80_CPU_py, __pyx_n_s_jump, 419, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__49)) __PYX_ERR(0, 419, __pyx_L1_error)
 
-  /* "Micro80/CPU.py":392
+  /* "Micro80/CPU.py":466
  *             raise ValueError("Invalid Opcode")
  * 
  *     def Loader(self, ROMFile, location=0x0000):             # <<<<<<<<<<<<<<
  *         "Loads the ROM file into memory."
  *         file = open(ROMFile, "r")
  */
-  __pyx_tuple__42 = PyTuple_Pack(3, __pyx_n_s_self, __pyx_n_s_ROMFile, __pyx_n_s_location); if (unlikely(!__pyx_tuple__42)) __PYX_ERR(0, 392, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__42);
-  __Pyx_GIVEREF(__pyx_tuple__42);
-  __pyx_codeobj__43 = (PyObject*)__Pyx_PyCode_New(3, 0, 0, 3, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__42, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Micro80_CPU_py, __pyx_n_s_Loader, 392, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__43)) __PYX_ERR(0, 392, __pyx_L1_error)
-  __pyx_tuple__44 = PyTuple_Pack(1, __pyx_int_0); if (unlikely(!__pyx_tuple__44)) __PYX_ERR(0, 392, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__44);
-  __Pyx_GIVEREF(__pyx_tuple__44);
+  __pyx_tuple__50 = PyTuple_Pack(3, __pyx_n_s_self, __pyx_n_s_ROMFile, __pyx_n_s_location); if (unlikely(!__pyx_tuple__50)) __PYX_ERR(0, 466, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__50);
+  __Pyx_GIVEREF(__pyx_tuple__50);
+  __pyx_codeobj__51 = (PyObject*)__Pyx_PyCode_New(3, 0, 0, 3, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__50, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_Micro80_CPU_py, __pyx_n_s_Loader, 466, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__51)) __PYX_ERR(0, 466, __pyx_L1_error)
+  __pyx_tuple__52 = PyTuple_Pack(1, __pyx_int_0); if (unlikely(!__pyx_tuple__52)) __PYX_ERR(0, 466, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__52);
+  __Pyx_GIVEREF(__pyx_tuple__52);
 
   /* "(tree fragment)":1
  * def __reduce_cython__(self):             # <<<<<<<<<<<<<<
  *     cdef tuple state
  *     cdef object _dict
  */
-  __pyx_tuple__45 = PyTuple_Pack(4, __pyx_n_s_self, __pyx_n_s_state, __pyx_n_s_dict_2, __pyx_n_s_use_setstate); if (unlikely(!__pyx_tuple__45)) __PYX_ERR(2, 1, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__45);
-  __Pyx_GIVEREF(__pyx_tuple__45);
-  __pyx_codeobj__46 = (PyObject*)__Pyx_PyCode_New(1, 0, 0, 4, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__45, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_stringsource, __pyx_n_s_reduce_cython, 1, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__46)) __PYX_ERR(2, 1, __pyx_L1_error)
+  __pyx_tuple__53 = PyTuple_Pack(4, __pyx_n_s_self, __pyx_n_s_state, __pyx_n_s_dict_2, __pyx_n_s_use_setstate); if (unlikely(!__pyx_tuple__53)) __PYX_ERR(2, 1, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__53);
+  __Pyx_GIVEREF(__pyx_tuple__53);
+  __pyx_codeobj__54 = (PyObject*)__Pyx_PyCode_New(1, 0, 0, 4, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__53, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_stringsource, __pyx_n_s_reduce_cython, 1, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__54)) __PYX_ERR(2, 1, __pyx_L1_error)
 
   /* "(tree fragment)":16
  *     else:
@@ -18917,20 +21103,20 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * def __setstate_cython__(self, __pyx_state):             # <<<<<<<<<<<<<<
  *     __pyx_unpickle_CPU__set_state(self, __pyx_state)
  */
-  __pyx_tuple__47 = PyTuple_Pack(2, __pyx_n_s_self, __pyx_n_s_pyx_state); if (unlikely(!__pyx_tuple__47)) __PYX_ERR(2, 16, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__47);
-  __Pyx_GIVEREF(__pyx_tuple__47);
-  __pyx_codeobj__48 = (PyObject*)__Pyx_PyCode_New(2, 0, 0, 2, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__47, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_stringsource, __pyx_n_s_setstate_cython, 16, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__48)) __PYX_ERR(2, 16, __pyx_L1_error)
+  __pyx_tuple__55 = PyTuple_Pack(2, __pyx_n_s_self, __pyx_n_s_pyx_state); if (unlikely(!__pyx_tuple__55)) __PYX_ERR(2, 16, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__55);
+  __Pyx_GIVEREF(__pyx_tuple__55);
+  __pyx_codeobj__56 = (PyObject*)__Pyx_PyCode_New(2, 0, 0, 2, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__55, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_stringsource, __pyx_n_s_setstate_cython, 16, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__56)) __PYX_ERR(2, 16, __pyx_L1_error)
 
   /* "(tree fragment)":1
  * def __pyx_unpickle_CPU(__pyx_type, long __pyx_checksum, __pyx_state):             # <<<<<<<<<<<<<<
  *     cdef object __pyx_PickleError
  *     cdef object __pyx_result
  */
-  __pyx_tuple__49 = PyTuple_Pack(5, __pyx_n_s_pyx_type, __pyx_n_s_pyx_checksum, __pyx_n_s_pyx_state, __pyx_n_s_pyx_PickleError, __pyx_n_s_pyx_result); if (unlikely(!__pyx_tuple__49)) __PYX_ERR(2, 1, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__49);
-  __Pyx_GIVEREF(__pyx_tuple__49);
-  __pyx_codeobj__50 = (PyObject*)__Pyx_PyCode_New(3, 0, 0, 5, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__49, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_stringsource, __pyx_n_s_pyx_unpickle_CPU, 1, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__50)) __PYX_ERR(2, 1, __pyx_L1_error)
+  __pyx_tuple__57 = PyTuple_Pack(5, __pyx_n_s_pyx_type, __pyx_n_s_pyx_checksum, __pyx_n_s_pyx_state, __pyx_n_s_pyx_PickleError, __pyx_n_s_pyx_result); if (unlikely(!__pyx_tuple__57)) __PYX_ERR(2, 1, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__57);
+  __Pyx_GIVEREF(__pyx_tuple__57);
+  __pyx_codeobj__58 = (PyObject*)__Pyx_PyCode_New(3, 0, 0, 5, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__57, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_stringsource, __pyx_n_s_pyx_unpickle_CPU, 1, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__58)) __PYX_ERR(2, 1, __pyx_L1_error)
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -18945,18 +21131,23 @@ static CYTHON_SMALL_CODE int __Pyx_InitConstants(void) {
   __pyx_int_1 = PyInt_FromLong(1); if (unlikely(!__pyx_int_1)) __PYX_ERR(0, 1, __pyx_L1_error)
   __pyx_int_2 = PyInt_FromLong(2); if (unlikely(!__pyx_int_2)) __PYX_ERR(0, 1, __pyx_L1_error)
   __pyx_int_3 = PyInt_FromLong(3); if (unlikely(!__pyx_int_3)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_int_4 = PyInt_FromLong(4); if (unlikely(!__pyx_int_4)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_int_5 = PyInt_FromLong(5); if (unlikely(!__pyx_int_5)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_int_6 = PyInt_FromLong(6); if (unlikely(!__pyx_int_6)) __PYX_ERR(0, 1, __pyx_L1_error)
   __pyx_int_16 = PyInt_FromLong(16); if (unlikely(!__pyx_int_16)) __PYX_ERR(0, 1, __pyx_L1_error)
   __pyx_int_45 = PyInt_FromLong(45); if (unlikely(!__pyx_int_45)) __PYX_ERR(0, 1, __pyx_L1_error)
   __pyx_int_71 = PyInt_FromLong(71); if (unlikely(!__pyx_int_71)) __PYX_ERR(0, 1, __pyx_L1_error)
   __pyx_int_73 = PyInt_FromLong(73); if (unlikely(!__pyx_int_73)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_int_74 = PyInt_FromLong(74); if (unlikely(!__pyx_int_74)) __PYX_ERR(0, 1, __pyx_L1_error)
   __pyx_int_128 = PyInt_FromLong(128); if (unlikely(!__pyx_int_128)) __PYX_ERR(0, 1, __pyx_L1_error)
   __pyx_int_16394 = PyInt_FromLong(16394L); if (unlikely(!__pyx_int_16394)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_int_16395 = PyInt_FromLong(16395L); if (unlikely(!__pyx_int_16395)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_int_16396 = PyInt_FromLong(16396L); if (unlikely(!__pyx_int_16396)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_int_16397 = PyInt_FromLong(16397L); if (unlikely(!__pyx_int_16397)) __PYX_ERR(0, 1, __pyx_L1_error)
   __pyx_int_17408 = PyInt_FromLong(17408L); if (unlikely(!__pyx_int_17408)) __PYX_ERR(0, 1, __pyx_L1_error)
-  __pyx_int_17414 = PyInt_FromLong(17414L); if (unlikely(!__pyx_int_17414)) __PYX_ERR(0, 1, __pyx_L1_error)
-  __pyx_int_21504 = PyInt_FromLong(21504L); if (unlikely(!__pyx_int_21504)) __PYX_ERR(0, 1, __pyx_L1_error)
-  __pyx_int_21510 = PyInt_FromLong(21510L); if (unlikely(!__pyx_int_21510)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_int_17423 = PyInt_FromLong(17423L); if (unlikely(!__pyx_int_17423)) __PYX_ERR(0, 1, __pyx_L1_error)
   __pyx_int_49152 = PyInt_FromLong(49152L); if (unlikely(!__pyx_int_49152)) __PYX_ERR(0, 1, __pyx_L1_error)
-  __pyx_int_49158 = PyInt_FromLong(49158L); if (unlikely(!__pyx_int_49158)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_int_49167 = PyInt_FromLong(49167L); if (unlikely(!__pyx_int_49167)) __PYX_ERR(0, 1, __pyx_L1_error)
   __pyx_int_65535 = PyInt_FromLong(65535L); if (unlikely(!__pyx_int_65535)) __PYX_ERR(0, 1, __pyx_L1_error)
   __pyx_int_1481767 = PyInt_FromLong(1481767L); if (unlikely(!__pyx_int_1481767)) __PYX_ERR(0, 1, __pyx_L1_error)
   __pyx_int_206723160 = PyInt_FromLong(206723160L); if (unlikely(!__pyx_int_206723160)) __PYX_ERR(0, 1, __pyx_L1_error)
@@ -19014,6 +21205,7 @@ static int __Pyx_modinit_type_init_code(void) {
   __pyx_vtabptr_7Micro80_3CPU_CPU = &__pyx_vtable_7Micro80_3CPU_CPU;
   __pyx_vtable_7Micro80_3CPU_CPU.runProgram = (PyObject *(*)(struct __pyx_obj_7Micro80_3CPU_CPU *, int __pyx_skip_dispatch))__pyx_f_7Micro80_3CPU_3CPU_runProgram;
   __pyx_vtable_7Micro80_3CPU_CPU.fetch = (PyObject *(*)(struct __pyx_obj_7Micro80_3CPU_CPU *, int __pyx_skip_dispatch))__pyx_f_7Micro80_3CPU_3CPU_fetch;
+  __pyx_vtable_7Micro80_3CPU_CPU._handleEvents = (PyObject *(*)(struct __pyx_obj_7Micro80_3CPU_CPU *, int __pyx_skip_dispatch))__pyx_f_7Micro80_3CPU_3CPU__handleEvents;
   __pyx_vtable_7Micro80_3CPU_CPU.execute = (PyObject *(*)(struct __pyx_obj_7Micro80_3CPU_CPU *, int, PyObject *, int __pyx_skip_dispatch))__pyx_f_7Micro80_3CPU_3CPU_execute;
   __pyx_vtable_7Micro80_3CPU_CPU.popAll = (PyObject *(*)(struct __pyx_obj_7Micro80_3CPU_CPU *, int __pyx_skip_dispatch))__pyx_f_7Micro80_3CPU_3CPU_popAll;
   __pyx_vtable_7Micro80_3CPU_CPU.pushAll = (PyObject *(*)(struct __pyx_obj_7Micro80_3CPU_CPU *, int __pyx_skip_dispatch))__pyx_f_7Micro80_3CPU_3CPU_pushAll;
@@ -19474,212 +21666,225 @@ if (!__Pyx_RefNanny) {
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_time, __pyx_t_3) < 0) __PYX_ERR(0, 15, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "Micro80/CPU.py":50
- *         self.window.show()
+  /* "Micro80/CPU.py":53
+ *             print("Debug Mode Enabled...")
  * 
  *     def runProgram(self):             # <<<<<<<<<<<<<<
  *         "Runs the program stores in memory"
  *         debug = self.debug
  */
-  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_7Micro80_3CPU_3CPU_3runProgram, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_CPU_runProgram, NULL, __pyx_n_s_Micro80_CPU, __pyx_d, ((PyObject *)__pyx_codeobj__23)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 50, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_7Micro80_3CPU_3CPU_3runProgram, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_CPU_runProgram, NULL, __pyx_n_s_Micro80_CPU, __pyx_d, ((PyObject *)__pyx_codeobj__30)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 53, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  if (__Pyx_SetItemOnTypeDict((PyObject *)__pyx_ptype_7Micro80_3CPU_CPU, __pyx_n_s_runProgram, __pyx_t_3) < 0) __PYX_ERR(0, 50, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict((PyObject *)__pyx_ptype_7Micro80_3CPU_CPU, __pyx_n_s_runProgram, __pyx_t_3) < 0) __PYX_ERR(0, 53, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   PyType_Modified(__pyx_ptype_7Micro80_3CPU_CPU);
 
-  /* "Micro80/CPU.py":83
- *             print(f"Rendered {renderAmount} times in {renderLocations}")
+  /* "Micro80/CPU.py":101
+ *             print(f"Program End.")
  * 
  *     def fetch(self):             # <<<<<<<<<<<<<<
  *         "Fetches the current opcode and operand from memory."
  *         self.curOpcode = self.memory.readAddress(self.programCounter)
  */
-  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_7Micro80_3CPU_3CPU_5fetch, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_CPU_fetch, NULL, __pyx_n_s_Micro80_CPU, __pyx_d, ((PyObject *)__pyx_codeobj__24)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 83, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_7Micro80_3CPU_3CPU_5fetch, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_CPU_fetch, NULL, __pyx_n_s_Micro80_CPU, __pyx_d, ((PyObject *)__pyx_codeobj__31)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 101, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  if (__Pyx_SetItemOnTypeDict((PyObject *)__pyx_ptype_7Micro80_3CPU_CPU, __pyx_n_s_fetch, __pyx_t_3) < 0) __PYX_ERR(0, 83, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict((PyObject *)__pyx_ptype_7Micro80_3CPU_CPU, __pyx_n_s_fetch, __pyx_t_3) < 0) __PYX_ERR(0, 101, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   PyType_Modified(__pyx_ptype_7Micro80_3CPU_CPU);
 
-  /* "Micro80/CPU.py":101
+  /* "Micro80/CPU.py":121
  *             self.curOperand = None
+ * 
+ *     def _handleEvents(self):             # <<<<<<<<<<<<<<
+ *         "Handles the SDL2 events"
+ *         events = sdl2.ext.get_events()
+ */
+  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_7Micro80_3CPU_3CPU_7_handleEvents, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_CPU__handleEvents, NULL, __pyx_n_s_Micro80_CPU, __pyx_d, ((PyObject *)__pyx_codeobj__32)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 121, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  if (__Pyx_SetItemOnTypeDict((PyObject *)__pyx_ptype_7Micro80_3CPU_CPU, __pyx_n_s_handleEvents, __pyx_t_3) < 0) __PYX_ERR(0, 121, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  PyType_Modified(__pyx_ptype_7Micro80_3CPU_CPU);
+
+  /* "Micro80/CPU.py":169
+ *                     self.memory.writeAddress(0x400D, 0x0000)
  * 
  *     def execute(self, opcode, operands):             # <<<<<<<<<<<<<<
  *         "Executes the code"
  *         instructions = self.instructions
  */
-  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_7Micro80_3CPU_3CPU_7execute, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_CPU_execute, NULL, __pyx_n_s_Micro80_CPU, __pyx_d, ((PyObject *)__pyx_codeobj__26)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 101, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_7Micro80_3CPU_3CPU_9execute, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_CPU_execute, NULL, __pyx_n_s_Micro80_CPU, __pyx_d, ((PyObject *)__pyx_codeobj__34)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 169, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  if (__Pyx_SetItemOnTypeDict((PyObject *)__pyx_ptype_7Micro80_3CPU_CPU, __pyx_n_s_execute, __pyx_t_3) < 0) __PYX_ERR(0, 101, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict((PyObject *)__pyx_ptype_7Micro80_3CPU_CPU, __pyx_n_s_execute, __pyx_t_3) < 0) __PYX_ERR(0, 169, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   PyType_Modified(__pyx_ptype_7Micro80_3CPU_CPU);
 
-  /* "Micro80/CPU.py":174
+  /* "Micro80/CPU.py":248
  *             raise ValueError(f"Invalid Opcode, {opcode}")
  * 
  *     def popAll(self):             # <<<<<<<<<<<<<<
  *         "Pops off all of the registers from the stack."
  *         self.pop(self.stackPointer)
  */
-  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_7Micro80_3CPU_3CPU_9popAll, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_CPU_popAll, NULL, __pyx_n_s_Micro80_CPU, __pyx_d, ((PyObject *)__pyx_codeobj__27)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 174, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_7Micro80_3CPU_3CPU_11popAll, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_CPU_popAll, NULL, __pyx_n_s_Micro80_CPU, __pyx_d, ((PyObject *)__pyx_codeobj__35)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 248, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  if (__Pyx_SetItemOnTypeDict((PyObject *)__pyx_ptype_7Micro80_3CPU_CPU, __pyx_n_s_popAll, __pyx_t_3) < 0) __PYX_ERR(0, 174, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict((PyObject *)__pyx_ptype_7Micro80_3CPU_CPU, __pyx_n_s_popAll, __pyx_t_3) < 0) __PYX_ERR(0, 248, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   PyType_Modified(__pyx_ptype_7Micro80_3CPU_CPU);
 
-  /* "Micro80/CPU.py":185
+  /* "Micro80/CPU.py":259
  *         self.pop(self.A)
  * 
  *     def pushAll(self):             # <<<<<<<<<<<<<<
  *         "Pushes all of the registers onto the stack."
  *         self.push(self.A)
  */
-  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_7Micro80_3CPU_3CPU_11pushAll, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_CPU_pushAll, NULL, __pyx_n_s_Micro80_CPU, __pyx_d, ((PyObject *)__pyx_codeobj__28)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 185, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_7Micro80_3CPU_3CPU_13pushAll, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_CPU_pushAll, NULL, __pyx_n_s_Micro80_CPU, __pyx_d, ((PyObject *)__pyx_codeobj__36)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 259, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  if (__Pyx_SetItemOnTypeDict((PyObject *)__pyx_ptype_7Micro80_3CPU_CPU, __pyx_n_s_pushAll, __pyx_t_3) < 0) __PYX_ERR(0, 185, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict((PyObject *)__pyx_ptype_7Micro80_3CPU_CPU, __pyx_n_s_pushAll, __pyx_t_3) < 0) __PYX_ERR(0, 259, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   PyType_Modified(__pyx_ptype_7Micro80_3CPU_CPU);
 
-  /* "Micro80/CPU.py":196
+  /* "Micro80/CPU.py":270
  *         self.push(self.stackPointer)
  * 
  *     def pop(self, operands):             # <<<<<<<<<<<<<<
  *         "Pops off the top of the stack and stores it in the given address."
  *         self.stackPointer -= 1
  */
-  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_7Micro80_3CPU_3CPU_13pop, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_CPU_pop, NULL, __pyx_n_s_Micro80_CPU, __pyx_d, ((PyObject *)__pyx_codeobj__30)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 196, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_7Micro80_3CPU_3CPU_15pop, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_CPU_pop, NULL, __pyx_n_s_Micro80_CPU, __pyx_d, ((PyObject *)__pyx_codeobj__38)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 270, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  if (__Pyx_SetItemOnTypeDict((PyObject *)__pyx_ptype_7Micro80_3CPU_CPU, __pyx_n_s_pop, __pyx_t_3) < 0) __PYX_ERR(0, 196, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict((PyObject *)__pyx_ptype_7Micro80_3CPU_CPU, __pyx_n_s_pop, __pyx_t_3) < 0) __PYX_ERR(0, 270, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   PyType_Modified(__pyx_ptype_7Micro80_3CPU_CPU);
 
-  /* "Micro80/CPU.py":206
+  /* "Micro80/CPU.py":280
  *             self.memory.writeAddress(self.stackPointer + 1, 0)
  * 
  *     def push(self, operands):             # <<<<<<<<<<<<<<
  *         "Pushes the given data onto the stack."
  *         self.memory.writeAddress(self.stackPointer, operands)
  */
-  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_7Micro80_3CPU_3CPU_15push, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_CPU_push, NULL, __pyx_n_s_Micro80_CPU, __pyx_d, ((PyObject *)__pyx_codeobj__31)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 206, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_7Micro80_3CPU_3CPU_17push, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_CPU_push, NULL, __pyx_n_s_Micro80_CPU, __pyx_d, ((PyObject *)__pyx_codeobj__39)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 280, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  if (__Pyx_SetItemOnTypeDict((PyObject *)__pyx_ptype_7Micro80_3CPU_CPU, __pyx_n_s_push, __pyx_t_3) < 0) __PYX_ERR(0, 206, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict((PyObject *)__pyx_ptype_7Micro80_3CPU_CPU, __pyx_n_s_push, __pyx_t_3) < 0) __PYX_ERR(0, 280, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   PyType_Modified(__pyx_ptype_7Micro80_3CPU_CPU);
 
-  /* "Micro80/CPU.py":211
+  /* "Micro80/CPU.py":285
  *         self.stackPointer += 1
  * 
  *     def ret(self):             # <<<<<<<<<<<<<<
  *         "Returns to the address on the top of the stack."
  *         self.stackPointer -= 1
  */
-  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_7Micro80_3CPU_3CPU_17ret, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_CPU_ret, NULL, __pyx_n_s_Micro80_CPU, __pyx_d, ((PyObject *)__pyx_codeobj__32)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 211, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_7Micro80_3CPU_3CPU_19ret, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_CPU_ret, NULL, __pyx_n_s_Micro80_CPU, __pyx_d, ((PyObject *)__pyx_codeobj__40)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 285, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  if (__Pyx_SetItemOnTypeDict((PyObject *)__pyx_ptype_7Micro80_3CPU_CPU, __pyx_n_s_ret, __pyx_t_3) < 0) __PYX_ERR(0, 211, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict((PyObject *)__pyx_ptype_7Micro80_3CPU_CPU, __pyx_n_s_ret, __pyx_t_3) < 0) __PYX_ERR(0, 285, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   PyType_Modified(__pyx_ptype_7Micro80_3CPU_CPU);
 
-  /* "Micro80/CPU.py":216
+  /* "Micro80/CPU.py":290
  *         self.programCounter = self.memory.readAddress(self.stackPointer)
  * 
  *     def call(self, operands):             # <<<<<<<<<<<<<<
  *         "Calls the given address."
  *         self.memory.writeAddress(self.stackPointer, self.programCounter)
  */
-  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_7Micro80_3CPU_3CPU_19call, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_CPU_call, NULL, __pyx_n_s_Micro80_CPU, __pyx_d, ((PyObject *)__pyx_codeobj__33)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 216, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_7Micro80_3CPU_3CPU_21call, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_CPU_call, NULL, __pyx_n_s_Micro80_CPU, __pyx_d, ((PyObject *)__pyx_codeobj__41)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 290, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  if (__Pyx_SetItemOnTypeDict((PyObject *)__pyx_ptype_7Micro80_3CPU_CPU, __pyx_n_s_call, __pyx_t_3) < 0) __PYX_ERR(0, 216, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict((PyObject *)__pyx_ptype_7Micro80_3CPU_CPU, __pyx_n_s_call, __pyx_t_3) < 0) __PYX_ERR(0, 290, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   PyType_Modified(__pyx_ptype_7Micro80_3CPU_CPU);
 
-  /* "Micro80/CPU.py":222
+  /* "Micro80/CPU.py":296
  *         self.programCounter = operands
  * 
  *     def increment(self, register):             # <<<<<<<<<<<<<<
  *         "Increments a given register."
  *         if register == "A":
  */
-  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_7Micro80_3CPU_3CPU_21increment, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_CPU_increment, NULL, __pyx_n_s_Micro80_CPU, __pyx_d, ((PyObject *)__pyx_codeobj__35)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 222, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_7Micro80_3CPU_3CPU_23increment, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_CPU_increment, NULL, __pyx_n_s_Micro80_CPU, __pyx_d, ((PyObject *)__pyx_codeobj__43)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 296, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  if (__Pyx_SetItemOnTypeDict((PyObject *)__pyx_ptype_7Micro80_3CPU_CPU, __pyx_n_s_increment, __pyx_t_3) < 0) __PYX_ERR(0, 222, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict((PyObject *)__pyx_ptype_7Micro80_3CPU_CPU, __pyx_n_s_increment, __pyx_t_3) < 0) __PYX_ERR(0, 296, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   PyType_Modified(__pyx_ptype_7Micro80_3CPU_CPU);
 
-  /* "Micro80/CPU.py":243
+  /* "Micro80/CPU.py":317
  *             raise ValueError("Invalid Register")
  * 
  *     def decrement(self, register):             # <<<<<<<<<<<<<<
  *         "Decrements a given register."
  *         if register == "A":
  */
-  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_7Micro80_3CPU_3CPU_23decrement, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_CPU_decrement, NULL, __pyx_n_s_Micro80_CPU, __pyx_d, ((PyObject *)__pyx_codeobj__36)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 243, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_7Micro80_3CPU_3CPU_25decrement, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_CPU_decrement, NULL, __pyx_n_s_Micro80_CPU, __pyx_d, ((PyObject *)__pyx_codeobj__44)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 317, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  if (__Pyx_SetItemOnTypeDict((PyObject *)__pyx_ptype_7Micro80_3CPU_CPU, __pyx_n_s_decrement, __pyx_t_3) < 0) __PYX_ERR(0, 243, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict((PyObject *)__pyx_ptype_7Micro80_3CPU_CPU, __pyx_n_s_decrement, __pyx_t_3) < 0) __PYX_ERR(0, 317, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   PyType_Modified(__pyx_ptype_7Micro80_3CPU_CPU);
 
-  /* "Micro80/CPU.py":264
+  /* "Micro80/CPU.py":338
  *             raise ValueError("Invalid Register")
  * 
  *     def load(self, register, operands):             # <<<<<<<<<<<<<<
  *         "Loads a value from an address to a register."
  *         if register == "A":
  */
-  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_7Micro80_3CPU_3CPU_25load, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_CPU_load, NULL, __pyx_n_s_Micro80_CPU, __pyx_d, ((PyObject *)__pyx_codeobj__38)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 264, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_7Micro80_3CPU_3CPU_27load, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_CPU_load, NULL, __pyx_n_s_Micro80_CPU, __pyx_d, ((PyObject *)__pyx_codeobj__46)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 338, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  if (__Pyx_SetItemOnTypeDict((PyObject *)__pyx_ptype_7Micro80_3CPU_CPU, __pyx_n_s_load, __pyx_t_3) < 0) __PYX_ERR(0, 264, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict((PyObject *)__pyx_ptype_7Micro80_3CPU_CPU, __pyx_n_s_load, __pyx_t_3) < 0) __PYX_ERR(0, 338, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   PyType_Modified(__pyx_ptype_7Micro80_3CPU_CPU);
 
-  /* "Micro80/CPU.py":291
+  /* "Micro80/CPU.py":365
  *             raise ValueError("Invalid Register")
  * 
  *     def store(self, register, operands):             # <<<<<<<<<<<<<<
  *         "Stores a value from a register to an address."
  *         if operands == None:
  */
-  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_7Micro80_3CPU_3CPU_27store, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_CPU_store, NULL, __pyx_n_s_Micro80_CPU, __pyx_d, ((PyObject *)__pyx_codeobj__39)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 291, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_7Micro80_3CPU_3CPU_29store, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_CPU_store, NULL, __pyx_n_s_Micro80_CPU, __pyx_d, ((PyObject *)__pyx_codeobj__47)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 365, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  if (__Pyx_SetItemOnTypeDict((PyObject *)__pyx_ptype_7Micro80_3CPU_CPU, __pyx_n_s_store, __pyx_t_3) < 0) __PYX_ERR(0, 291, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict((PyObject *)__pyx_ptype_7Micro80_3CPU_CPU, __pyx_n_s_store, __pyx_t_3) < 0) __PYX_ERR(0, 365, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   PyType_Modified(__pyx_ptype_7Micro80_3CPU_CPU);
 
-  /* "Micro80/CPU.py":316
+  /* "Micro80/CPU.py":390
  *             raise ValueError("Invalid Register")
  * 
  *     def alu(self, opcode, operands):             # <<<<<<<<<<<<<<
  *         "Performs an ALU operation."
  *         if opcode == "ADD":
  */
-  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_7Micro80_3CPU_3CPU_29alu, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_CPU_alu, NULL, __pyx_n_s_Micro80_CPU, __pyx_d, ((PyObject *)__pyx_codeobj__40)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 316, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_7Micro80_3CPU_3CPU_31alu, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_CPU_alu, NULL, __pyx_n_s_Micro80_CPU, __pyx_d, ((PyObject *)__pyx_codeobj__48)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 390, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  if (__Pyx_SetItemOnTypeDict((PyObject *)__pyx_ptype_7Micro80_3CPU_CPU, __pyx_n_s_alu, __pyx_t_3) < 0) __PYX_ERR(0, 316, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict((PyObject *)__pyx_ptype_7Micro80_3CPU_CPU, __pyx_n_s_alu, __pyx_t_3) < 0) __PYX_ERR(0, 390, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   PyType_Modified(__pyx_ptype_7Micro80_3CPU_CPU);
 
-  /* "Micro80/CPU.py":345
+  /* "Micro80/CPU.py":419
  *             raise ValueError("Invalid Opcode")
  * 
  *     def jump(self, opcode, operands):             # <<<<<<<<<<<<<<
  *         "Jumps to a given address based on the condition."
  *         self.jumpCount += 1
  */
-  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_7Micro80_3CPU_3CPU_31jump, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_CPU_jump, NULL, __pyx_n_s_Micro80_CPU, __pyx_d, ((PyObject *)__pyx_codeobj__41)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 345, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_7Micro80_3CPU_3CPU_33jump, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_CPU_jump, NULL, __pyx_n_s_Micro80_CPU, __pyx_d, ((PyObject *)__pyx_codeobj__49)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 419, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  if (__Pyx_SetItemOnTypeDict((PyObject *)__pyx_ptype_7Micro80_3CPU_CPU, __pyx_n_s_jump, __pyx_t_3) < 0) __PYX_ERR(0, 345, __pyx_L1_error)
+  if (__Pyx_SetItemOnTypeDict((PyObject *)__pyx_ptype_7Micro80_3CPU_CPU, __pyx_n_s_jump, __pyx_t_3) < 0) __PYX_ERR(0, 419, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   PyType_Modified(__pyx_ptype_7Micro80_3CPU_CPU);
 
-  /* "Micro80/CPU.py":392
+  /* "Micro80/CPU.py":466
  *             raise ValueError("Invalid Opcode")
  * 
  *     def Loader(self, ROMFile, location=0x0000):             # <<<<<<<<<<<<<<
  *         "Loads the ROM file into memory."
  *         file = open(ROMFile, "r")
  */
-  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_7Micro80_3CPU_3CPU_33Loader, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_CPU_Loader, NULL, __pyx_n_s_Micro80_CPU, __pyx_d, ((PyObject *)__pyx_codeobj__43)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 392, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_7Micro80_3CPU_3CPU_35Loader, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_CPU_Loader, NULL, __pyx_n_s_Micro80_CPU, __pyx_d, ((PyObject *)__pyx_codeobj__51)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 466, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __Pyx_CyFunction_SetDefaultsTuple(__pyx_t_3, __pyx_tuple__44);
-  if (__Pyx_SetItemOnTypeDict((PyObject *)__pyx_ptype_7Micro80_3CPU_CPU, __pyx_n_s_Loader, __pyx_t_3) < 0) __PYX_ERR(0, 392, __pyx_L1_error)
+  __Pyx_CyFunction_SetDefaultsTuple(__pyx_t_3, __pyx_tuple__52);
+  if (__Pyx_SetItemOnTypeDict((PyObject *)__pyx_ptype_7Micro80_3CPU_CPU, __pyx_n_s_Loader, __pyx_t_3) < 0) __PYX_ERR(0, 466, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   PyType_Modified(__pyx_ptype_7Micro80_3CPU_CPU);
 
@@ -19688,7 +21893,7 @@ if (!__Pyx_RefNanny) {
  *     cdef tuple state
  *     cdef object _dict
  */
-  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_7Micro80_3CPU_3CPU_35__reduce_cython__, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_CPU___reduce_cython, NULL, __pyx_n_s_Micro80_CPU, __pyx_d, ((PyObject *)__pyx_codeobj__46)); if (unlikely(!__pyx_t_3)) __PYX_ERR(2, 1, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_7Micro80_3CPU_3CPU_37__reduce_cython__, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_CPU___reduce_cython, NULL, __pyx_n_s_Micro80_CPU, __pyx_d, ((PyObject *)__pyx_codeobj__54)); if (unlikely(!__pyx_t_3)) __PYX_ERR(2, 1, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   if (__Pyx_SetItemOnTypeDict((PyObject *)__pyx_ptype_7Micro80_3CPU_CPU, __pyx_n_s_reduce_cython, __pyx_t_3) < 0) __PYX_ERR(2, 1, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -19700,7 +21905,7 @@ if (!__Pyx_RefNanny) {
  * def __setstate_cython__(self, __pyx_state):             # <<<<<<<<<<<<<<
  *     __pyx_unpickle_CPU__set_state(self, __pyx_state)
  */
-  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_7Micro80_3CPU_3CPU_37__setstate_cython__, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_CPU___setstate_cython, NULL, __pyx_n_s_Micro80_CPU, __pyx_d, ((PyObject *)__pyx_codeobj__48)); if (unlikely(!__pyx_t_3)) __PYX_ERR(2, 16, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_7Micro80_3CPU_3CPU_39__setstate_cython__, __Pyx_CYFUNCTION_CCLASS, __pyx_n_s_CPU___setstate_cython, NULL, __pyx_n_s_Micro80_CPU, __pyx_d, ((PyObject *)__pyx_codeobj__56)); if (unlikely(!__pyx_t_3)) __PYX_ERR(2, 16, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   if (__Pyx_SetItemOnTypeDict((PyObject *)__pyx_ptype_7Micro80_3CPU_CPU, __pyx_n_s_setstate_cython, __pyx_t_3) < 0) __PYX_ERR(2, 16, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -19711,7 +21916,7 @@ if (!__Pyx_RefNanny) {
  *     cdef object __pyx_PickleError
  *     cdef object __pyx_result
  */
-  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_7Micro80_3CPU_1__pyx_unpickle_CPU, 0, __pyx_n_s_pyx_unpickle_CPU, NULL, __pyx_n_s_Micro80_CPU, __pyx_d, ((PyObject *)__pyx_codeobj__50)); if (unlikely(!__pyx_t_3)) __PYX_ERR(2, 1, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_CyFunction_New(&__pyx_mdef_7Micro80_3CPU_1__pyx_unpickle_CPU, 0, __pyx_n_s_pyx_unpickle_CPU, NULL, __pyx_n_s_Micro80_CPU, __pyx_d, ((PyObject *)__pyx_codeobj__58)); if (unlikely(!__pyx_t_3)) __PYX_ERR(2, 1, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_pyx_unpickle_CPU, __pyx_t_3) < 0) __PYX_ERR(2, 1, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -20801,6 +23006,30 @@ static CYTHON_INLINE PyObject *__Pyx_GetItemInt_Fast(PyObject *o, Py_ssize_t i, 
     return __Pyx_GetItemInt_Generic(o, PyInt_FromSsize_t(i));
 }
 
+/* DictGetItem */
+#if PY_MAJOR_VERSION >= 3 && !CYTHON_COMPILING_IN_PYPY
+static PyObject *__Pyx_PyDict_GetItem(PyObject *d, PyObject* key) {
+    PyObject *value;
+    value = PyDict_GetItemWithError(d, key);
+    if (unlikely(!value)) {
+        if (!PyErr_Occurred()) {
+            if (unlikely(PyTuple_Check(key))) {
+                PyObject* args = PyTuple_Pack(1, key);
+                if (likely(args)) {
+                    PyErr_SetObject(PyExc_KeyError, args);
+                    Py_DECREF(args);
+                }
+            } else {
+                PyErr_SetObject(PyExc_KeyError, key);
+            }
+        }
+        return NULL;
+    }
+    Py_INCREF(value);
+    return value;
+}
+#endif
+
 /* PyIntCompare */
 static CYTHON_INLINE int __Pyx_PyInt_BoolEqObjC(PyObject *op1, PyObject *op2, long intval, long inplace) {
     CYTHON_MAYBE_UNUSED_VAR(intval);
@@ -21006,81 +23235,6 @@ static PyObject* __Pyx_PyInt_AddObjC(PyObject *op1, PyObject *op2, long intval, 
 }
 #endif
 
-/* JoinPyUnicode */
-static PyObject* __Pyx_PyUnicode_Join(PyObject* value_tuple, Py_ssize_t value_count, Py_ssize_t result_ulength,
-                                      Py_UCS4 max_char) {
-#if CYTHON_USE_UNICODE_INTERNALS && CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-    PyObject *result_uval;
-    int result_ukind, kind_shift;
-    Py_ssize_t i, char_pos;
-    void *result_udata;
-    CYTHON_MAYBE_UNUSED_VAR(max_char);
-#if CYTHON_PEP393_ENABLED
-    result_uval = PyUnicode_New(result_ulength, max_char);
-    if (unlikely(!result_uval)) return NULL;
-    result_ukind = (max_char <= 255) ? PyUnicode_1BYTE_KIND : (max_char <= 65535) ? PyUnicode_2BYTE_KIND : PyUnicode_4BYTE_KIND;
-    kind_shift = (result_ukind == PyUnicode_4BYTE_KIND) ? 2 : result_ukind - 1;
-    result_udata = PyUnicode_DATA(result_uval);
-#else
-    result_uval = PyUnicode_FromUnicode(NULL, result_ulength);
-    if (unlikely(!result_uval)) return NULL;
-    result_ukind = sizeof(Py_UNICODE);
-    kind_shift = (result_ukind == 4) ? 2 : result_ukind - 1;
-    result_udata = PyUnicode_AS_UNICODE(result_uval);
-#endif
-    assert(kind_shift == 2 || kind_shift == 1 || kind_shift == 0);
-    char_pos = 0;
-    for (i=0; i < value_count; i++) {
-        int ukind;
-        Py_ssize_t ulength;
-        void *udata;
-        PyObject *uval = PyTuple_GET_ITEM(value_tuple, i);
-        if (unlikely(__Pyx_PyUnicode_READY(uval)))
-            goto bad;
-        ulength = __Pyx_PyUnicode_GET_LENGTH(uval);
-        if (unlikely(!ulength))
-            continue;
-        if (unlikely((PY_SSIZE_T_MAX >> kind_shift) - ulength < char_pos))
-            goto overflow;
-        ukind = __Pyx_PyUnicode_KIND(uval);
-        udata = __Pyx_PyUnicode_DATA(uval);
-        if (!CYTHON_PEP393_ENABLED || ukind == result_ukind) {
-            memcpy((char *)result_udata + (char_pos << kind_shift), udata, (size_t) (ulength << kind_shift));
-        } else {
-            #if PY_VERSION_HEX >= 0x030d0000
-            if (unlikely(PyUnicode_CopyCharacters(result_uval, char_pos, uval, 0, ulength) < 0)) goto bad;
-            #elif CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030300F0 || defined(_PyUnicode_FastCopyCharacters)
-            _PyUnicode_FastCopyCharacters(result_uval, char_pos, uval, 0, ulength);
-            #else
-            Py_ssize_t j;
-            for (j=0; j < ulength; j++) {
-                Py_UCS4 uchar = __Pyx_PyUnicode_READ(ukind, udata, j);
-                __Pyx_PyUnicode_WRITE(result_ukind, result_udata, char_pos+j, uchar);
-            }
-            #endif
-        }
-        char_pos += ulength;
-    }
-    return result_uval;
-overflow:
-    PyErr_SetString(PyExc_OverflowError, "join() result is too long for a Python string");
-bad:
-    Py_DECREF(result_uval);
-    return NULL;
-#else
-    CYTHON_UNUSED_VAR(max_char);
-    CYTHON_UNUSED_VAR(result_ulength);
-    CYTHON_UNUSED_VAR(value_count);
-    return PyUnicode_Join(__pyx_empty_unicode, value_tuple);
-#endif
-}
-
-/* PyObjectCallOneArg */
-static CYTHON_INLINE PyObject* __Pyx_PyObject_CallOneArg(PyObject *func, PyObject *arg) {
-    PyObject *args[2] = {NULL, arg};
-    return __Pyx_PyObject_FastCall(func, args+1, 1 | __Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET);
-}
-
 /* CIntToDigits */
 static const char DIGIT_PAIRS_10[2*10*10+1] = {
     "00010203040506070809"
@@ -21254,6 +23408,81 @@ static CYTHON_INLINE PyObject* __Pyx_PyUnicode_From_int(int value, Py_ssize_t wi
         return PyUnicode_FromOrdinal(*dpos);
     }
     return __Pyx_PyUnicode_BuildFromAscii(ulength, dpos, (int) length, prepend_sign, padding_char);
+}
+
+/* PyObjectCallOneArg */
+static CYTHON_INLINE PyObject* __Pyx_PyObject_CallOneArg(PyObject *func, PyObject *arg) {
+    PyObject *args[2] = {NULL, arg};
+    return __Pyx_PyObject_FastCall(func, args+1, 1 | __Pyx_PY_VECTORCALL_ARGUMENTS_OFFSET);
+}
+
+/* JoinPyUnicode */
+static PyObject* __Pyx_PyUnicode_Join(PyObject* value_tuple, Py_ssize_t value_count, Py_ssize_t result_ulength,
+                                      Py_UCS4 max_char) {
+#if CYTHON_USE_UNICODE_INTERNALS && CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
+    PyObject *result_uval;
+    int result_ukind, kind_shift;
+    Py_ssize_t i, char_pos;
+    void *result_udata;
+    CYTHON_MAYBE_UNUSED_VAR(max_char);
+#if CYTHON_PEP393_ENABLED
+    result_uval = PyUnicode_New(result_ulength, max_char);
+    if (unlikely(!result_uval)) return NULL;
+    result_ukind = (max_char <= 255) ? PyUnicode_1BYTE_KIND : (max_char <= 65535) ? PyUnicode_2BYTE_KIND : PyUnicode_4BYTE_KIND;
+    kind_shift = (result_ukind == PyUnicode_4BYTE_KIND) ? 2 : result_ukind - 1;
+    result_udata = PyUnicode_DATA(result_uval);
+#else
+    result_uval = PyUnicode_FromUnicode(NULL, result_ulength);
+    if (unlikely(!result_uval)) return NULL;
+    result_ukind = sizeof(Py_UNICODE);
+    kind_shift = (result_ukind == 4) ? 2 : result_ukind - 1;
+    result_udata = PyUnicode_AS_UNICODE(result_uval);
+#endif
+    assert(kind_shift == 2 || kind_shift == 1 || kind_shift == 0);
+    char_pos = 0;
+    for (i=0; i < value_count; i++) {
+        int ukind;
+        Py_ssize_t ulength;
+        void *udata;
+        PyObject *uval = PyTuple_GET_ITEM(value_tuple, i);
+        if (unlikely(__Pyx_PyUnicode_READY(uval)))
+            goto bad;
+        ulength = __Pyx_PyUnicode_GET_LENGTH(uval);
+        if (unlikely(!ulength))
+            continue;
+        if (unlikely((PY_SSIZE_T_MAX >> kind_shift) - ulength < char_pos))
+            goto overflow;
+        ukind = __Pyx_PyUnicode_KIND(uval);
+        udata = __Pyx_PyUnicode_DATA(uval);
+        if (!CYTHON_PEP393_ENABLED || ukind == result_ukind) {
+            memcpy((char *)result_udata + (char_pos << kind_shift), udata, (size_t) (ulength << kind_shift));
+        } else {
+            #if PY_VERSION_HEX >= 0x030d0000
+            if (unlikely(PyUnicode_CopyCharacters(result_uval, char_pos, uval, 0, ulength) < 0)) goto bad;
+            #elif CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030300F0 || defined(_PyUnicode_FastCopyCharacters)
+            _PyUnicode_FastCopyCharacters(result_uval, char_pos, uval, 0, ulength);
+            #else
+            Py_ssize_t j;
+            for (j=0; j < ulength; j++) {
+                Py_UCS4 uchar = __Pyx_PyUnicode_READ(ukind, udata, j);
+                __Pyx_PyUnicode_WRITE(result_ukind, result_udata, char_pos+j, uchar);
+            }
+            #endif
+        }
+        char_pos += ulength;
+    }
+    return result_uval;
+overflow:
+    PyErr_SetString(PyExc_OverflowError, "join() result is too long for a Python string");
+bad:
+    Py_DECREF(result_uval);
+    return NULL;
+#else
+    CYTHON_UNUSED_VAR(max_char);
+    CYTHON_UNUSED_VAR(result_ulength);
+    CYTHON_UNUSED_VAR(value_count);
+    return PyUnicode_Join(__pyx_empty_unicode, value_tuple);
+#endif
 }
 
 /* SliceObject */
@@ -21743,30 +23972,6 @@ static CYTHON_INLINE int __Pyx_PyObject_Append(PyObject* L, PyObject* x) {
     return 0;
 }
 
-/* DictGetItem */
-#if PY_MAJOR_VERSION >= 3 && !CYTHON_COMPILING_IN_PYPY
-static PyObject *__Pyx_PyDict_GetItem(PyObject *d, PyObject* key) {
-    PyObject *value;
-    value = PyDict_GetItemWithError(d, key);
-    if (unlikely(!value)) {
-        if (!PyErr_Occurred()) {
-            if (unlikely(PyTuple_Check(key))) {
-                PyObject* args = PyTuple_Pack(1, key);
-                if (likely(args)) {
-                    PyErr_SetObject(PyExc_KeyError, args);
-                    Py_DECREF(args);
-                }
-            } else {
-                PyErr_SetObject(PyExc_KeyError, key);
-            }
-        }
-        return NULL;
-    }
-    Py_INCREF(value);
-    return value;
-}
-#endif
-
 /* ArgTypeTest */
 static int __Pyx__ArgTypeTest(PyObject *obj, PyTypeObject *type, const char *name, int exact)
 {
@@ -21911,7 +24116,7 @@ static PyObject* __Pyx_ImportFrom(PyObject* module, PyObject* name) {
         if (unlikely(!module_name_str)) { goto modbad; }
         module_name = PyUnicode_FromString(module_name_str);
         if (unlikely(!module_name)) { goto modbad; }
-        module_dot = PyUnicode_Concat(module_name, __pyx_kp_u__19);
+        module_dot = PyUnicode_Concat(module_name, __pyx_kp_u__26);
         if (unlikely(!module_dot)) { goto modbad; }
         full_name = PyUnicode_Concat(module_dot, name);
         if (unlikely(!full_name)) { goto modbad; }
@@ -22568,7 +24773,7 @@ static PyObject *__Pyx_ImportDottedModule_WalkParts(PyObject *module, PyObject *
 #endif
 static PyObject *__Pyx__ImportDottedModule(PyObject *name, PyObject *parts_tuple) {
 #if PY_MAJOR_VERSION < 3
-    PyObject *module, *from_list, *star = __pyx_n_s__20;
+    PyObject *module, *from_list, *star = __pyx_n_s__27;
     CYTHON_UNUSED_VAR(parts_tuple);
     from_list = PyList_New(1);
     if (unlikely(!from_list))
@@ -24818,7 +27023,7 @@ __Pyx_PyType_GetName(PyTypeObject* tp)
     if (unlikely(name == NULL) || unlikely(!PyUnicode_Check(name))) {
         PyErr_Clear();
         Py_XDECREF(name);
-        name = __Pyx_NewRef(__pyx_n_s__51);
+        name = __Pyx_NewRef(__pyx_n_s__59);
     }
     return name;
 }
