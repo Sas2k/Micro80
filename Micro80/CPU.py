@@ -165,12 +165,17 @@ class CPU:
                         self.memory.writeAddress(0x400C, 0x0000)
                 if event.key.keysym.sym in ActionKeys:
                     self.memory.writeAddress(0x400D, 0x0000)
+        if self.debug:
+            print(self.memory.memory[0x400B:0x400D])
 
     def execute(self, opcode, operands):
         "Executes the code"
         instructions = self.instructions
         if self.debug:
-            print(self.programCounter, instructions[opcode], operands)
+            print(self.memory.memory[0x4400:0x4410])
+            print(self.A, self.B, self.C, self.D, self.E, self.F)
+        if self.debug:
+            print(self.programCounter, opcode, operands)
         if opcode not in instructions:
             raise ValueError(f"Invalid Opcode, {opcode}")
         if instructions[opcode] == "NOP":

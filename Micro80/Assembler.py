@@ -107,6 +107,20 @@ outputFile = open(args.input.replace("./", "").split(".")[0] + ".rom.m80", "w")
 labels = {}
 
 for instruction in assembledCode:
+    # Pass :01 to get label locations
+    if args.debug:
+        print(memoryCounter, ":", instruction)
+    if len(instruction) == 1:
+        labels[instruction[0]] = (
+            memoryCounter + int(args.memory, 16)
+            if args.memory != None
+            else memoryCounter
+        )
+        continue
+
+    memoryCounter += 1
+
+for instruction in assembledCode:
     if args.debug:
         print(memoryCounter, ":", instruction)
     if len(instruction) == 1:
