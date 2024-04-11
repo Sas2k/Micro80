@@ -223,6 +223,7 @@ class CPU:
             self.memory.readAddress(operands)
         elif instructions[opcode] == "WAdr":
             self.adr = operands
+            self.memory.curData = self.memory.readAddress(operands)
         elif instructions[opcode] == "MOV":
             data = self.memory.readAddress(operands[0])
             location = self.memory.readAddress(operands[1])

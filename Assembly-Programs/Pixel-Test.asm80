@@ -7,6 +7,6 @@ WDir 0xFFFF ;renders at (127, 127)
 WAdr 0x400A
 WDir 0x0001
 
-SLP 0xFFFF
+SLP 0x0005
 
 HLT
