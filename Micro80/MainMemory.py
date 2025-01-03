@@ -1,6 +1,6 @@
 """
 Micro80: MainMemory.py
-Sas2k 2024
+Sas2k 2024 ~ 2025
 
 - Micro80 Main Memory -
 
@@ -35,14 +35,19 @@ class MainMemory:
         "Return the current address"
         return self.curAddress
 
-    def readAddress(self, address):
+    def readAddress(self, address, readSize=1):
         "Read an address from the memory"
         if address < 0x0000 or address > 0xFFFF:
             raise ValueError(f"Memory address out of range: {address}")
         else:
-            self.curAddress = address
-            self.curData = self.memory[address]
-            return self.memory[address]
+            if readSize == 1:
+                self.curAddress = address
+                self.curData = self.memory[address]
+                return self.memory[address]
+            else:
+                self.curAddress = address + readSize
+                self.curData = self.memory[address]
+                return self.memory[address:self.curAddress]
 
     def writeAddress(self, address, data):
         "Write data to an address in the memory"

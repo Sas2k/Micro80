@@ -14,7 +14,7 @@ cdef class Display:
     cdef public int startAddress, endAddress, x, y, curAddress
     cdef public renderer
     cdef public display
-    
+
     cpdef render(self)
 
     cpdef clear(Self)

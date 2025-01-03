@@ -137,7 +137,7 @@ python -m Micro80 -f main.rom.m80 -d
 
 And that's it! You have a simple program running on the Micro80 Emulator.
 
-To find out more on the language (for now...) check out the [Instructions.txt](Micro80\instructions.txt) in the Main Folder and the Assembly Codes in the [Assembly-Programs](Micro80\Assembly-Programs) Folder.
+To find out more on the language (for now...) check out the [Instructions.txt](Micro80/instructions.txt) in the Main Folder and the Assembly Codes in the [Assembly-Programs](Micro80/Assembly-Programs) Folder.
 
 ## ⛏️ Built Using <a name = "built_using"></a>
 

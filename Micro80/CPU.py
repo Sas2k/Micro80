@@ -1,6 +1,6 @@
 """
 Micro80: CPU.py
-Sas2k 2024
+Sas2k 2024 ~ 2025
 
 - Micro80 CPU -
 """
@@ -25,7 +25,8 @@ class CPU:
         self.programCounter = 0x0000
         self.stackPointer = memory.stackPointer
         self.RunStatus = 0x4009
-        self.instructionTable = open(Path(__file__).parent / "instructions.txt", "r")
+        self.instructionTable = open(
+            Path(__file__).parent / "instructions.txt", "r")
         self.instructions = {}
         self.List = self.instructionTable.read().split("\n")
         for i in self.List:
@@ -33,18 +34,35 @@ class CPU:
                 1
             ].strip()
         self.instructionTable.close()
-        self.A = 0x0000
-        self.B = 0x0000
-        self.C = 0x0000
-        self.D = 0x0000
-        self.E = 0x0000
-        self.F = 0x0000
+        self.registers = {
+            "A": 0x0000,
+            "B": 0x0000,
+            "C": 0x0000,
+            "D": 0x0000,
+            "E": 0x0000,
+            "F": 0x0000
+        }
+        self.operations = {
+            "ADD": lambda x, y: x + y,
+            "SUB": lambda x, y: x - y,
+            "MUL": lambda x, y: x * y,
+            "DIV": lambda x, y: x / y,
+            "MOD": lambda x, y: x % y,
+            "AND": lambda x, y: x & y,
+            "OR": lambda x, y: x | y,
+            "XOR": lambda x, y: x ^ y,
+            "NOT": lambda x, y: ~x,
+            "SHL": lambda x, y: x << y,
+            "SHR": lambda x, y: x >> y,
+            "CMP": lambda x, y: x - y
+        }
         self.adr = 0x0000
         self.sleepTimer = 0
         sdl2.ext.init()
         self.window = sdl2.ext.Window("Micro80", (128, 128))
         self.render = sdl2.ext.Renderer(self.window)
-        self.display = Display(self.memory, 0xC000, 0xFFFF, self.render, self.window)
+        self.display = Display(self.memory, 0xC000,
+                               0xFFFF, self.render, self.window)
         self.window.show()
         print("CPU Initialized...")
         if self.debug:
@@ -85,18 +103,22 @@ class CPU:
             print(f"Render Count: {renderAmount}")
             print(f"Ticks: {ticks}")
             print(
-                f"Accumulator: {self.A}, B: {self.B}, C: {self.C}, D: {self.D}, E: {self.E}, F: {self.F}"
+                f"Accumulator: {self.registers["A"]}, B: {self.registers["B"]}, C: {self.registers["C"]}, D: {
+                    self.registers["D"]}, E: {self.registers["E"]}, F: {self.registers["F"]}"
             )
             print(
-                f"Program Counter: {self.programCounter}, Stack Pointer: {self.stackPointer}, Address: {self.adr}"
+                f"Program Counter: {self.programCounter}, Stack Pointer: {
+                    self.stackPointer}, Address: {self.adr}"
             )
             print(
-                f"Input: {self.memory.readAddress(0x400B)}, {self.memory.readAddress(0x400C)}, {self.memory.readAddress(0x400D)}"
+                f"Input: {self.memory.readAddress(0x400B)}, {self.memory.readAddress(0x400C)}, {
+                    self.memory.readAddress(0x400D)}"
             )
             print(f"Variables: {self.memory.memory[0x4400:0x440F]}")
             print(f"Display: {self.memory.memory[0xC000:0xC00F]}")
-            print(f"Current Address: {self.adr}, Current Data: {self.memory.curData}")
-            print(f"Program End.")
+            print(f"Current Address: {self.adr}, Current Data: {
+                  self.memory.curData}")
+        print("Program End.")
 
     def fetch(self):
         "Fetches the current opcode and operand from memory."
@@ -106,14 +128,17 @@ class CPU:
         else:
             raise ValueError("Memory Overflow")
         singleOpcode = (
-            [0x0000, 0x002D] + [x for x in range(0x0035, 0x0046)] + [0x0049, 0x004A]
+            [0x0000, 0x002D] +
+            [x for x in range(0x0035, 0x0046)] + [0x0049, 0x004A]
         )
         if self.curOpcode not in singleOpcode:
             self.curOperand = self.memory.readAddress(self.programCounter)
             if self.curOpcode == 0x0047:
-                self.curOperand = [self.memory.readAddress(self.programCounter)]
+                self.curOperand = [
+                    self.memory.readAddress(self.programCounter)]
                 self.programCounter += 1
-                self.curOperand.append(self.memory.readAddress(self.programCounter))
+                self.curOperand.append(
+                    self.memory.readAddress(self.programCounter))
             self.programCounter += 1
         else:
             self.curOperand = None
@@ -149,11 +174,14 @@ class CPU:
                     break
                 elif event.key.keysym.sym in DPadKeys:
                     if self.memory.readAddress(0x400B) == 0x0000:
-                        self.memory.writeAddress(0x400B, DPadKeys[event.key.keysym.sym])
+                        self.memory.writeAddress(
+                            0x400B, DPadKeys[event.key.keysym.sym])
                     else:
-                        self.memory.writeAddress(0x400C, DPadKeys[event.key.keysym.sym])
+                        self.memory.writeAddress(
+                            0x400C, DPadKeys[event.key.keysym.sym])
                 elif event.key.keysym.sym in ActionKeys:
-                    self.memory.writeAddress(0x400D, ActionKeys[event.key.keysym.sym])
+                    self.memory.writeAddress(
+                        0x400D, ActionKeys[event.key.keysym.sym])
             if event.type == sdl2.SDL_KEYUP:
                 if event.key.keysym.sym in DPadKeys:
                     if (
@@ -173,11 +201,13 @@ class CPU:
         instructions = self.instructions
         if self.debug:
             print(self.memory.memory[0x4400:0x4410])
-            print(self.A, self.B, self.C, self.D, self.E, self.F)
+            print(self.registers)
         if self.debug:
             print(self.programCounter, opcode, operands)
         if opcode not in instructions:
             raise ValueError(f"Invalid Opcode, {opcode}")
+        if self.debug:
+            print(instructions[opcode], operands)
         if instructions[opcode] == "NOP":
             pass
         elif instructions[opcode] == "HLT":
@@ -186,21 +216,8 @@ class CPU:
             self.load(instructions[opcode][2:], operands)
         elif instructions[opcode][0:2] == "ST":
             self.store(instructions[opcode][2:], operands)
-        elif instructions[opcode] in [
-            "ADD",
-            "SUB",
-            "MUL",
-            "DIV",
-            "MOD",
-            "AND",
-            "OR",
-            "XOR",
-            "NOT",
-            "SHL",
-            "SHR",
-            "CMP",
-        ]:
-            self.alu(instructions[opcode], operands)
+        elif instructions[opcode] in self.operations.keys():
+            self.alu(instructions[opcode], operands, self.operations)
         elif instructions[opcode][0] == "J":
             self.jump(instructions[opcode][1:], operands)
         elif instructions[opcode] == "CALL":
@@ -255,28 +272,20 @@ class CPU:
         "Pops off all of the registers from the stack."
         self.pop(self.stackPointer)
         self.pop(self.programCounter)
-        self.pop(self.F)
-        self.pop(self.E)
-        self.pop(self.D)
-        self.pop(self.C)
-        self.pop(self.B)
-        self.pop(self.A)
+        for key in self.registers.keys()[::-1]:
+            self.pop(self.registers[key])
 
     def pushAll(self):
         "Pushes all of the registers onto the stack."
-        self.push(self.A)
-        self.push(self.B)
-        self.push(self.C)
-        self.push(self.D)
-        self.push(self.E)
-        self.push(self.F)
+        for key in self.registers.keys():
+            self.pop(self.registers[key])
         self.push(self.programCounter)
         self.push(self.stackPointer)
 
     def pop(self, operands):
         "Pops off the top of the stack and stores it in the given address."
         self.stackPointer -= 1
-        if operands != None:
+        if operands is not None:
             self.memory.writeAddress(
                 operands, self.memory.readAddress(self.stackPointer)
             )
@@ -301,18 +310,8 @@ class CPU:
 
     def increment(self, register):
         "Increments a given register."
-        if register == "A":
-            self.A += 1
-        elif register == "B":
-            self.B += 1
-        elif register == "C":
-            self.C += 1
-        elif register == "D":
-            self.D += 1
-        elif register == "E":
-            self.E += 1
-        elif register == "F":
-            self.F += 1
+        if register in self.registers.keys():
+            self.registers[register] += 1
         elif register == "SP":
             self.stackPointer += 1
         elif register == "P":
@@ -322,18 +321,8 @@ class CPU:
 
     def decrement(self, register):
         "Decrements a given register."
-        if register == "A":
-            self.A -= 1
-        elif register == "B":
-            self.B -= 1
-        elif register == "C":
-            self.C -= 1
-        elif register == "D":
-            self.D -= 1
-        elif register == "E":
-            self.E -= 1
-        elif register == "F":
-            self.F -= 1
+        if register in self.registers.keys():
+            self.registers[register] -= 1
         elif register == "SP":
             self.stackPointer -= 1
         elif register == "P":
@@ -343,20 +332,8 @@ class CPU:
 
     def load(self, register, operands):
         "Loads a value from an address to a register."
-        if register == "A":
-            self.A = self.memory.readAddress(operands)
-        elif register == "B":
-            self.B = self.memory.readAddress(operands)
-        elif register == "C":
-            self.C = self.memory.readAddress(operands)
-        elif register == "D":
-            self.D = self.memory.readAddress(operands)
-        elif register == "E":
-            self.E = self.memory.readAddress(operands)
-        elif register == "F":
-            self.H = self.memory.readAddress(operands)
-        elif register == "L":
-            self.L = self.memory.readAddress(operands)
+        if register in self.registers.keys():
+            self.registers[register] = self.memory.readAddress(operands)
         elif register == "Ad":
             self.adr = self.memory.readAddress(operands)
         elif register == "SP":
@@ -370,20 +347,10 @@ class CPU:
 
     def store(self, register, operands):
         "Stores a value from a register to an address."
-        if operands == None:
+        if operands is None:
             operands = self.adr
-        if register == "A":
-            self.memory.writeAddress(operands, self.A)
-        elif register == "B":
-            self.memory.writeAddress(operands, self.B)
-        elif register == "C":
-            self.memory.writeAddress(operands, self.C)
-        elif register == "D":
-            self.memory.writeAddress(operands, self.D)
-        elif register == "E":
-            self.memory.writeAddress(operands, self.E)
-        elif register == "F":
-            self.memory.writeAddress(operands, self.F)
+        if register in self.registers.keys():
+            self.memory.writeAddress(operands, self.registers[register])
         elif register == "ST":
             self.memory.writeAddress(operands, self.stackPointer)
         elif register == "Ad":
@@ -393,75 +360,55 @@ class CPU:
         else:
             raise ValueError("Invalid Register")
 
-    def alu(self, opcode, operands):
+    def alu(self, opcode, operands, operations):
         "Performs an ALU operation."
-        if opcode == "ADD":
-            self.A = self.A + self.memory.readAddress(operands)
-        elif opcode == "SUB":
-            self.A -= self.memory.readAddress(operands)
-        elif opcode == "MUL":
-            self.A *= self.memory.readAddress(operands)
-        elif opcode == "DIV":
-            self.A /= self.memory.readAddress(operands)
-        elif opcode == "MOD":
-            self.A %= self.memory.readAddress(operands)
-        elif opcode == "AND":
-            self.A &= self.memory.readAddress(operands)
-        elif opcode == "OR":
-            self.A |= self.memory.readAddress(operands)
-        elif opcode == "XOR":
-            self.A ^= self.memory.readAddress(operands)
-        elif opcode == "NOT":
-            self.A = ~self.memory.readAddress(operands)
-        elif opcode == "SHL":
-            self.A <<= self.memory.readAddress(operands)
-        elif opcode == "SHR":
-            self.A >>= self.memory.readAddress(operands)
-        elif opcode == "CMP":
-            self.A = self.A - self.memory.readAddress(operands)
+        if opcode in operations.keys():
+            self.registers["A"] = operations[opcode](
+                self.registers["A"], self.memory.readAddress(operands))
         else:
             raise ValueError("Invalid Opcode")
 
     def jump(self, opcode, operands):
         "Jumps to a given address based on the condition."
         self.jumpCount += 1
+        A = self.registers["A"]
         if opcode == "Z":
-            if self.A == 0:
+            if A == 0:
                 self.programCounter = operands
         elif opcode == "NZ":
-            if self.A != 0:
+            if A != 0:
                 self.programCounter = operands
         elif opcode == "GZ":
-            if self.A > 0:
+            if A > 0:
                 self.programCounter = operands
         elif opcode == "LEZ":
-            if self.A <= 0:
+            if A <= 0:
                 self.programCounter = operands
         elif opcode == "GEZ":
-            if self.A >= 0:
+            if A >= 0:
                 self.programCounter = operands
         elif opcode == "LZ":
-            if self.A < 0:
+            if A < 0:
                 self.programCounter = operands
         elif opcode == "MP":
             self.programCounter = operands
         elif opcode == "GT":
-            if self.A > self.memory.curData:
+            if A > self.memory.curData:
                 self.programCounter = operands
         elif opcode == "LT":
-            if self.A < self.memory.curData:
+            if A < self.memory.curData:
                 self.programCounter = operands
         elif opcode == "GE":
-            if self.A >= self.memory.curData:
+            if A >= self.memory.curData:
                 self.programCounter = operands
         elif opcode == "LE":
-            if self.A <= self.memory.curData:
+            if A <= self.memory.curData:
                 self.programCounter = operands
         elif opcode == "EQ":
-            if self.A == self.memory.curData:
+            if A == self.memory.curData:
                 self.programCounter = operands
         elif opcode == "NE":
-            if self.A != self.memory.curData:
+            if A != self.memory.curData:
                 self.programCounter = operands
         elif opcode == "MP":
             self.programCounter = operands

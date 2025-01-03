@@ -1,6 +1,6 @@
 """
 Micro80: Display.py
-Sas2k 2024
+Sas2k 2024 ~ 2025
 
 - Micro80 Display -
 """
@@ -34,8 +34,9 @@ class Display:
     def render(self):
         """Render the display to the screen"""
         for y in range(0, 128):
+            rowData = self.memory.readAddress(self.curAddress, readSize=128)
             for x in range(0, 128):
-                color = self.memory.readAddress(self.curAddress)
+                color = rowData[x]
                 r = ((color >> 11) & 0x1F) << 3
                 g = ((color >> 5) & 0x3F) << 2
                 b = (color & 0x1F) << 3

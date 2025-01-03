@@ -13,6 +13,6 @@ cdef class MainMemory:
 
     cpdef getCurAddress(self)
 
-    cpdef readAddress(self, int address)
+    cpdef readAddress(self, int address, int readSize)
 
     cpdef writeAddress(self, int address, int data)

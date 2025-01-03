@@ -17,11 +17,11 @@ import time
 cdef class CPU:
     cdef public debug
     cdef public memory
-    cdef public int programCounter, stackPointer, RunStatus, A, B, C, D, E, F, adr, sleepTimer, jumpCount
+    cdef public int programCounter, stackPointer, RunStatus, adr, sleepTimer, jumpCount
     cdef public curOpcode
     cdef public curOperand
     cdef public instructionTable
-    cdef public dict instructions
+    cdef public dict instructions, registers, operations
     cdef public list List
     cdef public window
     cdef public display
@@ -55,7 +55,7 @@ cdef class CPU:
 
     cpdef store(self, str register, int operands)
 
-    cpdef alu(self, str opcode, int operands)
+    cpdef alu(self, str opcode, int operands, dict operations)
 
     cpdef jump(self, str opcode, int operands)
 
