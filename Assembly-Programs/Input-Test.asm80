@@ -1,0 +1,7 @@
+:Loop-Start
+ADD 0x400B
+ADD 0x400C
+SUB 0x400D
+SLP 0x0001
+JZ :Loop-Start
+HLT

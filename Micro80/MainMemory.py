@@ -7,7 +7,7 @@ Sas2k 2024 ~ 2025
 """
 
 # 0x0000 - 0xFFFF : Total Memory      : 128kb
-# -----------------:-------------------:-----------
+# ----------------:-------------------:-----------
 # 0x0000 - 0x3FFF : Program Memory    : 32kb
 # 0x4000 - 0x43FF : Reserved          :  4kb [0x4009 : Run Status] [0x400A : Render Status] [0x400B ~ 0x400D : Inputs]
 # 0x4400 - 0x4BFF : Variable Memory   :  4kb

@@ -30,6 +30,7 @@ parser.add_argument(
     help="Writing location of code",
     metavar="MEMORY",
     required=False,
+    default=None
 )
 parser.add_argument(
     "-d",
@@ -100,55 +101,63 @@ for instruction in instructions:
         instruction.split(" : ")[0].replace("\n", "").strip()
     )
 
+
+# --- PASS 1: build label table ---
 memoryCounter = 0x0000
-
-outputFile = open(args.input.replace("./", "").split(".")[0] + ".rom.m80", "w")
-
 labels = {}
 
 for instruction in assembledCode:
-    # Pass :01 to get label locations
-    if args.debug:
-        print(memoryCounter, ":", instruction)
+    # label definition
     if len(instruction) == 1:
         labels[instruction[0]] = (
-            memoryCounter + int(args.memory, 16)
-            if args.memory != None
-            else memoryCounter
+            memoryCounter + int(args.memory, 16) if args.memory else memoryCounter
         )
         continue
 
+    # opcode always takes 1 word
     memoryCounter += 1
 
-for instruction in assembledCode:
-    if args.debug:
-        print(memoryCounter, ":", instruction)
-    if len(instruction) == 1:
-        labels[instruction[0]] = (
-            memoryCounter + int(args.memory, 16)
-            if args.memory != None
-            else memoryCounter
-        )
-        continue
-    else:
-        opcode = str(int(instructionTable[instruction[0]], 16))
-    outputFile.write("/" + opcode)
-    memoryCounter += 1
-    if instruction[1] != None and len(instruction) > 1:
-        if type(instruction[1]) == list:
-            for operand in instruction[1]:
-                if ":" not in operand:
-                    outputFile.write("/" + str(int(operand, 16)))
-                    memoryCounter += 1
+    # each operand also takes 1 word
+    if instruction[1] is not None:
+        if isinstance(instruction[1], list):
+            memoryCounter += len(instruction[1])
         else:
-            if ":" not in instruction[1]:
-                outputFile.write("/" + str(int(instruction[1], 16)))
-                memoryCounter += 1
-            else:
-                outputFile.write("/" + str(labels[instruction[1]]))
-
+            memoryCounter += 1
 
 if args.debug:
-    print(labels)
+    print("Labels:", labels)
 
+# --- PASS 2: generate code ---
 memoryCounter = 0x0000
+outputFile = open(args.input.replace("./", "").split(".")[0] + ".rom.m80", "w")
+
+for instruction in assembledCode:
+    # skip labels (already recorded)
+    if len(instruction) == 1:
+        continue
+
+    # get opcode
+    opcode = str(int(instructionTable[instruction[0]], 16))
+    outputFile.write("/" + opcode)
+    memoryCounter += 1
+
+    if args.debug:
+        print(memoryCounter, ":", instruction)
+
+    # write operands
+    if instruction[1] is not None:
+        if isinstance(instruction[1], list):
+            for operand in instruction[1]:
+                if operand in labels:  # label reference
+                    outputFile.write("/" + str(labels[operand]))
+                else:
+                    outputFile.write("/" + str(int(operand, 16)))
+                memoryCounter += 1
+        else:
+            if instruction[1] in labels:
+                outputFile.write("/" + str(labels[instruction[1]]))
+            else:
+                outputFile.write("/" + str(int(instruction[1], 16)))
+            memoryCounter += 1
+
+outputFile.close()

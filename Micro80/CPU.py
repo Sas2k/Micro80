@@ -13,7 +13,7 @@ from pathlib import Path
 import sdl2
 import sdl2.ext
 import time
-
+import os
 
 class CPU:
     """The CPU class for the Micro80 Emulator"""
@@ -117,7 +117,7 @@ class CPU:
             print(f"Variables: {self.memory.memory[0x4400:0x440F]}")
             print(f"Display: {self.memory.memory[0xC000:0xC00F]}")
             print(f"Current Address: {self.adr}, Current Data: {
-                  self.memory.curData}")
+                  self.memory.curData}" )
         print("Program End.")
 
     def fetch(self):
@@ -199,15 +199,13 @@ class CPU:
     def execute(self, opcode, operands):
         "Executes the code"
         instructions = self.instructions
-        if self.debug:
-            print(self.memory.memory[0x4400:0x4410])
-            print(self.registers)
-        if self.debug:
-            print(self.programCounter, opcode, operands)
         if opcode not in instructions:
-            raise ValueError(f"Invalid Opcode, {opcode}")
+            raise ValueError(f"Invalid Opcode, {hex(opcode)}: Memory. {self.memory.curAddress}")
         if self.debug:
             print(instructions[opcode], operands)
+            print(self.programCounter, opcode, operands)
+            print(self.memory.memory[0x4400:0x4410])
+            print(self.registers)
         if instructions[opcode] == "NOP":
             pass
         elif instructions[opcode] == "HLT":
@@ -266,7 +264,7 @@ class CPU:
             self.render.present()
             self.window.refresh()
         else:
-            raise ValueError(f"Invalid Opcode, {opcode}")
+            raise ValueError(f"Invalid Opcode, {hex(opcode)}")
 
     def popAll(self):
         "Pops off all of the registers from the stack."
@@ -369,52 +367,38 @@ class CPU:
             raise ValueError("Invalid Opcode")
 
     def jump(self, opcode, operands):
-        "Jumps to a given address based on the condition."
+        """Jumps to a given address based on the condition."""
         self.jumpCount += 1
         A = self.registers["A"]
-        if opcode == "Z":
-            if A == 0:
-                self.programCounter = operands
-        elif opcode == "NZ":
-            if A != 0:
-                self.programCounter = operands
-        elif opcode == "GZ":
-            if A > 0:
-                self.programCounter = operands
-        elif opcode == "LEZ":
-            if A <= 0:
-                self.programCounter = operands
-        elif opcode == "GEZ":
-            if A >= 0:
-                self.programCounter = operands
-        elif opcode == "LZ":
-            if A < 0:
-                self.programCounter = operands
-        elif opcode == "MP":
+        B = self.memory.curData  # shorthand
+
+        # Map opcodes to their conditions
+        conditions = {
+            "Z":   lambda: A == 0,
+            "NZ":  lambda: A != 0,
+            "GZ":  lambda: A > 0,
+            "LEZ": lambda: A <= 0,
+            "GEZ": lambda: A >= 0,
+            "LZ":  lambda: A < 0,
+
+            "GT":  lambda: A > B,
+            "LT":  lambda: A < B,
+            "GE":  lambda: A >= B,
+            "LE":  lambda: A <= B,
+            "EQ":  lambda: A == B,
+            "NE":  lambda: A != B,
+        }
+
+        if opcode == "MP":  # unconditional jump
             self.programCounter = operands
-        elif opcode == "GT":
-            if A > self.memory.curData:
-                self.programCounter = operands
-        elif opcode == "LT":
-            if A < self.memory.curData:
-                self.programCounter = operands
-        elif opcode == "GE":
-            if A >= self.memory.curData:
-                self.programCounter = operands
-        elif opcode == "LE":
-            if A <= self.memory.curData:
-                self.programCounter = operands
-        elif opcode == "EQ":
-            if A == self.memory.curData:
-                self.programCounter = operands
-        elif opcode == "NE":
-            if A != self.memory.curData:
-                self.programCounter = operands
-        elif opcode == "MP":
-            self.programCounter = operands
-        else:
+            return
+
+        if opcode not in conditions:
             self.jumpCount -= 1
-            raise ValueError("Invalid Opcode")
+            raise ValueError(f"Invalid Opcode: {hex(opcode)}")
+
+        if conditions[opcode]():
+            self.programCounter = operands
 
     def Loader(self, ROMFile, location=0x0000):
         "Loads the ROM file into memory."
