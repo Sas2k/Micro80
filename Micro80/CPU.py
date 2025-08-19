@@ -13,7 +13,6 @@ from pathlib import Path
 import sdl2
 import sdl2.ext
 import time
-import os
 
 class CPU:
     """The CPU class for the Micro80 Emulator"""

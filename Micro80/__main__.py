@@ -20,7 +20,7 @@ from timeit import timeit
 
 import sys
 
-__version__ = "1.2-Alpha"
+__version__ = "1.2.5-Alpha"
 
 parser = ArgumentParser(description="Micro80")
 
