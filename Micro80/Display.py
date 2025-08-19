@@ -40,7 +40,7 @@ class Display:
                 r = ((color >> 11) & 0x1F) << 3
                 g = ((color >> 5) & 0x3F) << 2
                 b = (color & 0x1F) << 3
-                self.renderer.draw_point((x, y), sdl2.ext.Color(r, g, b))
+                self.renderer.draw_rect((2*x, 2*y, 2, 2), sdl2.ext.Color(r, g, b))
                 self.curAddress += 1
         self.curAddress = self.startAddress
 

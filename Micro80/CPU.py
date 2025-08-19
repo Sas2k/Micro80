@@ -59,7 +59,7 @@ class CPU:
         self.adr = 0x0000
         self.sleepTimer = 0
         sdl2.ext.init()
-        self.window = sdl2.ext.Window("Micro80", (128, 128))
+        self.window = sdl2.ext.Window("Micro80", (256, 256))
         self.render = sdl2.ext.Renderer(self.window)
         self.display = Display(self.memory, 0xC000,
                                0xFFFF, self.render, self.window)

@@ -157,7 +157,13 @@ for instruction in assembledCode:
             if instruction[1] in labels:
                 outputFile.write("/" + str(labels[instruction[1]]))
             else:
-                outputFile.write("/" + str(int(instruction[1], 16)))
+                try:
+                    outputFile.write("/" + str(int(instruction[1], 16)))
+                except ValueError as e:
+                    raise ValueError(f"Invalid Label: {instruction[1]}")
             memoryCounter += 1
+
+if args.debug:
+    print(labels)            
 
 outputFile.close()
